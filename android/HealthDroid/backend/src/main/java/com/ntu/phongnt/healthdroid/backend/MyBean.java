@@ -1,4 +1,4 @@
-package com.example.phongnt.healthdroid.backend;
+package com.ntu.phongnt.healthdroid.backend;
 
 /**
  * The object model for the data we are sending through endpoints

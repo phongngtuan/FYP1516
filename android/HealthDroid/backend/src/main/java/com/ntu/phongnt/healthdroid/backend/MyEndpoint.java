@@ -4,7 +4,7 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloEndpoints
 */
 
-package com.example.phongnt.healthdroid.backend;
+package com.ntu.phongnt.healthdroid.backend;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -34,6 +34,13 @@ public class MyEndpoint {
         MyBean response = new MyBean();
         response.setData("Hi, " + name);
 
+        return response;
+    }
+
+    @ApiMethod(name = "getData")
+    public GraphData getData() {
+        GraphData response = new GraphData();
+        response.setValue((float)12.45);
         return response;
     }
 
