@@ -17,11 +17,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.phongnt.healthdroid.backend.myApi.MyApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.ntu.phongnt.healthdroid.backend.myApi.MyApi;
 
 import java.io.IOException;
 
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected String doInBackground(Pair<Context, String>... params) {
             if(myApiService == null) {  // Only do this once
-                /*
+
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                         new AndroidJsonFactory(), null)
                         // options for running against local devappserver
@@ -134,10 +134,10 @@ public class MainActivity extends AppCompatActivity
                             }
                         });
                 // end options for devappserver
-                */
+                
 
-                MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                        .setRootUrl("https://fyp-java-cloud-module.appspot.com/_ah/api/");
+//                MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+//                        .setRootUrl("https://fyp-java-cloud-module.appspot.com/_ah/api/");
 
                 myApiService = builder.build();
             }
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity
             String name = params[0].second;
 
             try {
-                return myApiService.sayHi(name).execute().getData();
+                return myApiService.getData().execute().getValue().toString();
             } catch (IOException e) {
                 return e.getMessage();
             }

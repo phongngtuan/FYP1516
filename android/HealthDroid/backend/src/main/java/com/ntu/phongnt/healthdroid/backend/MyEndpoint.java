@@ -19,8 +19,8 @@ import javax.inject.Named;
         name = "myApi",
         version = "v1",
         namespace = @ApiNamespace(
-                ownerDomain = "backend.healthdroid.phongnt.example.com",
-                ownerName = "backend.healthdroid.phongnt.example.com",
+                ownerDomain = "backend.healthdroid.phongnt.ntu.com",
+                ownerName = "backend.healthdroid.phongnt.ntu.com",
                 packagePath = ""
         )
 )
