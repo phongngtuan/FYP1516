@@ -1,4 +1,4 @@
-package com.example.phongnt.healthdroid;
+package com.ntu.phongnt.healthdroid;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,4 +1,4 @@
-package com.example.phongnt.healthdroid;
+package com.ntu.phongnt.healthdroid;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
