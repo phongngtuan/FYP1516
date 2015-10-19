@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid;
+package com.ntu.phongnt.healthdroid.gcm;
 
 import android.content.Intent;
 import android.util.Log;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ntu.phongnt.healthdroid;
+package com.ntu.phongnt.healthdroid.gcm;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -26,6 +26,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.ntu.phongnt.healthdroid.R;
 
 import java.io.IOException;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ntu.phongnt.healthdroid;
+package com.ntu.phongnt.healthdroid.gcm;
 
 public class QuickstartPreferences {
 

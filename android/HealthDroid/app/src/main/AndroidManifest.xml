@@ -39,20 +39,20 @@
             </intent-filter>
         </receiver>
         <service
-            android:name="com.ntu.phongnt.healthdroid.MyGcmListenerService"
+            android:name=".gcm.MyGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name="com.ntu.phongnt.healthdroid.MyInstanceIDListenerService"
+            android:name=".gcm.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
             </intent-filter>
         </service>
-        <service android:name=".RegistrationIntentService"
+        <service android:name=".gcm.RegistrationIntentService"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
