@@ -1,22 +1,27 @@
 package com.ntu.phongnt.healthdroid;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
+import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 
 public class MainActivity extends AppCompatActivity
@@ -24,6 +29,8 @@ public class MainActivity extends AppCompatActivity
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
+    private HomeFragment homeFragment = null;
+    private GraphFragment graphFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,14 @@ public class MainActivity extends AppCompatActivity
             startService(intent);
             Log.i(TAG, "Here");
         }
+
+        if (homeFragment == null) {
+            homeFragment = new HomeFragment();
+        }
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.fragment_container, homeFragment);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -86,7 +101,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
-
+        Log.i(TAG, "onOptionsItemSelected()");
         return super.onOptionsItemSelected(item);
     }
 
@@ -97,9 +112,17 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camara) {
-            // Handle the camera action
+            if (homeFragment == null) {
+                homeFragment = new HomeFragment();
+            }
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, homeFragment).commit();
         } else if (id == R.id.nav_gallery) {
-
+            if (graphFragment == null) {
+                graphFragment = new GraphFragment();
+            }
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, graphFragment).commit();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -112,6 +135,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
