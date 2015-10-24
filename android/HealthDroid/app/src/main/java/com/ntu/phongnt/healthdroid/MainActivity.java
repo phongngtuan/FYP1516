@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -111,13 +110,13 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
+        if (id == R.id.nav_home) {
             if (homeFragment == null) {
                 homeFragment = new HomeFragment();
             }
             getFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, homeFragment).commit();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_graph) {
             if (graphFragment == null) {
                 graphFragment = new GraphFragment();
             }
