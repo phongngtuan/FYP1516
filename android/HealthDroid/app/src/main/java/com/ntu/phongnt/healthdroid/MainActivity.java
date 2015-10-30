@@ -66,10 +66,12 @@ public class MainActivity extends AppCompatActivity
         if (homeFragment == null) {
             homeFragment = new HomeFragment();
         }
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.fragment_container, homeFragment);
-        fragmentTransaction.commit();
+        if (savedInstanceState == null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment_container, homeFragment);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
@@ -111,17 +113,21 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            homeFragment = (HomeFragment) getFragmentManager().findFragmentByTag("HOME_FRAGMENT");
             if (homeFragment == null) {
                 homeFragment = new HomeFragment();
             }
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, homeFragment).commit();
+            if (!homeFragment.isVisible())
+                getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, homeFragment, "HOME_FRAGMENT").commit();
         } else if (id == R.id.nav_graph) {
+            graphFragment = (GraphFragment) getFragmentManager().findFragmentByTag("GRAPH_FRAGMENT");
             if (graphFragment == null) {
                 graphFragment = new GraphFragment();
             }
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, graphFragment).commit();
+            if (!graphFragment.isVisible())
+                getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, graphFragment, "GRAPH_FRAGMENT").commit();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
