@@ -9,7 +9,7 @@ public class MyGcmListenerService extends GcmListenerService{
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        Log.i(TAG, from);
-        Log.i(TAG, String.valueOf(data.getFloat("reading")));
+        Log.d(TAG, from);
+        Log.d(TAG, data.getString("reading"));
     }
 }

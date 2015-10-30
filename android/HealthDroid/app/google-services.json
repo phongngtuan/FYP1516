@@ -1,1 +1,42 @@
-{"project_info":{"project_id":"fyp-java-cloud-module","project_number":"29062929092","name":"FYP Java Cloud module"},"client":[{"client_info":{"mobilesdk_app_id":"1:29062929092:android:5e676949ae1069ee","client_id":"android:com.ntu.phongnt.healthdroid","client_type":1,"android_client_info":{"package_name":"com.ntu.phongnt.healthdroid"}},"oauth_client":[],"api_key":[],"services":{"analytics_service":{"status":1},"cloud_messaging_service":{"status":2,"apns_config":[]},"appinvite_service":{"status":1,"other_platform_oauth_client":[]},"google_signin_service":{"status":1},"ads_service":{"status":1}}}],"client_info":[],"ARTIFACT_VERSION":"1"}
+{
+  "project_info": {
+    "project_id": "fyp-java-cloud-module",
+    "project_number": "29062929092",
+    "name": "FYP Java Cloud module"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29062929092:android:5e676949ae1069ee",
+        "client_id": "android:com.ntu.phongnt.healthdroid",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.ntu.phongnt.healthdroid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
