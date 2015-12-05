@@ -6,13 +6,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+    private static DatabaseHelper databaseHelper;
     private static final String DATABASE_NAME = "healthdroid";
-    private static final int SCHEMA = 1;
+    private static final int DATABASE_VERSION = 1;
     public static final String VALUE = "value";
     public static final String TABLE = "readings";
 
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, SCHEMA);
+    private DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static synchronized DatabaseHelper getInstance(Context context){
+        if (databaseHelper == null)
+            databaseHelper = new DatabaseHelper(context.getApplicationContext());
+        return databaseHelper;
     }
 
     @Override

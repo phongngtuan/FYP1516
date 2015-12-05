@@ -33,7 +33,7 @@ public class DataFragment extends ListFragment {
         setListAdapter(adapter);
 
         if (db == null) {
-            db = new DatabaseHelper(getActivity());
+            db = DatabaseHelper.getInstance(getActivity());
             task = new LoadCursorTask().execute();
         }
     }
