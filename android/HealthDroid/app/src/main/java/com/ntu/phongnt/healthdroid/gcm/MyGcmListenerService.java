@@ -5,14 +5,16 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+
 import com.google.android.gms.gcm.GcmListenerService;
 import com.ntu.phongnt.healthdroid.R;
 
-public class MyGcmListenerService extends GcmListenerService{
+public class MyGcmListenerService extends GcmListenerService {
     private static final String TAG = "MyGcmListenerService";
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
+        //TODO Implement actual work to be done when receiving some pushed notification from cloud
         Log.d(TAG, from);
         Log.d(TAG, data.getString("reading"));
         Notification notification = new Notification.Builder(this)

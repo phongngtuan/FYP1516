@@ -57,27 +57,6 @@ public class GraphFragment extends Fragment {
         chart.invalidate();
 
         chart_container.addView(chart);
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                for (int i = 0; i < 100; i++) {
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            addEntry();
-//                        }
-//                    });
-//
-//                    try {
-//                        Thread.sleep(35);
-//                    }
-//                    catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }).start();
         return view;
     }
 
