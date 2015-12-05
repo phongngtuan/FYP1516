@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "healthdroid";
     private static final int SCHEMA = 1;
-    static final String VALUE = "value";
-    static final String TABLE = "readings";
+    public static final String VALUE = "value";
+    public static final String TABLE = "readings";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, SCHEMA);

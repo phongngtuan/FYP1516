@@ -19,6 +19,7 @@ import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     private HomeFragment homeFragment = null;
     private GraphFragment graphFragment = null;
+    private DataFragment dataFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +131,13 @@ public class MainActivity extends AppCompatActivity
                 getFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, graphFragment, "GRAPH_FRAGMENT").commit();
         } else if (id == R.id.nav_slideshow) {
-
+            dataFragment = (DataFragment) getFragmentManager().findFragmentByTag("DATA_FRAGMENT");
+            if (dataFragment == null) {
+                dataFragment = new DataFragment();
+            }
+            if (!dataFragment.isVisible())
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, dataFragment, "DATA_FRAGMENT").commit();
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
