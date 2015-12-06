@@ -10,7 +10,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -25,7 +24,7 @@ import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends SignInActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;

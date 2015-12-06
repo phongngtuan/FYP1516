@@ -1,8 +1,8 @@
 package com.ntu.phongnt.healthdroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.auth.api.Auth;
@@ -11,7 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-public class SignInActivity extends Activity {
+public class SignInActivity extends AppCompatActivity {
     //Google Authentication
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
