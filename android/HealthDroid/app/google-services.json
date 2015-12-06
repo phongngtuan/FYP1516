@@ -14,7 +14,16 @@
           "package_name": "com.ntu.phongnt.healthdroid"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "29062929092-4linqgpn8afo4f61e7qsl35ul3ll7pdb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ntu.phongnt.healthdroid",
+            "certificate_hash": "2CEBDCC575369181A9482DE17B05BCF4F0CD2E47"
+          }
+        }
+      ],
       "api_key": [],
       "services": {
         "analytics_service": {
@@ -29,7 +38,7 @@
           "other_platform_oauth_client": []
         },
         "google_signin_service": {
-          "status": 1
+          "status": 2
         },
         "ads_service": {
           "status": 1
