@@ -115,8 +115,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         // TODO: implement normal login with email and password, perhaps
+        if (googleApiClient.isConnected())
+            startActivity(new Intent(this, MainActivity.class));
     }
 
     @Override
