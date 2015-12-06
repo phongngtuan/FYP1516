@@ -17,8 +17,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
@@ -29,6 +32,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
+
+    private GoogleApiClient googleApiClient = null;
+
     private HomeFragment homeFragment = null;
     private GraphFragment graphFragment = null;
     private DataFragment dataFragment = null;
@@ -74,6 +80,13 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.add(R.id.fragment_container, homeFragment);
             fragmentTransaction.commit();
         }
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        Log.i(TAG, "googleApiClient status " + googleApiClient.isConnected());
     }
 
     @Override
