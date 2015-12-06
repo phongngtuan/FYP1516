@@ -35,7 +35,7 @@ public class GraphFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
-        View view = inflater.inflate(R.layout.graph_main, container, false);
+        View view = inflater.inflate(R.layout.content_graph, container, false);
         chart = new LineChart(inflater.getContext());
         chart.setData(new LineData());
         FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
