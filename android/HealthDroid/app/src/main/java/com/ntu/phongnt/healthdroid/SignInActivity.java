@@ -16,6 +16,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
     GoogleApiClient googleApiClient = null;
+    GoogleSignInAccount account = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +49,11 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
-    private void handleSignInResult(GoogleSignInResult result) {
+    protected void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
+            account = result.getSignInAccount();
             startActivity(new Intent(this, MainActivity.class));
         } else {
             // TODO: Handle failed login

@@ -16,9 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
@@ -30,11 +31,13 @@ public class MainActivity extends SignInActivity
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
 
-    private GoogleApiClient googleApiClient = null;
-
     private HomeFragment homeFragment = null;
     private GraphFragment graphFragment = null;
     private DataFragment dataFragment = null;
+
+    public GoogleSignInAccount getAccount() {
+        return account;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +97,13 @@ public class MainActivity extends SignInActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    protected void handleSignInResult(GoogleSignInResult result) {
+        super.handleSignInResult(result);
+        Log.d(TAG, "in handle sign in result");
+        homeFragment.onSignedIn(account);
     }
 
     @Override
