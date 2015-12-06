@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity
             if (!graphFragment.isVisible())
                 getFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, graphFragment, "GRAPH_FRAGMENT").commit();
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_data) {
             dataFragment = (DataFragment) getFragmentManager().findFragmentByTag("DATA_FRAGMENT");
             if (dataFragment == null) {
                 dataFragment = new DataFragment();
