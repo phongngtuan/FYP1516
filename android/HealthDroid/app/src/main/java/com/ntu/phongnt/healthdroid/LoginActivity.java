@@ -116,6 +116,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+        // TODO: implement normal login with email and password, perhaps
     }
 
     @Override
@@ -149,6 +150,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             GoogleSignInAccount acct = result.getSignInAccount();
             startActivity(new Intent(this, MainActivity.class));
         } else {
+            // TODO: Handle failed login
             // Signed out, show unauthenticated UI.
         }
     }
