@@ -87,8 +87,15 @@ public class GraphFragment extends Fragment {
         protected void onPostExecute(Cursor cursor) {
             Log.i("GraphFragment", String.valueOf(cursor.getCount()));
             Log.i("GraphFragment", chart.toString());
-            addEntry();
-            addEntry();
+            if (cursor.moveToFirst()){
+                do{
+                    float data = cursor.getFloat(cursor.getColumnIndex("value"));
+                    addEntry(data);
+                }while(cursor.moveToNext());
+            }
+            cursor.close();
+
+
             chart.invalidate();
         }
 
@@ -98,7 +105,7 @@ public class GraphFragment extends Fragment {
         }
     }
 
-    private void addEntry() {
+    private void addEntry(float value) {
         LineData data = chart.getData();
 
         if (data != null) {
@@ -109,7 +116,7 @@ public class GraphFragment extends Fragment {
             }
             data.addXValue("");
             data.addEntry(
-                    new Entry((float) (Math.random()*10), dataSet.getEntryCount()),
+                    new Entry((float) value, dataSet.getEntryCount()),
                     0
             );
             chart.notifyDataSetChanged();
