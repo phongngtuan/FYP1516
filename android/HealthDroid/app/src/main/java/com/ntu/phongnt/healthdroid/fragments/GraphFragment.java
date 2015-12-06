@@ -5,19 +5,16 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.DropBoxManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.FrameLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -68,6 +65,30 @@ public class GraphFragment extends Fragment {
         return view;
     }
 
+    private void addEntry(float value) {
+        LineData data = chart.getData();
+
+        if (data != null) {
+            LineDataSet dataSet = data.getDataSetByIndex(0);
+            if (dataSet == null) {
+                dataSet = createSet();
+                data.addDataSet(dataSet);
+            }
+            data.addXValue("");
+            data.addEntry(
+                    new Entry(value, dataSet.getEntryCount()),
+                    0
+            );
+            chart.notifyDataSetChanged();
+            chart.setVisibleXRangeMaximum(20);
+            chart.moveViewToX(data.getXValCount() - 7);
+        }
+    }
+
+    private LineDataSet createSet() {
+        return new LineDataSet(new ArrayList<Entry>(), "value");
+    }
+
     abstract private class BaseTask<T> extends AsyncTask<T, Void, Cursor> {
         protected Cursor doQuery() {
             Cursor result =
@@ -87,14 +108,13 @@ public class GraphFragment extends Fragment {
         protected void onPostExecute(Cursor cursor) {
             Log.i("GraphFragment", String.valueOf(cursor.getCount()));
             Log.i("GraphFragment", chart.toString());
-            if (cursor.moveToFirst()){
-                do{
+            if (cursor.moveToFirst()) {
+                do {
                     float data = cursor.getFloat(cursor.getColumnIndex("value"));
                     addEntry(data);
-                }while(cursor.moveToNext());
+                } while (cursor.moveToNext());
             }
             cursor.close();
-
 
             chart.invalidate();
         }
@@ -103,29 +123,5 @@ public class GraphFragment extends Fragment {
         protected Cursor doInBackground(Void... params) {
             return (doQuery());
         }
-    }
-
-    private void addEntry(float value) {
-        LineData data = chart.getData();
-
-        if (data != null) {
-            LineDataSet dataSet = data.getDataSetByIndex(0);
-            if (dataSet == null) {
-                dataSet = createSet();
-                data.addDataSet(dataSet);
-            }
-            data.addXValue("");
-            data.addEntry(
-                    new Entry((float) value, dataSet.getEntryCount()),
-                    0
-            );
-            chart.notifyDataSetChanged();
-            chart.setVisibleXRangeMaximum(20);
-            chart.moveViewToX(data.getXValCount() - 7);
-        }
-    }
-
-    private LineDataSet createSet(){
-        return new LineDataSet(new ArrayList<Entry>(), "value");
     }
 }
