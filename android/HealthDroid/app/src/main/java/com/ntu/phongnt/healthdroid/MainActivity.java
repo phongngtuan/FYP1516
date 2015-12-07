@@ -80,6 +80,10 @@ public class MainActivity extends SignInActivity
             fragmentTransaction.add(R.id.fragment_container, homeFragment);
             fragmentTransaction.commit();
         }
+        Log.d(TAG, "Is connected = " + googleApiClient.isConnected());
+        if (!googleApiClient.isConnected()) {
+            signIn();
+        }
     }
 
     @Override
@@ -101,8 +105,8 @@ public class MainActivity extends SignInActivity
 
     @Override
     protected void handleSignInResult(GoogleSignInResult result) {
-        super.handleSignInResult(result);
         Log.d(TAG, "in handle sign in result");
+        account = result.getSignInAccount();
         homeFragment.onSignedIn(account);
     }
 

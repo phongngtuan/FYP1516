@@ -17,6 +17,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -53,6 +55,7 @@ public class LoginActivity extends SignInActivity implements LoaderCallbacks<Cur
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
+    private static final String TAG = "Login Activity";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -299,6 +302,19 @@ public class LoginActivity extends SignInActivity implements LoaderCallbacks<Cur
 
     }
 
+    @Override
+    protected void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            account = result.getSignInAccount();
+            startActivity(new Intent(this, MainActivity.class));
+        } else {
+            // TODO: Handle failed login
+            // Signed out, show unauthenticated UI.
+        }
+    }
+
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
@@ -314,7 +330,6 @@ public class LoginActivity extends SignInActivity implements LoaderCallbacks<Cur
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
         private final String mEmail;
         private final String mPassword;
 
