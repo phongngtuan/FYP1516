@@ -4,12 +4,13 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/GcmEndpoints
 */
 
-package com.ntu.phongnt.healthdroid.messaging;
+package com.ntu.phongnt.healthdroid.messaging.apis;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.ntu.phongnt.healthdroid.messaging.models.RegistrationRecord;
 
 import java.util.List;
 import java.util.logging.Logger;

@@ -3,6 +3,7 @@ package com.ntu.phongnt.healthdroid.messaging;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
+import com.ntu.phongnt.healthdroid.messaging.models.RegistrationRecord;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes
