@@ -74,12 +74,14 @@ public class MainActivity extends SignInActivity
         if (homeFragment == null) {
             homeFragment = new HomeFragment();
         }
+
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.fragment_container, homeFragment);
             fragmentTransaction.commit();
         }
+
         Log.d(TAG, "Is connected = " + googleApiClient.isConnected());
         if (!googleApiClient.isConnected()) {
             signIn();
@@ -138,7 +140,7 @@ public class MainActivity extends SignInActivity
             }
             if (!homeFragment.isVisible())
                 getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, homeFragment, "HOME_FRAGMENT").commit();
+                        .replace(R.id.fragment_container, homeFragment, "HOME_FRAGMENT").commit();
         } else if (id == R.id.nav_graph) {
             graphFragment = (GraphFragment) getFragmentManager().findFragmentByTag("GRAPH_FRAGMENT");
             if (graphFragment == null) {
@@ -146,7 +148,7 @@ public class MainActivity extends SignInActivity
             }
             if (!graphFragment.isVisible())
                 getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, graphFragment, "GRAPH_FRAGMENT").commit();
+                        .replace(R.id.fragment_container, graphFragment, "GRAPH_FRAGMENT").commit();
         } else if (id == R.id.nav_data) {
             dataFragment = (DataFragment) getFragmentManager().findFragmentByTag("DATA_FRAGMENT");
             if (dataFragment == null) {
