@@ -67,8 +67,6 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
-
-        <activity android:name=".SignInActivity"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,27 @@
+apply plugin: 'com.android.application'
+
+android {
+    defaultConfig {
+        /**
+         * The URL to the API. Default when running locally on your computer:
+         * "http://10.0.2.2:8080/_ah/api/"
+         */
+        buildConfigField "String", "ROOT_URL",
+                "\"http://10.0.2.2:8080/_ah/api/\""
+        // The IP ADDRESS of your SERVER. Yours may be different.
+        /**
+         * Defines whether authentication is required or not. Only works once
+         * deployed on production AppEngine, not on local server.
+         */
+        buildConfigField "boolean", "SIGN_IN_REQUIRED", "false"
+        /**
+         * Substitute you own sender ID here. This is the project number you got
+         * from the API Console, as described in "Getting Started."
+         */
+        buildConfigField "String", "SENDER_ID", "\"YOUR-SENDER-ID\""
+        /**
+         * Web client ID from Google Cloud console.
+         */
+        buildConfigField "String", "WEB_CLIENT_ID", "\"YOUR-WEB-CLIENT-ID\""
+    }
+}

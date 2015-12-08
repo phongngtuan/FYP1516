@@ -86,3 +86,6 @@ proguard/
 
 # Android Studio captures folder
 captures/
+
+#API key files
+secured/
