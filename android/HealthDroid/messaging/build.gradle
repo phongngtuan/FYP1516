@@ -35,6 +35,7 @@ appengine {
     appcfg {
         oauth2 = true
     }
+    jvmFlags = ["-Ddatastore.backing.store=\"/tmp/local_db.bin\""]
     endpoints {
         getClientLibsOnBuild = true
         getDiscoveryDocsOnBuild = true
