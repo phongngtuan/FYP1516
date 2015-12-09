@@ -7,18 +7,31 @@ import com.googlecode.objectify.annotation.Id;
 public class DataRecord {
 
     @Id
-    Long id;
+    public Long id;
 
-    private float value;
+    private int value;
+    private String identifier;
 
-    public DataRecord(float value) {
+    public DataRecord() {
+    }
+
+    public DataRecord(long id) {
+        this.id = id;
     }
 
     public float getValue() {
         return value;
     }
 
-    public void setValue(float value) {
+    public void setValue(int value) {
         this.value = value;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 }

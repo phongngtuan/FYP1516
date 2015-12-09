@@ -3,6 +3,7 @@ package com.ntu.phongnt.healthdroid.messaging;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
+import com.ntu.phongnt.healthdroid.messaging.models.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.models.RegistrationRecord;
 
 /**
@@ -13,6 +14,7 @@ public class OfyService {
 
     static {
         ObjectifyService.register(RegistrationRecord.class);
+        ObjectifyService.register(DataRecord.class);
     }
 
     public static Objectify ofy() {
