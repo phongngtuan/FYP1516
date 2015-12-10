@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.messaging.models;
+package com.ntu.phongnt.healthdroid.messaging.entities;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;

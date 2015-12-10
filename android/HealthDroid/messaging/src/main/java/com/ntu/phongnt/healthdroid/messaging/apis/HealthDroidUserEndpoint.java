@@ -6,7 +6,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
-import com.ntu.phongnt.healthdroid.messaging.models.HealthDroidUser;
+import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 
 import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 

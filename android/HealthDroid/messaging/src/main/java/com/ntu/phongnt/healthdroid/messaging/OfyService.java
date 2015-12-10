@@ -3,9 +3,9 @@ package com.ntu.phongnt.healthdroid.messaging;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
-import com.ntu.phongnt.healthdroid.messaging.models.DataRecord;
-import com.ntu.phongnt.healthdroid.messaging.models.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.messaging.models.RegistrationRecord;
+import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
+import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
+import com.ntu.phongnt.healthdroid.messaging.entities.RegistrationRecord;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes

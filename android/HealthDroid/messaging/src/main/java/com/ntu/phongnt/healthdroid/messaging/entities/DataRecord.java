@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.messaging.models;
+package com.ntu.phongnt.healthdroid.messaging.entities;
 
 import com.google.api.server.spi.config.AnnotationBoolean;
 import com.google.api.server.spi.config.ApiResourceProperty;
