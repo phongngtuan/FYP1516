@@ -11,6 +11,7 @@ import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
@@ -28,11 +29,12 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 public class DataEndpoint {
     private static final String API_KEY = System.getProperty("gcm.api.key");
 
-    @ApiMethod(name = "add")
-    public DataRecord addData(@Named("value") int value, User user) {
+    @ApiMethod(name = "add", path = "data")
+    public DataRecord addData(@Named("value") int value, @Named("date") @Nullable Date date, User user) {
         DataRecord dataRecord = new DataRecord();
         Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getUserId());
         dataRecord.setValue(value);
+        dataRecord.setDate(date);
         dataRecord.setIdentifier(healthDroidUserKey.toString());
         dataRecord.setUser(healthDroidUserKey);
         ofy().save().entity(dataRecord).now();

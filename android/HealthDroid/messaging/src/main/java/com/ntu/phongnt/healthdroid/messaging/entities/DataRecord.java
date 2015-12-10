@@ -7,6 +7,8 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Parent;
 
+import java.util.Date;
+
 @Entity
 public class DataRecord {
 
@@ -16,6 +18,7 @@ public class DataRecord {
     @Parent
     @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
     private Key<HealthDroidUser> user;
+    private Date date;
 
     private int value;
     private String identifier;
@@ -45,5 +48,13 @@ public class DataRecord {
 
     public void setUser(Key<HealthDroidUser> user) {
         this.user = user;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
