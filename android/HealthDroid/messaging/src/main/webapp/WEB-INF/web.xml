@@ -13,7 +13,9 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.ntu.phongnt.healthdroid.messaging.apis.RegistrationEndpoint,
+            <param-value>
+                com.ntu.phongnt.healthdroid.messaging.apis.RegistrationEndpoint,
+                com.ntu.phongnt.healthdroid.messaging.apis.HealthDroidUserEndpoint,
                 com.ntu.phongnt.healthdroid.messaging.apis.MessagingEndpoint,
                 com.ntu.phongnt.healthdroid.messaging.apis.DataEndpoint
             </param-value>
