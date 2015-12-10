@@ -1,7 +1,11 @@
 package com.ntu.phongnt.healthdroid.messaging.models;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Parent;
 
 @Entity
 public class DataRecord {
@@ -9,14 +13,14 @@ public class DataRecord {
     @Id
     public Long id;
 
+    @Parent
+    @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
+    private Key<HealthDroidUser> user;
+
     private int value;
     private String identifier;
 
     public DataRecord() {
-    }
-
-    public DataRecord(long id) {
-        this.id = id;
     }
 
     public float getValue() {
@@ -33,5 +37,13 @@ public class DataRecord {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public Key<HealthDroidUser> getUser() {
+        return user;
+    }
+
+    public void setUser(Key<HealthDroidUser> user) {
+        this.user = user;
     }
 }

@@ -4,8 +4,14 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
+import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 import com.ntu.phongnt.healthdroid.messaging.models.DataRecord;
+import com.ntu.phongnt.healthdroid.messaging.models.HealthDroidUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 
@@ -18,23 +24,38 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
                 packagePath = ""
         )
 )
+
 public class DataEndpoint {
     private static final String API_KEY = System.getProperty("gcm.api.key");
 
     @ApiMethod(name = "add")
-    public DataRecord addData(@Named("value") int value) {
+    public DataRecord addData(@Named("value") int value, User user) {
         DataRecord dataRecord = new DataRecord();
+        Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getUserId());
         dataRecord.setValue(value);
+        dataRecord.setIdentifier(healthDroidUserKey.toString());
+        dataRecord.setUser(healthDroidUserKey);
         ofy().save().entity(dataRecord).now();
         assert dataRecord.id != null;
         return dataRecord;
     }
 
     @ApiMethod(name = "get")
-    public DataRecord getDataRecord(@Named("id") long id) {
+    public List<DataRecord> getDataRecord(@Nullable @Named("id") Long id) {
+        if (id == null) {
+            return ofy().load().type(DataRecord.class).list();
+        }
         Key<DataRecord> key = Key.create(DataRecord.class, id);
-        DataRecord dataRecordResult = ofy().load().key(key).safe();
-        dataRecordResult.setValue(3223);
-        return dataRecordResult;
+        DataRecord dataRecord = ofy().load().key(key).safe();
+        List<DataRecord> dataRecordList = new ArrayList<DataRecord>();
+        dataRecordList.add(dataRecord);
+        return dataRecordList;
+    }
+
+    @ApiMethod(name = "getByUser")
+    public List<DataRecord> getDataRecordByUser(@Named("userid") String userid) {
+        Key<HealthDroidUser> key = Key.create(HealthDroidUser.class, userid);
+        List<DataRecord> dataRecords = ofy().load().type(DataRecord.class).ancestor(key).list();
+        return dataRecords;
     }
 }
