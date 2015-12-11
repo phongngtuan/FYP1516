@@ -35,7 +35,7 @@ appengine {
     appcfg {
         oauth2 = true
     }
-    jvmFlags = ["-Ddatastore.backing.store=\"/tmp/local_db.bin\""]
+    jvmFlags = ['-Ddatastore.backing_store="/tmp/local_db.bin"']
     httpAddress = '0.0.0.0'
     endpoints {
         getClientLibsOnBuild = true
