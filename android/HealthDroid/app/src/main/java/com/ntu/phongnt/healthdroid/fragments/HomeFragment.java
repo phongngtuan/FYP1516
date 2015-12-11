@@ -1,6 +1,8 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
 import android.app.Fragment;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,6 +43,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_home, container, false);
         setRetainInstance(true);
+        db = DatabaseHelper.getInstance(getActivity());
         button = (Button) view.findViewById(R.id.send_button);
         button.setOnClickListener(this);
         userField = (TextView) view.findViewById(R.id.user_id);
@@ -81,6 +84,14 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
             try {
                 List<DataRecord> dataRecordList = dataService.get().execute().getItems();
                 Log.i(TAG, "dataRecord size = " + dataRecordList.size());
+                SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
+                for (DataRecord d : dataRecordList) {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.VALUE, d.getValue());
+                    sqLiteDatabase.insert(DatabaseHelper.TABLE,
+                            DatabaseHelper.VALUE,
+                            values);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
