@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile project(path: ':messaging', configuration: 'android-endpoints')
     compile 'com.android.support:appcompat-v7:23.1.1'
@@ -39,4 +39,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-ads:8.3.0'
     compile 'com.google.android.gms:play-services-auth:8.3.0'
     compile 'com.google.android.gms:play-services-gcm:8.3.0'
+    compile project(':messaging')
 }
