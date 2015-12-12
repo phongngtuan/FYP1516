@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,19 +34,30 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     DatabaseHelper db = null;
     private GoogleSignInAccount account;
 
-    private Button button;
+    private Button button = null;
     private TextView userField = null;
+    private Button submit_btn = null;
 
     private String message;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.content_home, container, false);
+        final View view = inflater.inflate(R.layout.content_home, container, false);
         setRetainInstance(true);
         db = DatabaseHelper.getInstance(getActivity());
         button = (Button) view.findViewById(R.id.send_button);
         button.setOnClickListener(this);
+        button = (Button) view.findViewById(R.id.submit_btn);
+        button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText valueField = (EditText) view.findViewById(R.id.edit_field);
+                Integer value = Integer.valueOf(valueField.getText().toString());
+                new PostDataRecord().execute(value);
+                Toast.makeText(getActivity(), valueField.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
         userField = (TextView) view.findViewById(R.id.user_id);
         return view;
     }
@@ -59,6 +71,32 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     public void onSignedIn(GoogleSignInAccount account) {
         this.account = account;
         userField.setText(account.getId());
+    }
+
+    private class PostDataRecord extends AsyncTask<Integer, Void, Void> {
+        @Override
+        protected Void doInBackground(Integer... params) {
+            Data.Builder builder = new Data.Builder(
+                    AndroidHttp.newCompatibleTransport(),
+                    new AndroidJsonFactory(),
+                    null)
+                    .setRootUrl("http://192.168.1.28:8080/_ah/api/")
+                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                        @Override
+                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                            abstractGoogleClientRequest.setDisableGZipContent(true);
+                        }
+                    });
+            Data dataService = builder.build();
+            for (Integer value : params) {
+                try {
+                    dataService.add(value).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
     }
 
     private class GetDataTask extends AsyncTask<Void, Void, Void> {

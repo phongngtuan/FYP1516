@@ -15,7 +15,7 @@ import com.ntu.phongnt.healthdroid.db.DatabaseHelper;
 public class DataFragment extends ListFragment {
     DatabaseHelper db = null;
     private Cursor current = null;
-    private AsyncTask task=null;
+    private AsyncTask task = null;
 
     public DataFragment() {
         super();
@@ -25,9 +25,11 @@ public class DataFragment extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SimpleCursorAdapter adapter =
-                new SimpleCursorAdapter(getActivity(), R.layout.row,
-                        current, new String[]{
-                        DatabaseHelper.VALUE},
+                new SimpleCursorAdapter(
+                        getActivity(),
+                        R.layout.row,
+                        current,
+                        new String[]{DatabaseHelper.VALUE},
                         new int[]{R.id.value},
                         0);
         setListAdapter(adapter);

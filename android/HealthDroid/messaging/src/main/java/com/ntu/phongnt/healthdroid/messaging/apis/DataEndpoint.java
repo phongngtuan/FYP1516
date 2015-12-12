@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
+import com.google.appengine.api.oauth.OAuthRequestException;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
@@ -30,15 +31,19 @@ public class DataEndpoint {
     private static final String API_KEY = System.getProperty("gcm.api.key");
 
     @ApiMethod(name = "add", path = "data")
-    public DataRecord addData(@Named("value") int value, @Named("date") @Nullable Date date, User user) {
+    public DataRecord addData(@Named("value") int value, @Named("date") @Nullable Date date, User user) throws OAuthRequestException {
         DataRecord dataRecord = new DataRecord();
-        Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getUserId());
-        dataRecord.setValue(value);
-        dataRecord.setDate(date);
-        dataRecord.setIdentifier(healthDroidUserKey.toString());
-        dataRecord.setUser(healthDroidUserKey);
-        ofy().save().entity(dataRecord).now();
-        assert dataRecord.id != null;
+        if (user != null) {
+            Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getUserId());
+            dataRecord.setValue(value);
+            dataRecord.setDate(date);
+            dataRecord.setIdentifier(healthDroidUserKey.toString());
+            dataRecord.setUser(healthDroidUserKey);
+            ofy().save().entity(dataRecord).now();
+            assert dataRecord.id != null;
+        } else {
+            throw new OAuthRequestException("Data Endpoints exception");
+        }
         return dataRecord;
     }
 
