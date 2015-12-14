@@ -10,6 +10,7 @@ import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
+import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,17 +25,19 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
                 ownerDomain = "data.healthdroid.phongnt.ntu.com",
                 ownerName = "data.healthdroid.phongnt.ntu.com",
                 packagePath = ""
-        )
+        ),
+        clientIds = {Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID, Constants.IOS_CLIENT_ID},
+        audiences = {Constants.ANDROID_AUDIENCE}
 )
 
 public class DataEndpoint {
-    private static final String API_KEY = System.getProperty("gcm.api.key");
+    private static final String API_KEY = Constants.GCM_API_KEY;
 
     @ApiMethod(name = "add", path = "data")
     public DataRecord addData(@Named("value") int value, @Named("date") @Nullable Date date, User user) throws OAuthRequestException {
         DataRecord dataRecord = new DataRecord();
         if (user != null) {
-            Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getUserId());
+            Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getEmail());
             dataRecord.setValue(value);
             dataRecord.setDate(date);
             dataRecord.setIdentifier(healthDroidUserKey.toString());
@@ -42,27 +45,20 @@ public class DataEndpoint {
             ofy().save().entity(dataRecord).now();
             assert dataRecord.id != null;
         } else {
-            throw new OAuthRequestException("Data Endpoints exception");
+            throw new OAuthRequestException("Data Endpoints exception: User= " + user);
         }
         return dataRecord;
     }
 
     @ApiMethod(name = "get")
-    public List<DataRecord> getDataRecord(@Nullable @Named("id") Long id) {
-        if (id == null) {
+    public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId) {
+        if (userId == null) {
             return ofy().load().type(DataRecord.class).list();
         }
-        Key<DataRecord> key = Key.create(DataRecord.class, id);
+        Key<DataRecord> key = Key.create(DataRecord.class, userId);
         DataRecord dataRecord = ofy().load().key(key).safe();
         List<DataRecord> dataRecordList = new ArrayList<DataRecord>();
         dataRecordList.add(dataRecord);
         return dataRecordList;
-    }
-
-    @ApiMethod(name = "getByUser")
-    public List<DataRecord> getDataRecordByUser(@Named("userid") String userid) {
-        Key<HealthDroidUser> key = Key.create(HealthDroidUser.class, userid);
-        List<DataRecord> dataRecords = ofy().load().type(DataRecord.class).ancestor(key).list();
-        return dataRecords;
     }
 }

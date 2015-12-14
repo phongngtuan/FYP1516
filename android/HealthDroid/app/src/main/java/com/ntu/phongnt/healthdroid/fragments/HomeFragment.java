@@ -35,11 +35,15 @@ import java.util.List;
 
 public class HomeFragment extends Fragment implements Button.OnClickListener, GoogleSignInListener {
     private static final int REQUEST_ACCOUNT_PICKER = 2;
+    private static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
     private static String TAG = "HomeFragment";
     private static HomeFragment instance;
+
     DatabaseHelper db = null;
-    GoogleAccountCredential credential;
-    SharedPreferences settings;
+    String accountName = null;
+    GoogleAccountCredential credential = null;
+    SharedPreferences settings = null;
+
     private GoogleSignInAccount account;
     private Button button = null;
     private TextView userField = null;
@@ -62,14 +66,16 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                 EditText valueField = (EditText) view.findViewById(R.id.edit_field);
                 Integer value = Integer.valueOf(valueField.getText().toString());
                 new PostDataRecord().execute(value);
-                Toast.makeText(getActivity(), valueField.getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), accountName, Toast.LENGTH_SHORT).show();
             }
         });
         userField = (TextView) view.findViewById(R.id.user_id);
+
+        //Instance variables initializations
         settings = getActivity().getSharedPreferences("HealthDroid", 0);
         credential = GoogleAccountCredential.usingAudience(
                 getActivity(),
-                BuildConfig.WEB_CLIENT_ID);
+                "server:client_id:" + BuildConfig.WEB_CLIENT_ID);
         return view;
     }
 
@@ -85,13 +91,13 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     }
 
     // setSelectedAccountName definition
-//    private void setSelectedAccountName(String accountName) {
-//        SharedPreferences.Editor editor = settings.edit();
-//        editor.putString(PREF_ACCOUNT_NAME, accountName);
-//        editor.commit();
-//        credential.setSelectedAccountName(accountName);
-//        this.accountName = accountName;
-//    }
+    private void setSelectedAccountName(String accountName) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(PREF_ACCOUNT_NAME, accountName);
+        editor.apply();
+        credential.setSelectedAccountName(accountName);
+        this.accountName = accountName;
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -104,7 +110,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                                     AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
                         Log.d(TAG, "Authorized complete");
-                        credential.setSelectedAccountName(accountName);
+                        setSelectedAccountName(accountName);
                         // User is authorized.
                     }
                 }
@@ -129,6 +135,14 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
 
             if (credential.getSelectedAccountName() != null) {
                 // Already signed in, begin app!
+                Data dataService = builder.build();
+                for (Integer value : params) {
+                    try {
+                        dataService.add(value).execute();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Log.d(TAG, "already signed in");
             } else {
                 // Not signed in, show login window or request an account.
@@ -136,14 +150,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                 startActivityForResult(credential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER);
             }
-//            Data dataService = builder.build();
-//            for (Integer value : params) {
-//                try {
-//                    dataService.add(value).execute();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+
             return null;
         }
     }
@@ -187,7 +194,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Toast toast = Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(getActivity(), accountName, Toast.LENGTH_SHORT);
             toast.show();
         }
     }
