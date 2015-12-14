@@ -1,7 +1,10 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
+import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,8 +21,10 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.ntu.phongnt.healthdroid.BuildConfig;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
@@ -29,11 +34,13 @@ import java.io.IOException;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements Button.OnClickListener, GoogleSignInListener {
+    private static final int REQUEST_ACCOUNT_PICKER = 2;
     private static String TAG = "HomeFragment";
     private static HomeFragment instance;
     DatabaseHelper db = null;
+    GoogleAccountCredential credential;
+    SharedPreferences settings;
     private GoogleSignInAccount account;
-
     private Button button = null;
     private TextView userField = null;
     private Button submit_btn = null;
@@ -59,6 +66,10 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
             }
         });
         userField = (TextView) view.findViewById(R.id.user_id);
+        settings = getActivity().getSharedPreferences("HealthDroid", 0);
+        credential = GoogleAccountCredential.usingAudience(
+                getActivity(),
+                BuildConfig.WEB_CLIENT_ID);
         return view;
     }
 
@@ -73,13 +84,41 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         userField.setText(account.getId());
     }
 
+    // setSelectedAccountName definition
+//    private void setSelectedAccountName(String accountName) {
+//        SharedPreferences.Editor editor = settings.edit();
+//        editor.putString(PREF_ACCOUNT_NAME, accountName);
+//        editor.commit();
+//        credential.setSelectedAccountName(accountName);
+//        this.accountName = accountName;
+//    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_ACCOUNT_PICKER:
+                if (data != null && data.getExtras() != null) {
+                    String accountName =
+                            data.getExtras().getString(
+                                    AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        Log.d(TAG, "Authorized complete");
+                        credential.setSelectedAccountName(accountName);
+                        // User is authorized.
+                    }
+                }
+                break;
+        }
+    }
+
     private class PostDataRecord extends AsyncTask<Integer, Void, Void> {
         @Override
         protected Void doInBackground(Integer... params) {
             Data.Builder builder = new Data.Builder(
                     AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(),
-                    null)
+                    credential)
                     .setRootUrl("http://192.168.1.28:8080/_ah/api/")
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         @Override
@@ -87,14 +126,24 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                             abstractGoogleClientRequest.setDisableGZipContent(true);
                         }
                     });
-            Data dataService = builder.build();
-            for (Integer value : params) {
-                try {
-                    dataService.add(value).execute();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+            if (credential.getSelectedAccountName() != null) {
+                // Already signed in, begin app!
+                Log.d(TAG, "already signed in");
+            } else {
+                // Not signed in, show login window or request an account.
+                Log.d(TAG, "Not signed in");
+                startActivityForResult(credential.newChooseAccountIntent(),
+                        REQUEST_ACCOUNT_PICKER);
             }
+//            Data dataService = builder.build();
+//            for (Integer value : params) {
+//                try {
+//                    dataService.add(value).execute();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             return null;
         }
     }
