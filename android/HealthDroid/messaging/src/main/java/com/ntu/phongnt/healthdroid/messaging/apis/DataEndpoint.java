@@ -34,7 +34,7 @@ public class DataEndpoint {
     private static final String API_KEY = Constants.GCM_API_KEY;
 
     @ApiMethod(name = "add", path = "data")
-    public DataRecord addData(@Named("value") int value, @Named("date") @Nullable Date date, User user) throws OAuthRequestException {
+    public DataRecord addData(@Named("value") int value, @Named("date") Date date, User user) throws OAuthRequestException {
         DataRecord dataRecord = new DataRecord();
         if (user != null) {
             Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getEmail());

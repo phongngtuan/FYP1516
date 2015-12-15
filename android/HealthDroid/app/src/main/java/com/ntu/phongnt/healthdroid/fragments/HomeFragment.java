@@ -24,6 +24,7 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.BuildConfig;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
@@ -31,6 +32,7 @@ import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.DatabaseHelper;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements Button.OnClickListener, GoogleSignInListener {
@@ -138,7 +140,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                 Data dataService = builder.build();
                 for (Integer value : params) {
                     try {
-                        dataService.add(value).execute();
+                        dataService.add(new DateTime(new Date()), value).execute();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
