@@ -26,8 +26,9 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
                 ownerName = "data.healthdroid.phongnt.ntu.com",
                 packagePath = ""
         ),
-        clientIds = {Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID, Constants.IOS_CLIENT_ID},
-        audiences = {Constants.ANDROID_AUDIENCE}
+        clientIds = {Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID, Constants.IOS_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+        audiences = {Constants.ANDROID_AUDIENCE},
+        scopes = {"https://www.googleapis.com/auth/userinfo.email"}
 )
 
 public class DataEndpoint {
