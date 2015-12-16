@@ -29,7 +29,7 @@ import com.ntu.phongnt.healthdroid.BuildConfig;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
-import com.ntu.phongnt.healthdroid.db.DatabaseHelper;
+import com.ntu.phongnt.healthdroid.db.DataHelper;
 
 import java.io.IOException;
 import java.util.Date;
@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     private static String TAG = "HomeFragment";
     private static HomeFragment instance;
 
-    DatabaseHelper db = null;
+    DataHelper db = null;
     String accountName = null;
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
@@ -58,7 +58,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.content_home, container, false);
         setRetainInstance(true);
-        db = DatabaseHelper.getInstance(getActivity());
+        db = DataHelper.getInstance(getActivity());
         button = (Button) view.findViewById(R.id.send_button);
         button.setOnClickListener(this);
         button = (Button) view.findViewById(R.id.submit_btn);
@@ -183,9 +183,9 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                 SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
                 for (DataRecord d : dataRecordList) {
                     ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.VALUE, d.getValue());
-                    sqLiteDatabase.insert(DatabaseHelper.TABLE,
-                            DatabaseHelper.VALUE,
+                    values.put(DataHelper.VALUE, d.getValue());
+                    sqLiteDatabase.insert(DataHelper.TABLE,
+                            DataHelper.VALUE,
                             values);
                 }
             } catch (IOException e) {

@@ -10,10 +10,10 @@ import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
 
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.db.DatabaseHelper;
+import com.ntu.phongnt.healthdroid.db.DataHelper;
 
 public class DataFragment extends ListFragment {
-    DatabaseHelper db = null;
+    DataHelper db = null;
     private Cursor current = null;
     private AsyncTask task = null;
 
@@ -29,13 +29,13 @@ public class DataFragment extends ListFragment {
                         getActivity(),
                         R.layout.row,
                         current,
-                        new String[]{DatabaseHelper.VALUE},
+                        new String[]{DataHelper.VALUE},
                         new int[]{R.id.value},
                         0);
         setListAdapter(adapter);
 
         if (db == null) {
-            db = DatabaseHelper.getInstance(getActivity());
+            db = DataHelper.getInstance(getActivity());
             task = new LoadCursorTask().execute();
         }
     }
@@ -51,10 +51,10 @@ public class DataFragment extends ListFragment {
             Cursor result =
                     db
                             .getReadableDatabase()
-                            .query(DatabaseHelper.TABLE,
+                            .query(DataHelper.TABLE,
                                     new String[]{"ROWID AS _id",
-                                            DatabaseHelper.VALUE},
-                                    null, null, null, null, DatabaseHelper.VALUE);
+                                            DataHelper.VALUE},
+                                    null, null, null, null, DataHelper.VALUE);
 
             Log.i("DataFragment", String.valueOf(result.getCount()));
 

@@ -5,21 +5,21 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
-    private static DatabaseHelper databaseHelper;
-    private static final String DATABASE_NAME = "healthdroid";
-    private static final int DATABASE_VERSION = 1;
+public class DataHelper extends SQLiteOpenHelper {
     public static final String VALUE = "value";
     public static final String TABLE = "readings";
+    private static final String DATABASE_NAME = "healthdroid";
+    private static final int DATABASE_VERSION = 1;
+    private static DataHelper dataHelper;
 
-    private DatabaseHelper(Context context) {
+    private DataHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public static synchronized DatabaseHelper getInstance(Context context){
-        if (databaseHelper == null)
-            databaseHelper = new DatabaseHelper(context.getApplicationContext());
-        return databaseHelper;
+    public static synchronized DataHelper getInstance(Context context) {
+        if (dataHelper == null)
+            dataHelper = new DataHelper(context.getApplicationContext());
+        return dataHelper;
     }
 
     @Override

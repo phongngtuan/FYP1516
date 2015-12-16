@@ -19,13 +19,13 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.db.DatabaseHelper;
+import com.ntu.phongnt.healthdroid.db.DataHelper;
 
 import java.util.ArrayList;
 
 public class GraphFragment extends Fragment {
     private LineChart chart = null;
-    private DatabaseHelper db = null;
+    private DataHelper db = null;
 
     public GraphFragment() {
         super();
@@ -48,7 +48,7 @@ public class GraphFragment extends Fragment {
         chart.setDrawGridBackground(false);
         chart.setBackgroundColor(Color.LTGRAY);
 
-        db = DatabaseHelper.getInstance(getActivity());
+        db = DataHelper.getInstance(getActivity());
 
         new LoadCursorTask().execute();
 
@@ -94,10 +94,10 @@ public class GraphFragment extends Fragment {
             Cursor result =
                     db
                             .getReadableDatabase()
-                            .query(DatabaseHelper.TABLE,
+                            .query(DataHelper.TABLE,
                                     new String[]{"ROWID AS _id",
-                                            DatabaseHelper.VALUE},
-                                    null, null, null, null, DatabaseHelper.VALUE);
+                                            DataHelper.VALUE},
+                                    null, null, null, null, DataHelper.VALUE);
             Log.i("GraphFragment", String.valueOf(result.getCount()));
             return (result);
         }
