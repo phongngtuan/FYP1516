@@ -29,8 +29,8 @@ public class DataFragment extends ListFragment {
                         getActivity(),
                         R.layout.row,
                         current,
-                        new String[]{DataHelper.VALUE},
-                        new int[]{R.id.value},
+                        new String[]{DataHelper.VALUE, DataHelper.CREATED_AT},
+                        new int[]{R.id.value, R.id.created_at},
                         0);
         setListAdapter(adapter);
 
@@ -53,7 +53,7 @@ public class DataFragment extends ListFragment {
                             .getReadableDatabase()
                             .query(DataHelper.TABLE,
                                     new String[]{"ROWID AS _id",
-                                            DataHelper.VALUE},
+                                            DataHelper.VALUE, DataHelper.CREATED_AT},
                                     null, null, null, null, DataHelper.VALUE);
 
             Log.i("DataFragment", String.valueOf(result.getCount()));
