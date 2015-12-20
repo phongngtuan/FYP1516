@@ -41,6 +41,7 @@ public class DataEndpoint {
             Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getEmail());
             dataRecord.setValue(value);
             dataRecord.setDate(date);
+            dataRecord.setCreatedAt(new Date());
             dataRecord.setIdentifier(healthDroidUserKey.toString());
             dataRecord.setUser(healthDroidUserKey);
             ofy().save().entity(dataRecord).now();

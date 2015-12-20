@@ -19,6 +19,7 @@ public class DataRecord {
     @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
     private Key<HealthDroidUser> user;
     private Date date;
+    private Date createdAt;
 
     private int value;
     private String identifier;
@@ -56,5 +57,13 @@ public class DataRecord {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }
