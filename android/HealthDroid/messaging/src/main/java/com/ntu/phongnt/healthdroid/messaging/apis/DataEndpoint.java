@@ -12,7 +12,6 @@ import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,14 +52,15 @@ public class DataEndpoint {
     }
 
     @ApiMethod(name = "get")
-    public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId) {
+    public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, @Nullable @Named("after") Date after) {
+        List<DataRecord> dataRecordList = null;
         if (userId == null) {
-            return ofy().load().type(DataRecord.class).list();
+            dataRecordList = ofy().load().type(DataRecord.class).list();
+        } else {
+            Key<HealthDroidUser> parent = Key.create(HealthDroidUser.class, userId);
+            HealthDroidUser user = ofy().load().key(parent).safe();
+            dataRecordList = ofy().load().type(DataRecord.class).ancestor(user).list();
         }
-        Key<DataRecord> key = Key.create(DataRecord.class, userId);
-        DataRecord dataRecord = ofy().load().key(key).safe();
-        List<DataRecord> dataRecordList = new ArrayList<DataRecord>();
-        dataRecordList.add(dataRecord);
         return dataRecordList;
     }
 }
