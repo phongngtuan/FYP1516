@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -70,6 +69,10 @@ public class GraphFragment extends Fragment {
     }
 
     private void addEntry(float value) {
+        addEntry(value, "");
+    }
+
+    private void addEntry(float value, String label) {
         LineData data = chart.getData();
 
         if (data != null) {
@@ -79,7 +82,7 @@ public class GraphFragment extends Fragment {
                 data.addDataSet(dataSet);
                 dataSet.setValueTextColor(Color.WHITE);
             }
-            data.addXValue("A");
+            data.addXValue(label);
             data.addEntry(
                     new Entry(value, dataSet.getEntryCount()),
                     0
@@ -101,7 +104,7 @@ public class GraphFragment extends Fragment {
                             .getReadableDatabase()
                             .query(DataHelper.TABLE,
                                     new String[]{"ROWID AS _id",
-                                            DataHelper.VALUE},
+                                            DataHelper.VALUE, DataHelper.CREATED_AT},
                                     null, null, null, null, DataHelper.VALUE);
             Log.i("GraphFragment", String.valueOf(result.getCount()));
             return (result);
@@ -111,12 +114,12 @@ public class GraphFragment extends Fragment {
     private class LoadCursorTask extends BaseTask<Void> {
         @Override
         protected void onPostExecute(Cursor cursor) {
-            Log.i("GraphFragment", String.valueOf(cursor.getCount()));
-            Log.i("GraphFragment", chart.toString());
+
             if (cursor.moveToFirst()) {
                 do {
-                    float data = cursor.getFloat(cursor.getColumnIndex("value"));
-                    addEntry(data);
+                    float data = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
+                    int month = DataHelper.getMonth(cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT)));
+                    addEntry(data, String.valueOf(month));
                 } while (cursor.moveToNext());
             }
             cursor.close();
