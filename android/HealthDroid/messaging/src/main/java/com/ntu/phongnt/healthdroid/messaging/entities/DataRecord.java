@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiResourceProperty;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Parent;
 
 import java.util.Date;
@@ -19,6 +20,7 @@ public class DataRecord {
     @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
     private Key<HealthDroidUser> user;
     private Date date;
+    @Index
     private Date createdAt;
 
     private int value;

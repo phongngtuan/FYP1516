@@ -8,6 +8,7 @@ import com.google.api.server.spi.config.Nullable;
 import com.google.appengine.api.oauth.OAuthRequestException;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.cmd.Query;
 import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
@@ -54,13 +55,26 @@ public class DataEndpoint {
     @ApiMethod(name = "get")
     public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, @Nullable @Named("after") Date after) {
         List<DataRecord> dataRecordList = null;
-        if (userId == null) {
-            dataRecordList = ofy().load().type(DataRecord.class).list();
-        } else {
+        Query<DataRecord> query = ofy().load().type(DataRecord.class);
+        if (userId != null) {
             Key<HealthDroidUser> parent = Key.create(HealthDroidUser.class, userId);
             HealthDroidUser user = ofy().load().key(parent).safe();
-            dataRecordList = ofy().load().type(DataRecord.class).ancestor(user).list();
+            query = query.ancestor(user);
         }
+        if (after != null) {
+            query = query.filter("createdAt >", after);
+        }
+        dataRecordList = query.list();
+//        if (userId == null) {
+//            if (after == null )
+//                dataRecordList = allDataRecords.list();
+//            else
+//                dataRecordList = allDataRecords.filter("createdAt >", after).list();
+//        } else {
+//            Key<HealthDroidUser> parent = Key.create(HealthDroidUser.class, userId);
+//            HealthDroidUser user = ofy().load().key(parent).safe();
+//            dataRecordList = allDataRecords.ancestor(user).list();
+//        }
         return dataRecordList;
     }
 }
