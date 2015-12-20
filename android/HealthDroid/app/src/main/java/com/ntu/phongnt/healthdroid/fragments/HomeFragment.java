@@ -179,11 +179,13 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
             }
             try {
                 List<DataRecord> dataRecordList = dataService.get().execute().getItems();
+
                 Log.i(TAG, "dataRecord size = " + dataRecordList.size());
                 SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
                 for (DataRecord d : dataRecordList) {
                     ContentValues values = new ContentValues();
                     values.put(DataHelper.VALUE, d.getValue());
+                    values.put(DataHelper.CREATED_AT, d.getDate().toStringRfc3339());
                     sqLiteDatabase.insert(DataHelper.TABLE,
                             DataHelper.VALUE,
                             values);

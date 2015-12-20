@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -40,23 +41,26 @@ public class GraphFragment extends Fragment {
         chart.setData(new LineData());
         FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
 
-        chart.setHighlightEnabled(true);
         chart.setTouchEnabled(true);
         chart.setScaleEnabled(true);
         chart.setDragEnabled(true);
         chart.setPinchZoom(true);
         chart.setDrawGridBackground(false);
-        chart.setBackgroundColor(Color.LTGRAY);
+        chart.setBackgroundColor(Color.BLACK);
+        chart.setDescriptionColor(Color.WHITE);
 
         db = DataHelper.getInstance(getActivity());
 
         new LoadCursorTask().execute();
 
+        //Appearance
         XAxis x1 = chart.getXAxis();
         x1.setDrawGridLines(false);
         x1.setAvoidFirstLastClipping(true);
+        x1.setTextColor(Color.WHITE);
         YAxis y1 = chart.getAxisLeft();
         y1.setDrawGridLines(true);
+        y1.setTextColor(Color.WHITE);
         chart.getAxisRight().setEnabled(false);
 
         chart.invalidate();
@@ -73,8 +77,9 @@ public class GraphFragment extends Fragment {
             if (dataSet == null) {
                 dataSet = createSet();
                 data.addDataSet(dataSet);
+                dataSet.setValueTextColor(Color.WHITE);
             }
-            data.addXValue("");
+            data.addXValue("A");
             data.addEntry(
                     new Entry(value, dataSet.getEntryCount()),
                     0

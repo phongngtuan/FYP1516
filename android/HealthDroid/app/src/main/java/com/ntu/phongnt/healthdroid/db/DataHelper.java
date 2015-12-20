@@ -57,7 +57,7 @@ public class DataHelper extends SQLiteOpenHelper {
 
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
     }
