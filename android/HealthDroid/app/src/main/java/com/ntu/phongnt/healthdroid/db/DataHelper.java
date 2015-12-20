@@ -31,16 +31,24 @@ public class DataHelper extends SQLiteOpenHelper {
         return dataHelper;
     }
 
-    public static int getMonth(String date) {
+    public static int getProperty(String date, int property) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(RFC3339_TEMPLATE, Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
         try {
             calendar.setTime(dateFormat.parse(date));
-            return calendar.get(Calendar.MONTH);
+            return calendar.get(property);
         } catch (ParseException e) {
             Log.d("DataHelper", "Cannot parse string: " + date);
         }
         return -1;
+    }
+
+    public static int getMonth(String date) {
+        return getProperty(date, Calendar.MONTH);
+    }
+
+    public static int getYear(String date) {
+        return getProperty(date, Calendar.YEAR);
     }
 
     @Override

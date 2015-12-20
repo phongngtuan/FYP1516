@@ -162,7 +162,6 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         @Override
         protected Void doInBackground(Void... params) {
             Data dataService = null;
-            message = "Hello World!";
             if (dataService == null) {
                 Data.Builder builder = new Data.Builder(
                         AndroidHttp.newCompatibleTransport(),
