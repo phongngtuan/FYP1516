@@ -22,8 +22,8 @@ import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 public class GraphFragment extends Fragment {
     private LineChart chart = null;
@@ -123,7 +123,7 @@ public class GraphFragment extends Fragment {
                     float data = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
                     int month = DataHelper.getMonth(cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT)));
                     int year = DataHelper.getYear(cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT)));
-                    String key = String.valueOf(month) + "/" + String.valueOf(year);
+                    String key = String.format("%02d", month) + "/" + String.format("%02d", year);
                     Float value = monthToValue.get(key);
                     if (value == null) {
                         monthToValue.put(key, data);
@@ -135,8 +135,11 @@ public class GraphFragment extends Fragment {
             }
             cursor.close();
 
-            for (Map.Entry<String, Float> entry : monthToValue.entrySet()) {
-                addEntry(entry.getValue(), entry.getKey());
+            ArrayList<String> keys = new ArrayList<String>(monthToValue.keySet());
+            Collections.sort(keys);
+
+            for (String key : keys) {
+                addEntry(monthToValue.get(key), key);
             }
 
             chart.invalidate();
