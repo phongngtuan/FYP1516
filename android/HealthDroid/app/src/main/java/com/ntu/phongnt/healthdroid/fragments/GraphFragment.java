@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class GraphFragment extends Fragment {
+    public static String TAG = "GraphFragment";
     private LineChart chart = null;
     private DataHelper db = null;
 
@@ -130,16 +131,32 @@ public class GraphFragment extends Fragment {
                     } else {
                         monthToValue.put(key, value + data);
                     }
-//                    addEntry(data, String.valueOf(month));
                 } while (cursor.moveToNext());
             }
             cursor.close();
 
             ArrayList<String> keys = new ArrayList<String>(monthToValue.keySet());
             Collections.sort(keys);
+            String[] last = keys.get(keys.size() - 1).split("/");
+            String[] first = keys.get(0).split("/");
+            int firstMonth = Integer.parseInt(first[0]);
+            int firstYear = Integer.parseInt(first[1]);
+            int lastMonth = Integer.parseInt(last[0]);
+            int lastYear = Integer.parseInt(last[1]);
+            int range = (lastYear - firstYear) * 12 + lastMonth - firstMonth;
 
-            for (String key : keys) {
-                addEntry(monthToValue.get(key), key);
+            Log.d(TAG, "range = " + range);
+
+            int month = firstMonth;
+            int year = firstYear;
+            while (month != lastMonth || year != lastYear) {
+                String key = String.format("%02d", month) + "/" + String.format("%02d", year);
+                if (monthToValue.containsKey(key))
+                    addEntry(monthToValue.get(key), key);
+                else
+                    addEntry(0, key);
+                year = year + (month / 12);
+                month = (month + 1) % 12;
             }
 
             chart.invalidate();
