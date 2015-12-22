@@ -169,6 +169,8 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
 
             String lastUpdatedPreference = dataPreferences.getString(DataHelper.LAST_UPDATED, DataHelper.ZERO_TIME);
             Date lastUpdate = DataHelper.getDate(lastUpdatedPreference);
+            Date latestDateFromData = new Date();
+            latestDateFromData.setTime(lastUpdate.getTime());
 
             if (dataService == null) {
                 Data.Builder builder = new Data.Builder(
@@ -189,11 +191,13 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                 List<DataRecord> dataRecordList = dataService.get().execute().getItems();
 
                 Log.i(TAG, "dataRecord size = " + dataRecordList.size());
+                int count = 0;
                 SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
                 for (DataRecord d : dataRecordList) {
-                    Date date = DataHelper.getDate(d.getDate().toStringRfc3339());
-                    if (date.after(lastUpdate)) {
-                        lastUpdate = date;
+                    Date dateFromData = DataHelper.getDate(d.getDate().toStringRfc3339());
+                    if (dateFromData.after(lastUpdate)) {
+                        count++;
+                        latestDateFromData = dateFromData;
                         ContentValues values = new ContentValues();
                         values.put(DataHelper.VALUE, d.getValue());
                         values.put(DataHelper.CREATED_AT, d.getDate().toStringRfc3339());
@@ -202,9 +206,10 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                                 values);
                     }
                 }
-                editor.putString(DataHelper.LAST_UPDATED, DataHelper.toString(lastUpdate));
+                editor.putString(DataHelper.LAST_UPDATED, DataHelper.toString(latestDateFromData));
                 editor.apply();
                 Log.d(TAG, "last Updated = " + lastUpdate);
+                Log.d(TAG, "Updated count= " + count);
             } catch (IOException e) {
                 e.printStackTrace();
             }

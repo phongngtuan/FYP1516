@@ -140,8 +140,8 @@ public class GraphFragment extends Fragment {
 
             ArrayList<String> keys = new ArrayList<String>(monthToValue.keySet());
             Collections.sort(keys);
-            String[] last = keys.get(keys.size() - 1).split("/");
-            String[] first = keys.get(0).split("/");
+            String[] first = keys.get(keys.size() - 1).split("/");
+            String[] last = keys.get(0).split("/");
             int firstMonth = Integer.parseInt(first[0]);
             int firstYear = Integer.parseInt(first[1]);
             int lastMonth = Integer.parseInt(last[0]);
