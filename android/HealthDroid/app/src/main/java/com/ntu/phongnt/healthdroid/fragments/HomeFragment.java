@@ -3,6 +3,7 @@ package com.ntu.phongnt.healthdroid.fragments;
 import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -162,6 +163,13 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         @Override
         protected Void doInBackground(Void... params) {
             Data dataService = null;
+            SharedPreferences dataPreferences = getActivity().
+                    getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = dataPreferences.edit();
+
+            String lastUpdatedPreference = dataPreferences.getString(DataHelper.LAST_UPDATED, DataHelper.ZERO_TIME);
+            Date lastUpdate = DataHelper.getDate(lastUpdatedPreference);
+
             if (dataService == null) {
                 Data.Builder builder = new Data.Builder(
                         AndroidHttp.newCompatibleTransport(),
@@ -176,19 +184,27 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                         });
                 dataService = builder.build();
             }
+
             try {
                 List<DataRecord> dataRecordList = dataService.get().execute().getItems();
 
                 Log.i(TAG, "dataRecord size = " + dataRecordList.size());
                 SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
                 for (DataRecord d : dataRecordList) {
-                    ContentValues values = new ContentValues();
-                    values.put(DataHelper.VALUE, d.getValue());
-                    values.put(DataHelper.CREATED_AT, d.getDate().toStringRfc3339());
-                    sqLiteDatabase.insert(DataHelper.TABLE,
-                            DataHelper.VALUE,
-                            values);
+                    Date date = DataHelper.getDate(d.getDate().toStringRfc3339());
+                    if (date.after(lastUpdate)) {
+                        lastUpdate = date;
+                        ContentValues values = new ContentValues();
+                        values.put(DataHelper.VALUE, d.getValue());
+                        values.put(DataHelper.CREATED_AT, d.getDate().toStringRfc3339());
+                        sqLiteDatabase.insert(DataHelper.TABLE,
+                                DataHelper.VALUE,
+                                values);
+                    }
                 }
+                editor.putString(DataHelper.LAST_UPDATED, DataHelper.toString(lastUpdate));
+                editor.apply();
+                Log.d(TAG, "last Updated = " + lastUpdate);
             } catch (IOException e) {
                 e.printStackTrace();
             }

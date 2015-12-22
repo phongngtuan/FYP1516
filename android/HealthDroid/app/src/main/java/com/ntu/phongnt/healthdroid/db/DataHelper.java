@@ -17,9 +17,12 @@ public class DataHelper extends SQLiteOpenHelper {
     public static final String CREATED_AT = "created_at";
     public static final String TABLE = "readings";
     public static final String RFC3339_TEMPLATE = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
+    public static final String ZERO_TIME = "2000-12-19T02:08:50.889+07:00";
+    public static final String LAST_UPDATED = "last_updated";
     private static final String DATABASE_NAME = "healthdroid";
     private static final int DATABASE_VERSION = 1;
     private static DataHelper dataHelper;
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat(RFC3339_TEMPLATE, Locale.getDefault());
 
     private DataHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,8 +34,20 @@ public class DataHelper extends SQLiteOpenHelper {
         return dataHelper;
     }
 
+    public static Date getDate(String date) {
+        try {
+            return dateFormat.parse(date);
+        } catch (ParseException e) {
+            Log.d("DataHelper", "Cannot parse string: " + date);
+        }
+        return null;
+    }
+
+    public static String toString(Date date) {
+        return dateFormat.format(date);
+    }
+
     public static int getProperty(String date, int property) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(RFC3339_TEMPLATE, Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
         try {
             calendar.setTime(dateFormat.parse(date));

@@ -122,8 +122,9 @@ public class GraphFragment extends Fragment {
             if (cursor.moveToFirst()) {
                 do {
                     float data = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
-                    int month = DataHelper.getMonth(cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT)));
-                    int year = DataHelper.getYear(cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT)));
+                    String createdAt = cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT));
+                    int month = DataHelper.getMonth(createdAt);
+                    int year = DataHelper.getYear(createdAt);
                     String key = String.format("%02d", month) + "/" + String.format("%02d", year);
                     Float value = monthToValue.get(key);
                     if (value == null) {
