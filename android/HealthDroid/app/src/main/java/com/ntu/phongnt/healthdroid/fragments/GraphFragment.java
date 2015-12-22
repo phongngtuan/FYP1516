@@ -120,6 +120,7 @@ public class GraphFragment extends Fragment {
         @Override
         protected void onPostExecute(Cursor cursor) {
             HashMap<String, Float> monthToValue = new HashMap<String, Float>();
+            HashMap<String, Integer> monthToCount = new HashMap<String, Integer>();
 
             if (cursor.moveToFirst()) {
                 do {
@@ -131,13 +132,17 @@ public class GraphFragment extends Fragment {
                     Float value = monthToValue.get(key);
                     if (value == null) {
                         monthToValue.put(key, data);
+                        monthToCount.put(key, 1);
                     } else {
+                        int count = monthToCount.get(key);
                         monthToValue.put(key, value + data);
+                        monthToCount.put(key, count + 1);
                     }
                 } while (cursor.moveToNext());
             }
             cursor.close();
 
+            //Determine the range
             ArrayList<String> keys = new ArrayList<String>(monthToValue.keySet());
             Collections.sort(keys);
             String[] first = keys.get(keys.size() - 1).split("/");
@@ -155,6 +160,7 @@ public class GraphFragment extends Fragment {
                 }
             }
 
+            //Add entries to graph
             Log.d(TAG, "range = " + range);
 
             int month = firstMonth;
@@ -163,7 +169,7 @@ public class GraphFragment extends Fragment {
             while (month != lastMonth || year != lastYear) {
                 String key = String.format("%02d", month) + "/" + String.format("%02d", year);
                 if (monthToValue.containsKey(key))
-                    addEntry(monthToValue.get(key), key);
+                    addEntry((float) monthToValue.get(key) / monthToCount.get(key), key);
                 else
                     addEntry(0, key);
                 month += 1;
