@@ -145,19 +145,30 @@ public class GraphFragment extends Fragment {
             int lastMonth = Integer.parseInt(last[0]);
             int lastYear = Integer.parseInt(last[1]);
             int range = (lastYear - firstYear) * 12 + lastMonth - firstMonth;
+            if (range < 10) {
+                lastMonth = lastMonth + 10;
+                if (lastMonth > 12) {
+                    lastYear += 1;
+                    lastMonth %= 12;
+                }
+            }
 
             Log.d(TAG, "range = " + range);
 
             int month = firstMonth;
             int year = firstYear;
+
             while (month != lastMonth || year != lastYear) {
                 String key = String.format("%02d", month) + "/" + String.format("%02d", year);
                 if (monthToValue.containsKey(key))
                     addEntry(monthToValue.get(key), key);
                 else
                     addEntry(0, key);
-                year = year + (month / 12);
-                month = (month + 1) % 12;
+                month += 1;
+                if (month > 12) {
+                    year += 1;
+                    month %= 12;
+                }
             }
 
             chart.invalidate();
