@@ -82,6 +82,8 @@ public class GraphFragment extends Fragment {
             LineDataSet dataSet = data.getDataSetByIndex(0);
             if (dataSet == null) {
                 dataSet = createSet();
+                dataSet.setDrawFilled(true);
+                dataSet.setDrawCubic(true);
                 data.addDataSet(dataSet);
                 dataSet.setValueTextColor(Color.WHITE);
             }
