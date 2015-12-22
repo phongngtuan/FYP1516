@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 public abstract class SignInActivity extends AppCompatActivity {
     //Google Authentication
+    //TODO : Not sure whether i need to have this
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
     GoogleApiClient googleApiClient = null;
