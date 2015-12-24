@@ -115,6 +115,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                         Log.d(TAG, "Authorized complete");
                         setSelectedAccountName(accountName);
                         // User is authorized.
+
                     }
                 }
                 break;
