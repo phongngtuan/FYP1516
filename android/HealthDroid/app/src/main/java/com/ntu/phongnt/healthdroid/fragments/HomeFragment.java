@@ -83,6 +83,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     private class PostDataRecordsToEndpoint extends AsyncTask<Integer, Void, Void> {
         @Override
         protected Void doInBackground(Integer... params) {
+            //TODO: move credential check to the calling method
             GoogleAccountCredential credential =
                     ((MainActivity) getActivity()).getCredential();
             if (credential.getSelectedAccountName() != null) {
@@ -113,6 +114,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
 
     private class GetDataRecordsFromEndpoint extends AsyncTask<Void, Void, Void> {
         //TODO: Complete the features
+        //TODO: Quite a big task, need refactoring
         @Override
         protected Void doInBackground(Void... params) {
             Data dataService = null;
@@ -126,6 +128,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
             latestDateFromData.setTime(lastUpdate.getTime());
 
             if (dataService == null) {
+                //TODO: Consider moving builder stuff to a util class
                 Data.Builder builder = new Data.Builder(
                         AndroidHttp.newCompatibleTransport(),
                         new AndroidJsonFactory(),
