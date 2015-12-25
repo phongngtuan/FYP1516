@@ -1,10 +1,8 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
-import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -26,35 +24,26 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.api.client.util.DateTime;
-import com.ntu.phongnt.healthdroid.BuildConfig;
+import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
-import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
-import com.ntu.phongnt.healthdroid.util.UserUtil;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements Button.OnClickListener, GoogleSignInListener {
-    private static final int REQUEST_ACCOUNT_PICKER = 2;
-    private static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
     private static String TAG = "HomeFragment";
     private static HomeFragment instance;
 
     DataHelper db = null;
     String accountName = null;
-    GoogleAccountCredential credential = null;
-    SharedPreferences settings = null;
 
     private GoogleSignInAccount account;
     private Button button = null;
     private TextView userField = null;
-    private Button submit_btn = null;
-
-    private String message;
 
     @Nullable
     @Override
@@ -76,15 +65,6 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         });
         userField = (TextView) view.findViewById(R.id.user_id);
 
-        //Instance variables initializations
-        settings = getActivity().getSharedPreferences("HealthDroid", 0);
-        credential = GoogleAccountCredential.usingAudience(
-                getActivity(),
-                "server:client_id:" + BuildConfig.WEB_CLIENT_ID);
-        if (credential.getSelectedAccountName() == null) {
-            startActivityForResult(credential.newChooseAccountIntent(),
-                    REQUEST_ACCOUNT_PICKER);
-        }
 
         return view;
     }
@@ -100,65 +80,24 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         userField.setText(account.getId());
     }
 
-    // setSelectedAccountName definition
-    private void setSelectedAccountName(String accountName) {
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(PREF_ACCOUNT_NAME, accountName);
-        editor.apply();
-        credential.setSelectedAccountName(accountName);
-        this.accountName = accountName;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQUEST_ACCOUNT_PICKER:
-                if (data != null && data.getExtras() != null) {
-                    String accountName =
-                            data.getExtras().getString(
-                                    AccountManager.KEY_ACCOUNT_NAME);
-                    if (accountName != null) {
-                        Log.d(TAG, "Authorized complete");
-                        setSelectedAccountName(accountName);
-                        // User is authorized.
-                        new RegisterUserToEndpoint().execute();
-                    }
-                }
-                break;
-        }
-    }
-
-    private class RegisterUserToEndpoint extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            User userService = UserUtil.getUserService(credential);
-            try {
-                userService.add().execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
     private class PostDataRecordsToEndpoint extends AsyncTask<Integer, Void, Void> {
         @Override
         protected Void doInBackground(Integer... params) {
-            Data.Builder builder = new Data.Builder(
-                    AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(),
-                    credential)
-                    .setRootUrl("http://192.168.1.28:8080/_ah/api/")
-                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                        @Override
-                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                            abstractGoogleClientRequest.setDisableGZipContent(true);
-                        }
-                    });
-
+            GoogleAccountCredential credential =
+                    ((MainActivity) getActivity()).getCredential();
             if (credential.getSelectedAccountName() != null) {
-                // Already signed in, begin app!
+                Data.Builder builder = new Data.Builder(
+                        AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(),
+                        credential)
+                        .setRootUrl("http://192.168.1.28:8080/_ah/api/")
+                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                            @Override
+                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                abstractGoogleClientRequest.setDisableGZipContent(true);
+                            }
+                        });
+
                 Data dataService = builder.build();
                 for (Integer value : params) {
                     try {
@@ -167,14 +106,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                         e.printStackTrace();
                     }
                 }
-                Log.d(TAG, "already signed in");
-            } else {
-                // Not signed in, show login window or request an account.
-                Log.d(TAG, "Not signed in");
-                startActivityForResult(credential.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER);
             }
-
             return null;
         }
     }

@@ -1,8 +1,11 @@
 package com.ntu.phongnt.healthdroid;
 
+import android.accounts.AccountManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,11 +23,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
+import com.ntu.phongnt.healthdroid.util.UserUtil;
+
+import java.io.IOException;
 
 public class MainActivity extends SignInActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,6 +44,12 @@ public class MainActivity extends SignInActivity
     private GraphFragment graphFragment = null;
     private DataFragment dataFragment = null;
     private UserFragment userFragment = null;
+
+    private static final int REQUEST_ACCOUNT_PICKER = 2;
+    private static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
+    GoogleAccountCredential credential = null;
+    SharedPreferences settings = null;
+    private String accountName = null;
 
     public GoogleSignInAccount getAccount() {
         return account;
@@ -73,6 +87,12 @@ public class MainActivity extends SignInActivity
             Log.i(TAG, "Here");
         }
 
+        //Instance variables initializations
+        settings = getSharedPreferences("HealthDroid", 0);
+        credential = GoogleAccountCredential.usingAudience(
+                this,
+                "server:client_id:" + BuildConfig.WEB_CLIENT_ID);
+
         if (homeFragment == null) {
             homeFragment = new HomeFragment();
         }
@@ -87,6 +107,26 @@ public class MainActivity extends SignInActivity
         Log.d(TAG, "Is connected = " + googleApiClient.isConnected());
         if (!googleApiClient.isConnected()) {
             signIn();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_ACCOUNT_PICKER:
+                if (data != null && data.getExtras() != null) {
+                    String accountName =
+                            data.getExtras().getString(
+                                    AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        Log.d(TAG, "Authorized complete");
+                        setSelectedAccountName(accountName);
+                        // User is authorized.
+                        new RegisterUserToEndpoint().execute();
+                    }
+                }
+                break;
         }
     }
 
@@ -178,6 +218,14 @@ public class MainActivity extends SignInActivity
         return true;
     }
 
+    public GoogleAccountCredential getCredential() {
+        if (credential.getSelectedAccountName() == null) {
+            startActivityForResult(credential.newChooseAccountIntent(),
+                    REQUEST_ACCOUNT_PICKER);
+        }
+        return credential;
+    }
+
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
@@ -192,5 +240,27 @@ public class MainActivity extends SignInActivity
             return false;
         }
         return true;
+    }
+
+    // setSelectedAccountName definition
+    private void setSelectedAccountName(String accountName) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(PREF_ACCOUNT_NAME, accountName);
+        editor.apply();
+        credential.setSelectedAccountName(accountName);
+        this.accountName = accountName;
+    }
+
+    private class RegisterUserToEndpoint extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            User userService = UserUtil.getUserService(getCredential());
+            try {
+                userService.add().execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 }
