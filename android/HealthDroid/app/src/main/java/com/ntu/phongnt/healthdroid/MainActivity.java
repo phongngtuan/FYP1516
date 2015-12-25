@@ -23,6 +23,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
+import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 
 public class MainActivity extends SignInActivity
@@ -34,6 +35,7 @@ public class MainActivity extends SignInActivity
     private HomeFragment homeFragment = null;
     private GraphFragment graphFragment = null;
     private DataFragment dataFragment = null;
+    private UserFragment userFragment = null;
 
     public GoogleSignInAccount getAccount() {
         return account;
@@ -158,7 +160,12 @@ public class MainActivity extends SignInActivity
                 getFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, dataFragment, "DATA_FRAGMENT").commit();
         } else if (id == R.id.nav_manage) {
-
+            userFragment = (UserFragment) getFragmentManager().findFragmentByTag("USER_FRAGMENT");
+            if (userFragment == null)
+                userFragment = UserFragment.newInstance(1);
+            if (!userFragment.isVisible())
+                getFragmentManager().beginTransaction().
+                        replace(R.id.fragment_container, userFragment, "USER_FRAGMENT").commit();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

@@ -39,6 +39,8 @@ import java.io.IOException;
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
+    private static Registration registrationService = null;
+
     private InstanceID instanceID = null;
     private String token = null;
 
@@ -112,8 +114,6 @@ public class RegistrationIntentService extends IntentService {
     // [END subscribe_topics]
 
     private class RegistrationTask extends AsyncTask<String, Void, Void> {
-        private Registration registrationService = null;
-
         @Override
         protected Void doInBackground(String... params) {
             token = params[0];
