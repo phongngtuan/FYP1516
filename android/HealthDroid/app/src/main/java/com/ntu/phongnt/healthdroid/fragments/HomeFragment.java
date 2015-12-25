@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
             public void onClick(View v) {
                 EditText valueField = (EditText) view.findViewById(R.id.edit_field);
                 Integer value = Integer.valueOf(valueField.getText().toString());
-                new PostDataRecord().execute(value);
+                new PostDataRecordsToEndpoint().execute(value);
                 Toast.makeText(getActivity(), accountName, Toast.LENGTH_SHORT).show();
             }
         });
@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
 
     @Override
     public void onClick(View v) {
-        new GetDataTask().execute();
+        new GetDataRecordsFromEndpoint().execute();
     }
 
     @Override
@@ -122,7 +122,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         }
     }
 
-    private class PostDataRecord extends AsyncTask<Integer, Void, Void> {
+    private class PostDataRecordsToEndpoint extends AsyncTask<Integer, Void, Void> {
         @Override
         protected Void doInBackground(Integer... params) {
             Data.Builder builder = new Data.Builder(
@@ -159,7 +159,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         }
     }
 
-    private class GetDataTask extends AsyncTask<Void, Void, Void> {
+    private class GetDataRecordsFromEndpoint extends AsyncTask<Void, Void, Void> {
         //TODO: Complete the features
         @Override
         protected Void doInBackground(Void... params) {

@@ -2,17 +2,26 @@ package com.ntu.phongnt.healthdroid.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.data.user.User;
+import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.dummy.DummyContent;
 import com.ntu.phongnt.healthdroid.fragments.dummy.DummyContent.DummyItem;
+import com.ntu.phongnt.healthdroid.util.UserUtil;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -24,9 +33,12 @@ public class UserFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String TAG = "USER_FRAGMENT";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private List<HealthDroidUser> listUser = null;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -48,6 +60,8 @@ public class UserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        new ListUserTask().execute((GoogleAccountCredential) null);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -104,5 +118,26 @@ public class UserFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(DummyItem item);
+    }
+
+    private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUser>> {
+        @Override
+        protected List<HealthDroidUser> doInBackground(GoogleAccountCredential... params) {
+            GoogleAccountCredential credential = params[0];
+            User userService = UserUtil.getUserService(credential);
+            try {
+                List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
+                Log.d(TAG, "Received " + healthDroidUsers.size() + " users");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<HealthDroidUser> healthDroidUsers) {
+            super.onPostExecute(healthDroidUsers);
+            listUser = healthDroidUsers;
+        }
     }
 }
