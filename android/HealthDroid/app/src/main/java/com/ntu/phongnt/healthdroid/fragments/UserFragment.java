@@ -16,6 +16,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
+import com.ntu.phongnt.healthdroid.fragments.adapter.MyUserRecyclerViewAdapter;
 import com.ntu.phongnt.healthdroid.util.UserUtil;
 
 import java.io.IOException;

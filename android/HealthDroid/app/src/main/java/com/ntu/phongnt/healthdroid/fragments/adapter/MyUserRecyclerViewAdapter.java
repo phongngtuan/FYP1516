@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments;
+package com.ntu.phongnt.healthdroid.fragments.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
