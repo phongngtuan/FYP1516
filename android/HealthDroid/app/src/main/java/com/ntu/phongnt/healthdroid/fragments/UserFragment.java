@@ -16,11 +16,10 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.fragments.dummy.DummyContent;
-import com.ntu.phongnt.healthdroid.fragments.dummy.DummyContent.DummyItem;
 import com.ntu.phongnt.healthdroid.util.UserUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,10 +34,11 @@ public class UserFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String TAG = "USER_FRAGMENT";
     // TODO: Customize parameters
+    private RecyclerView recyclerView = null;
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
-    private List<HealthDroidUser> listUser = null;
+    private List<HealthDroidUser> listUser = new ArrayList<HealthDroidUser>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -75,6 +75,7 @@ public class UserFragment extends Fragment {
 
         // Set the adapter
         if (view instanceof RecyclerView) {
+            recyclerView = (RecyclerView) view;
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
@@ -82,9 +83,13 @@ public class UserFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyUserRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyUserRecyclerViewAdapter(listUser, mListener));
         }
         return view;
+    }
+
+    private void notifyChange() {
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
 
@@ -117,7 +122,7 @@ public class UserFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(HealthDroidUser item);
     }
 
     private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUser>> {
@@ -128,6 +133,7 @@ public class UserFragment extends Fragment {
             try {
                 List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
                 Log.d(TAG, "Received " + healthDroidUsers.size() + " users");
+                return healthDroidUsers;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -137,7 +143,10 @@ public class UserFragment extends Fragment {
         @Override
         protected void onPostExecute(List<HealthDroidUser> healthDroidUsers) {
             super.onPostExecute(healthDroidUsers);
-            listUser = healthDroidUsers;
+            for (HealthDroidUser user : healthDroidUsers) {
+                listUser.add(user);
+            }
+            notifyChange();
         }
     }
 }

@@ -1,12 +1,14 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment.OnListFragmentInteractionListener;
 import com.ntu.phongnt.healthdroid.fragments.dummy.DummyContent.DummyItem;
 
@@ -19,10 +21,11 @@ import java.util.List;
  */
 public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private static final String TAG = "RecyclerViewAdapter";
+    private final List<HealthDroidUser> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyUserRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyUserRecyclerViewAdapter(List<HealthDroidUser> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -37,8 +40,9 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(mValues.get(position).getId());
+        holder.mContentView.setText(mValues.get(position).getEmail());
+        Log.d(TAG, "Hereeeeee");
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +58,7 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "Item count = " + mValues.size());
         return mValues.size();
     }
 
@@ -61,7 +66,7 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public HealthDroidUser mItem;
 
         public ViewHolder(View view) {
             super(view);
