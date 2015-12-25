@@ -30,7 +30,9 @@ import com.ntu.phongnt.healthdroid.BuildConfig;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
+import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.util.UserUtil;
 
 import java.io.IOException;
 import java.util.Date;
@@ -79,6 +81,11 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
         credential = GoogleAccountCredential.usingAudience(
                 getActivity(),
                 "server:client_id:" + BuildConfig.WEB_CLIENT_ID);
+        if (credential.getSelectedAccountName() == null) {
+            startActivityForResult(credential.newChooseAccountIntent(),
+                    REQUEST_ACCOUNT_PICKER);
+        }
+
         return view;
     }
 
@@ -115,10 +122,23 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
                         Log.d(TAG, "Authorized complete");
                         setSelectedAccountName(accountName);
                         // User is authorized.
-
+                        new RegisterUserToEndpoint().execute();
                     }
                 }
                 break;
+        }
+    }
+
+    private class RegisterUserToEndpoint extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            User userService = UserUtil.getUserService(credential);
+            try {
+                userService.add().execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
