@@ -17,7 +17,8 @@
                 com.ntu.phongnt.healthdroid.messaging.apis.RegistrationEndpoint,
                 com.ntu.phongnt.healthdroid.messaging.apis.HealthDroidUserEndpoint,
                 com.ntu.phongnt.healthdroid.messaging.apis.MessagingEndpoint,
-                com.ntu.phongnt.healthdroid.messaging.apis.DataEndpoint
+                com.ntu.phongnt.healthdroid.messaging.apis.DataEndpoint,
+                com.ntu.phongnt.healthdroid.messaging.apis.SubscriptionEndpoint
             </param-value>
         </init-param>
     </servlet>

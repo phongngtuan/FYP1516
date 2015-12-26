@@ -6,6 +6,7 @@ import com.googlecode.objectify.ObjectifyService;
 import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.entities.RegistrationRecord;
+import com.ntu.phongnt.healthdroid.messaging.entities.Subscription;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes
@@ -17,6 +18,7 @@ public class OfyService {
         ObjectifyService.register(HealthDroidUser.class);
         ObjectifyService.register(RegistrationRecord.class);
         ObjectifyService.register(DataRecord.class);
+        ObjectifyService.register(Subscription.class);
     }
 
     public static Objectify ofy() {
