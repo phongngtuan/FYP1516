@@ -65,16 +65,6 @@ public class DataEndpoint {
             query = query.filter("createdAt >", after);
         }
         dataRecordList = query.list();
-//        if (userId == null) {
-//            if (after == null )
-//                dataRecordList = allDataRecords.list();
-//            else
-//                dataRecordList = allDataRecords.filter("createdAt >", after).list();
-//        } else {
-//            Key<HealthDroidUser> parent = Key.create(HealthDroidUser.class, userId);
-//            HealthDroidUser user = ofy().load().key(parent).safe();
-//            dataRecordList = allDataRecords.ancestor(user).list();
-//        }
         return dataRecordList;
     }
 }

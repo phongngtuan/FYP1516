@@ -6,7 +6,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.appengine.api.users.User;
-import com.googlecode.objectify.Key;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
 
@@ -44,10 +43,9 @@ public class HealthDroidUserEndpoint {
     public List<HealthDroidUser> getUser(@Nullable @Named("userId") String userId) {
         List<HealthDroidUser> list = null;
         if (userId == null) {
-            list = ofy().load().type(HealthDroidUser.class).list();
+            list = HealthDroidUser.getAllUsers();
         } else {
-            Key<HealthDroidUser> key = Key.create(HealthDroidUser.class, userId);
-            HealthDroidUser user = ofy().load().key(key).now();
+            HealthDroidUser user = HealthDroidUser.getUser(userId);
             list = new ArrayList<HealthDroidUser>();
             list.add(user);
         }
