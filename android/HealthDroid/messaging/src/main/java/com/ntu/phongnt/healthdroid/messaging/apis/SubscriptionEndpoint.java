@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.users.User;
+import com.googlecode.objectify.Ref;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.entities.Subscription;
 import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
@@ -36,8 +37,11 @@ public class SubscriptionEndpoint {
             subscription.setTarget(targetUser);
 
         HealthDroidUser subscriber = HealthDroidUser.getUser(user.getEmail());
-        if (subscriber != null)
+        if (subscriber != null) {
             subscription.setSubscriber(subscriber);
+            subscriber.subscribe(Ref.create(targetUser));
+            ofy().save().entity(subscriber).now();
+        }
 
         ofy().save().entity(subscription).now();
         return subscription;

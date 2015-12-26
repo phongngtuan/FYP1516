@@ -1,9 +1,11 @@
 package com.ntu.phongnt.healthdroid.messaging.entities;
 
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
@@ -14,10 +16,14 @@ public class HealthDroidUser {
     private String id;
     private String email;
 
+    List<Ref<HealthDroidUser>> subscribed;
+
     public HealthDroidUser() {
+        this.subscribed = new ArrayList<Ref<HealthDroidUser>>();
     }
 
     public HealthDroidUser(String id) {
+        this.subscribed = new ArrayList<Ref<HealthDroidUser>>();
         this.id = id;
     }
     public String getId() {
@@ -34,6 +40,10 @@ public class HealthDroidUser {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void subscribe(Ref<HealthDroidUser> target) {
+        this.subscribed.add(target);
     }
 
     public static HealthDroidUser getUser(String userId) {
