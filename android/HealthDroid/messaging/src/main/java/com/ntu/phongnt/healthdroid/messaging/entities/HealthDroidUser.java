@@ -16,14 +16,14 @@ public class HealthDroidUser {
     private String id;
     private String email;
 
-    List<Ref<HealthDroidUser>> subscribed;
+    List<Ref<Subscription>> subscribed;
 
     public HealthDroidUser() {
-        this.subscribed = new ArrayList<Ref<HealthDroidUser>>();
+        this.subscribed = new ArrayList<>();
     }
 
     public HealthDroidUser(String id) {
-        this.subscribed = new ArrayList<Ref<HealthDroidUser>>();
+        this.subscribed = new ArrayList<>();
         this.id = id;
     }
     public String getId() {
@@ -42,8 +42,17 @@ public class HealthDroidUser {
         this.email = email;
     }
 
-    public void subscribe(Ref<HealthDroidUser> target) {
-        this.subscribed.add(target);
+    public void subscribe(Ref<Subscription> subscriptionRef) {
+        this.subscribed.add(subscriptionRef);
+        System.out.println(subscribed);
+    }
+
+    public List<Subscription> getSubscribed() {
+        //TODO: clean this up because we won't need the whole object
+        List<Subscription> result = new ArrayList<Subscription>();
+        for (Ref<Subscription> ref : subscribed)
+            result.add(ofy().load().ref(ref).now());
+        return result;
     }
 
     public static HealthDroidUser getUser(String userId) {

@@ -33,17 +33,16 @@ public class SubscriptionEndpoint {
         Subscription subscription = new Subscription();
 
         HealthDroidUser targetUser = HealthDroidUser.getUser(target);
-        if (targetUser != null)
-            subscription.setTarget(targetUser);
-
         HealthDroidUser subscriber = HealthDroidUser.getUser(user.getEmail());
-        if (subscriber != null) {
+
+        if (subscriber != null && targetUser != null) {
             subscription.setSubscriber(subscriber);
-            subscriber.subscribe(Ref.create(targetUser));
+            subscription.setTarget(targetUser);
+            ofy().save().entity(subscription).now();
+            subscriber.subscribe(Ref.create(subscription));
             ofy().save().entity(subscriber).now();
         }
 
-        ofy().save().entity(subscription).now();
         return subscription;
     }
 
