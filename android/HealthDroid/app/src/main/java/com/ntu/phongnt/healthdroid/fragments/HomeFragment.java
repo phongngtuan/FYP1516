@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements Button.OnClickListener, GoogleSignInListener {
+public class HomeFragment extends Fragment implements Button.OnClickListener {
     private static String TAG = "HomeFragment";
     private static HomeFragment instance;
 
@@ -72,12 +72,6 @@ public class HomeFragment extends Fragment implements Button.OnClickListener, Go
     @Override
     public void onClick(View v) {
         new GetDataRecordsFromEndpoint().execute();
-    }
-
-    @Override
-    public void onSignedIn(GoogleSignInAccount account) {
-        this.account = account;
-        userField.setText(account.getId());
     }
 
     private class PostDataRecordsToEndpoint extends AsyncTask<Integer, Void, Void> {

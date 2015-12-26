@@ -152,7 +152,6 @@ public class MainActivity extends SignInActivity
     protected void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "in handle sign in result");
         account = result.getSignInAccount();
-        homeFragment.onSignedIn(account);
     }
 
     @Override
