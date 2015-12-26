@@ -92,6 +92,7 @@ public class MainActivity extends SignInActivity
         credential = GoogleAccountCredential.usingAudience(
                 this,
                 "server:client_id:" + BuildConfig.WEB_CLIENT_ID);
+        getCredential();
 
         if (homeFragment == null) {
             homeFragment = new HomeFragment();
@@ -257,6 +258,7 @@ public class MainActivity extends SignInActivity
             User userService = UserUtil.getUserService(getCredential());
             try {
                 userService.add().execute();
+                Log.d(TAG, "Registered user");
             } catch (IOException e) {
                 e.printStackTrace();
             }
