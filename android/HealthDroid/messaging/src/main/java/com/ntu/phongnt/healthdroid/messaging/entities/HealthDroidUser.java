@@ -50,8 +50,8 @@ public class HealthDroidUser {
     public List<Subscription> getSubscribed() {
         //TODO: clean this up because we won't need the whole object
         List<Subscription> result = new ArrayList<Subscription>();
-        for (Ref<Subscription> ref : subscribed)
-            result.add(ofy().load().ref(ref).now());
+//        for (Ref<Subscription> ref : subscribed)
+//            result.add(ofy().load().ref(ref).now());
         return result;
     }
 
