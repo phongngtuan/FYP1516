@@ -3,6 +3,7 @@ package com.ntu.phongnt.healthdroid.messaging.entities;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 public class Subscription {
     @Id
     private Long id;
+    @Index
     private Ref<HealthDroidUser> subscriber;
     private Ref<HealthDroidUser> target;
 

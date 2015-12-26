@@ -47,13 +47,13 @@ public class HealthDroidUser {
         System.out.println(subscribed);
     }
 
-    public List<Subscription> getSubscribed() {
-        //TODO: clean this up because we won't need the whole object
-        List<Subscription> result = new ArrayList<Subscription>();
+//    public List<Subscription> getSubscribed() {
+//        //TODO: clean this up because we won't need the whole object
+//        List<Subscription> result = new ArrayList<Subscription>();
 //        for (Ref<Subscription> ref : subscribed)
 //            result.add(ofy().load().ref(ref).now());
-        return result;
-    }
+//        return result;
+//    }
 
     public static HealthDroidUser getUser(String userId) {
         if (userId == null)
