@@ -23,4 +23,5 @@
     <string name="nav_graph">Graph</string>
     <string name="nav_data">Data</string>
     <string name="user_id_caption">User</string>
+    <string name="nav_user">User</string>
 </resources>

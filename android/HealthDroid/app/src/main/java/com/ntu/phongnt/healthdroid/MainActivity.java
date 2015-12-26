@@ -200,7 +200,7 @@ public class MainActivity extends SignInActivity
             if (!dataFragment.isVisible())
                 getFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, dataFragment, "DATA_FRAGMENT").commit();
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_user) {
             userFragment = (UserFragment) getFragmentManager().findFragmentByTag("USER_FRAGMENT");
             if (userFragment == null)
                 userFragment = UserFragment.newInstance(1);
@@ -243,7 +243,6 @@ public class MainActivity extends SignInActivity
         return true;
     }
 
-    // setSelectedAccountName definition
     private void setSelectedAccountName(String accountName) {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(PREF_ACCOUNT_NAME, accountName);
