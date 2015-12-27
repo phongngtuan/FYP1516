@@ -4,45 +4,53 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.fragments.UserFragment.OnListFragmentInteractionListener;
+import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 
 import java.util.List;
 
-public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecyclerViewAdapter.ViewHolder> {
+public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecyclerViewAdapter.UserViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
     private final List<HealthDroidUser> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final UserFragment.HealthDroidUserViewInteractionListener itemClickListener;
 
-    public MyUserRecyclerViewAdapter(List<HealthDroidUser> items, OnListFragmentInteractionListener listener) {
+    public MyUserRecyclerViewAdapter(List<HealthDroidUser> items, UserFragment.HealthDroidUserViewInteractionListener listener) {
         mValues = items;
-        mListener = listener;
+        itemClickListener = listener;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_user, parent, false);
-        return new ViewHolder(view);
+        return new UserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getId());
-        holder.mContentView.setText(mValues.get(position).getEmail());
+    public void onBindViewHolder(final UserViewHolder holder, int position) {
+        holder.healthDroidUser = mValues.get(position);
+        holder.idView.setText(mValues.get(position).getId());
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+        //listener for interaction on whole view
+        holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                if (null != itemClickListener) {
+                    itemClickListener.onItemClick(holder.healthDroidUser);
+                }
+            }
+        });
+
+        holder.subscribeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != itemClickListener) {
+                    itemClickListener.onSubscribeClick(holder.healthDroidUser);
                 }
             }
         });
@@ -53,22 +61,22 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public HealthDroidUser mItem;
+    public class UserViewHolder extends RecyclerView.ViewHolder {
+        public final View view;
+        public final TextView idView;
+        public final Button subscribeButton;
+        public HealthDroidUser healthDroidUser;
 
-        public ViewHolder(View view) {
+        public UserViewHolder(View view) {
             super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            this.view = view;
+            idView = (TextView) view.findViewById(R.id.id);
+            subscribeButton = (Button) view.findViewById(R.id.subscribe_btn);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + idView.getText() + "'";
         }
     }
 }
