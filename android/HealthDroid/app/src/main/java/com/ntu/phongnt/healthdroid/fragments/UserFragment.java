@@ -15,9 +15,12 @@ import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
+import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.adapter.MyUserRecyclerViewAdapter;
+import com.ntu.phongnt.healthdroid.util.SubscriptionUtil;
 import com.ntu.phongnt.healthdroid.util.UserUtil;
 
 import java.io.IOException;
@@ -34,18 +37,18 @@ public class UserFragment extends Fragment {
     private int mColumnCount = 1;
 
     private List<HealthDroidUser> listUser = new ArrayList<HealthDroidUser>();
+    private GoogleAccountCredential credential = null;
+    private List<SubscriptionRecord> subscriptionRecords = null;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public UserFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static UserFragment newInstance(int columnCount) {
+    public static UserFragment newInstance(int columnCount, GoogleAccountCredential credential) {
+        //TODO: clean this up
         UserFragment fragment = new UserFragment();
+        fragment.credential = credential;
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -57,6 +60,7 @@ public class UserFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         new ListUserTask().execute((GoogleAccountCredential) null);
+        new GetSubscriptionsTask().execute();
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -77,6 +81,7 @@ public class UserFragment extends Fragment {
 
             @Override
             public void onSubscribeClick(HealthDroidUser user) {
+                subscribe(user);
                 Toast.makeText(getActivity(), user.getEmail() + "subscribed", Toast.LENGTH_SHORT).show();
             }
         };
@@ -95,6 +100,10 @@ public class UserFragment extends Fragment {
             recyclerView.setAdapter(viewAdapter);
         }
         return view;
+    }
+
+    private void subscribe(HealthDroidUser user) {
+        new SubscribeTask().execute(user);
     }
 
     private void notifyChange() {
@@ -136,11 +145,45 @@ public class UserFragment extends Fragment {
 
         void onSubscribeClick(HealthDroidUser user);
     }
-//
-//    public interface OnHealthDroidUserSubscribed {
-//        void onHealthDroidUserSubscribed(HealthDroidUser user);
-//    }
 
+    private class SubscribeTask extends AsyncTask<HealthDroidUser, Void, SubscriptionRecord> {
+        @Override
+        protected SubscriptionRecord doInBackground(HealthDroidUser... params) {
+            Subscription subscriptionService = SubscriptionUtil.getSubscriptionService(credential);
+            SubscriptionRecord subscriptionRecord = null;
+            HealthDroidUser targetUser = params[0];
+            try {
+                subscriptionRecord = subscriptionService.subscribe(targetUser.getEmail()).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return subscriptionRecord;
+        }
+    }
+
+    private class GetSubscriptionsTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
+        @Override
+        protected List<SubscriptionRecord> doInBackground(Void... params) {
+            Subscription subscriptionService = SubscriptionUtil.getSubscriptionService(credential);
+            List<SubscriptionRecord> subscriptionRecords = null;
+            try {
+                //TODO: uncomment this to use get insteaad of list
+//                subscriptionRecords = subscriptionService.get().execute().getItems();
+                subscriptionRecords = subscriptionService.list().execute().getItems();
+                Log.d(TAG, "Get subscription records count: " + subscriptionRecords.size());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return subscriptionRecords;
+        }
+
+        @Override
+        protected void onPostExecute(List<SubscriptionRecord> resultedSubscriptionRecords) {
+            super.onPostExecute(resultedSubscriptionRecords);
+            subscriptionRecords = resultedSubscriptionRecords;
+            Log.d(TAG, subscriptionRecords.toString());
+        }
+    }
     private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUser>> {
         @Override
         protected List<HealthDroidUser> doInBackground(GoogleAccountCredential... params) {

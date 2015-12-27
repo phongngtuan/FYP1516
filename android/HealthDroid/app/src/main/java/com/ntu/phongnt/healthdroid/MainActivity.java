@@ -24,6 +24,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.DataFragment;
@@ -52,6 +53,8 @@ public class MainActivity extends SignInActivity
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
     private String accountName = null;
+    private HealthDroidUser healthDroidUser = null;
+    private List<SubscriptionRecord> subscriptionRecords = null;
 
     public GoogleSignInAccount getAccount() {
         return account;
@@ -206,7 +209,7 @@ public class MainActivity extends SignInActivity
         } else if (id == R.id.nav_user) {
             userFragment = (UserFragment) getFragmentManager().findFragmentByTag("USER_FRAGMENT");
             if (userFragment == null)
-                userFragment = UserFragment.newInstance(1);
+                userFragment = UserFragment.newInstance(1, credential);
             if (!userFragment.isVisible())
                 getFragmentManager().beginTransaction().
                         replace(R.id.fragment_container, userFragment, "USER_FRAGMENT").commit();
@@ -223,9 +226,14 @@ public class MainActivity extends SignInActivity
     }
 
     public void pickAccount() {
+        String savedAccountName = settings.getString(PREF_ACCOUNT_NAME, null);
         if (credential.getSelectedAccountName() == null) {
-            startActivityForResult(credential.newChooseAccountIntent(),
-                    REQUEST_ACCOUNT_PICKER);
+            if (savedAccountName != null) {
+                credential.setSelectedAccountName(savedAccountName);
+                new RegisterUserToEndpoint().execute();
+            } else
+                startActivityForResult(credential.newChooseAccountIntent(),
+                        REQUEST_ACCOUNT_PICKER);
         }
     }
 
@@ -257,22 +265,31 @@ public class MainActivity extends SignInActivity
         this.accountName = accountName;
     }
 
-    private class RegisterUserToEndpoint extends AsyncTask<Void, Void, Void> {
+    private class RegisterUserToEndpoint extends AsyncTask<Void, Void, HealthDroidUser> {
         @Override
-        protected Void doInBackground(Void... params) {
+        protected HealthDroidUser doInBackground(Void... params) {
             User userService = UserUtil.getUserService(getCredential());
+            HealthDroidUser healthDroidUser = null;
             try {
                 List<HealthDroidUser> users = userService.get().set("userId", credential.getSelectedAccountName()).execute().getItems();
-                if (users.isEmpty()) {
-                    userService.add().execute();
+                if (users.isEmpty() || users.get(0).isEmpty()) {
+                    healthDroidUser = userService.add().execute();
                     Log.d(TAG, "Registered user");
                 } else {
+                    healthDroidUser = users.get(0);
                     Log.d(TAG, "Found registered user " + users.get(0));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            return healthDroidUser;
+        }
+
+        @Override
+        protected void onPostExecute(HealthDroidUser resultedHealthDroidUser) {
+            super.onPostExecute(resultedHealthDroidUser);
+            healthDroidUser = resultedHealthDroidUser;
         }
     }
+
 }
