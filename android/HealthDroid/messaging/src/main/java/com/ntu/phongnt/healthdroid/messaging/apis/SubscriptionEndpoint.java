@@ -56,8 +56,14 @@ public class SubscriptionEndpoint {
     }
 
     @ApiMethod(name = "get")
-    public List<Subscription> getSubscriptions(User user) {
+    public List<Subscription> getSubscribed(User user) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(user.getEmail());
         return ofy().load().type(Subscription.class).filter("subscriber", healthDroidUser).list();
+    }
+
+    @ApiMethod(name = "subscribers")
+    public List<Subscription> subscribers(@Named("userId") String userId) {
+        HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
+        return ofy().load().type(Subscription.class).ancestor(healthDroidUser).list();
     }
 }
