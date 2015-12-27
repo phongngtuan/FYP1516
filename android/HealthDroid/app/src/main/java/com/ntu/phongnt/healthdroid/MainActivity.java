@@ -92,7 +92,8 @@ public class MainActivity extends SignInActivity
         credential = GoogleAccountCredential.usingAudience(
                 this,
                 "server:client_id:" + BuildConfig.WEB_CLIENT_ID);
-        getCredential();
+
+        pickAccount();
 
         if (homeFragment == null) {
             homeFragment = new HomeFragment();
@@ -122,6 +123,7 @@ public class MainActivity extends SignInActivity
                                     AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
                         Log.d(TAG, "Authorized complete");
+                        Log.d(TAG, "Account name: " + accountName);
                         setSelectedAccountName(accountName);
                         // User is authorized.
                         new RegisterUserToEndpoint().execute();
@@ -218,11 +220,14 @@ public class MainActivity extends SignInActivity
         return true;
     }
 
-    public GoogleAccountCredential getCredential() {
+    public void pickAccount() {
         if (credential.getSelectedAccountName() == null) {
             startActivityForResult(credential.newChooseAccountIntent(),
                     REQUEST_ACCOUNT_PICKER);
         }
+    }
+
+    public GoogleAccountCredential getCredential() {
         return credential;
     }
 

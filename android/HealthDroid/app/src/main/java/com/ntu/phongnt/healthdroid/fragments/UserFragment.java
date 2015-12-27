@@ -144,9 +144,10 @@ public class UserFragment extends Fragment {
         @Override
         protected void onPostExecute(List<HealthDroidUser> healthDroidUsers) {
             super.onPostExecute(healthDroidUsers);
-            for (HealthDroidUser user : healthDroidUsers) {
-                listUser.add(user);
-            }
+            if (healthDroidUsers != null)
+                for (HealthDroidUser user : healthDroidUsers) {
+                    listUser.add(user);
+                }
             notifyChange();
         }
     }
