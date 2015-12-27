@@ -25,6 +25,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.data.user.User;
+import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
@@ -33,6 +34,7 @@ import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.util.UserUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends SignInActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -260,8 +262,13 @@ public class MainActivity extends SignInActivity
         protected Void doInBackground(Void... params) {
             User userService = UserUtil.getUserService(getCredential());
             try {
-                userService.add().execute();
-                Log.d(TAG, "Registered user");
+                List<HealthDroidUser> users = userService.get().set("userId", credential.getSelectedAccountName()).execute().getItems();
+                if (users.isEmpty()) {
+                    userService.add().execute();
+                    Log.d(TAG, "Registered user");
+                } else {
+                    Log.d(TAG, "Found registered user " + users.get(0));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
