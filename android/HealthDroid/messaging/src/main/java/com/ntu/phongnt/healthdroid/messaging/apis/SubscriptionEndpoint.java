@@ -4,8 +4,10 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Ref;
+import com.googlecode.objectify.cmd.Query;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.entities.Subscription;
 import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
@@ -65,5 +67,18 @@ public class SubscriptionEndpoint {
     public List<Subscription> subscribers(@Named("userId") String userId) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
         return ofy().load().type(Subscription.class).ancestor(healthDroidUser).list();
+    }
+
+    @ApiMethod(name = "unsubscribe")
+    public List<Subscription> unsubscribe(@Named("userId") String userId, @Nullable @Named("target") String target) {
+        HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
+        Query<Subscription> query = ofy().load().type(Subscription.class).filter("subscriber", healthDroidUser);
+        if (target != null) {
+            HealthDroidUser targetUser = HealthDroidUser.getUser(target);
+            query = query.ancestor(targetUser);
+        }
+        List<Subscription> subscriptions = query.list();
+        ofy().delete().entities(subscriptions).now();
+        return subscriptions;
     }
 }
