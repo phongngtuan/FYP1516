@@ -9,7 +9,7 @@ import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.cmd.Query;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.messaging.entities.Subscription;
+import com.ntu.phongnt.healthdroid.messaging.entities.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
 
 import java.util.List;
@@ -31,8 +31,8 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 
 public class SubscriptionEndpoint {
     @ApiMethod(name = "subscribe")
-    public Subscription subscribe(@Named("target") String target, User user) {
-        Subscription subscription = new Subscription();
+    public SubscriptionRecord subscribe(@Named("target") String target, User user) {
+        SubscriptionRecord subscriptionRecord = new SubscriptionRecord();
 
         HealthDroidUser targetUser = HealthDroidUser.getUser(target);
         HealthDroidUser subscriber = HealthDroidUser.getUser(user.getEmail());
@@ -41,44 +41,44 @@ public class SubscriptionEndpoint {
             Ref<HealthDroidUser> subscriberRef = Ref.create(subscriber);
             Ref<HealthDroidUser> targetUserRef = Ref.create(targetUser);
 
-            subscription.setTarget(targetUserRef);
-            subscription.setSubscriber(subscriberRef);
-            ofy().save().entity(subscription).now();
+            subscriptionRecord.setTarget(targetUserRef);
+            subscriptionRecord.setSubscriber(subscriberRef);
+            ofy().save().entity(subscriptionRecord).now();
 
-            subscriber.subscribe(Ref.create(subscription));
+            subscriber.subscribe(Ref.create(subscriptionRecord));
             ofy().save().entity(subscriber).now();
         }
 
-        return subscription;
+        return subscriptionRecord;
     }
 
     @ApiMethod(name = "list")
-    public List<Subscription> listSubscriptions() {
-        return Subscription.getAllSubscriptions();
+    public List<SubscriptionRecord> listSubscriptions() {
+        return SubscriptionRecord.getAllSubscriptions();
     }
 
     @ApiMethod(name = "get")
-    public List<Subscription> getSubscribed(User user) {
+    public List<SubscriptionRecord> getSubscribed(User user) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(user.getEmail());
-        return ofy().load().type(Subscription.class).filter("subscriber", healthDroidUser).list();
+        return ofy().load().type(SubscriptionRecord.class).filter("subscriber", healthDroidUser).list();
     }
 
     @ApiMethod(name = "subscribers")
-    public List<Subscription> subscribers(@Named("userId") String userId) {
+    public List<SubscriptionRecord> subscribers(@Named("userId") String userId) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
-        return ofy().load().type(Subscription.class).ancestor(healthDroidUser).list();
+        return ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
     }
 
     @ApiMethod(name = "unsubscribe")
-    public List<Subscription> unsubscribe(@Named("userId") String userId, @Nullable @Named("target") String target) {
+    public List<SubscriptionRecord> unsubscribe(@Named("userId") String userId, @Nullable @Named("target") String target) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
-        Query<Subscription> query = ofy().load().type(Subscription.class).filter("subscriber", healthDroidUser);
+        Query<SubscriptionRecord> query = ofy().load().type(SubscriptionRecord.class).filter("subscriber", healthDroidUser);
         if (target != null) {
             HealthDroidUser targetUser = HealthDroidUser.getUser(target);
             query = query.ancestor(targetUser);
         }
-        List<Subscription> subscriptions = query.list();
-        ofy().delete().entities(subscriptions).now();
-        return subscriptions;
+        List<SubscriptionRecord> subscriptionRecords = query.list();
+        ofy().delete().entities(subscriptionRecords).now();
+        return subscriptionRecords;
     }
 }

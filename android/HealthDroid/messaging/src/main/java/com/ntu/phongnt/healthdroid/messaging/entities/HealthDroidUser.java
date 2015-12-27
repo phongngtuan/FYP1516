@@ -16,7 +16,7 @@ public class HealthDroidUser {
     private String id;
     private String email;
 
-    List<Ref<Subscription>> subscribed;
+    List<Ref<SubscriptionRecord>> subscribed;
 
     public HealthDroidUser() {
         this.subscribed = new ArrayList<>();
@@ -42,15 +42,15 @@ public class HealthDroidUser {
         this.email = email;
     }
 
-    public void subscribe(Ref<Subscription> subscriptionRef) {
+    public void subscribe(Ref<SubscriptionRecord> subscriptionRef) {
         this.subscribed.add(subscriptionRef);
         System.out.println(subscribed);
     }
 
-//    public List<Subscription> getSubscribed() {
+//    public List<SubscriptionRecord> getSubscribed() {
 //        //TODO: clean this up because we won't need the whole object
-//        List<Subscription> result = new ArrayList<Subscription>();
-//        for (Ref<Subscription> ref : subscribed)
+//        List<SubscriptionRecord> result = new ArrayList<SubscriptionRecord>();
+//        for (Ref<SubscriptionRecord> ref : subscribed)
 //            result.add(ofy().load().ref(ref).now());
 //        return result;
 //    }

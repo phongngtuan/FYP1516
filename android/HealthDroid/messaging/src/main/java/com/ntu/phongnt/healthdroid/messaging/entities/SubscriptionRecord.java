@@ -11,7 +11,7 @@ import java.util.List;
 import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 
 @Entity
-public class Subscription {
+public class SubscriptionRecord {
     @Id
     private Long id;
     @Index
@@ -19,7 +19,7 @@ public class Subscription {
     @Parent
     private Ref<HealthDroidUser> target;
 
-    public Subscription() {
+    public SubscriptionRecord() {
 
     }
 
@@ -39,7 +39,7 @@ public class Subscription {
         this.target = target;
     }
 
-    public static List<Subscription> getAllSubscriptions() {
-        return ofy().load().type(Subscription.class).list();
+    public static List<SubscriptionRecord> getAllSubscriptions() {
+        return ofy().load().type(SubscriptionRecord.class).list();
     }
 }
