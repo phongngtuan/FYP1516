@@ -184,6 +184,7 @@ public class UserFragment extends Fragment {
             Log.d(TAG, subscriptionRecords.toString());
         }
     }
+
     private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUser>> {
         @Override
         protected List<HealthDroidUser> doInBackground(GoogleAccountCredential... params) {

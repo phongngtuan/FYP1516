@@ -16,11 +16,11 @@ import java.util.List;
 public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecyclerViewAdapter.UserViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private final List<HealthDroidUser> mValues;
+    private final List<HealthDroidUser> healthDroidUsers;
     private final UserFragment.HealthDroidUserViewInteractionListener itemClickListener;
 
     public MyUserRecyclerViewAdapter(List<HealthDroidUser> items, UserFragment.HealthDroidUserViewInteractionListener listener) {
-        mValues = items;
+        healthDroidUsers = items;
         itemClickListener = listener;
     }
 
@@ -33,8 +33,10 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
 
     @Override
     public void onBindViewHolder(final UserViewHolder holder, int position) {
-        holder.healthDroidUser = mValues.get(position);
-        holder.idView.setText(mValues.get(position).getId());
+        holder.healthDroidUser = healthDroidUsers.get(position);
+        holder.idView.setText(healthDroidUsers.get(position).getId());
+
+        holder.subscribeButton.setEnabled(false);
 
         //listener for interaction on whole view
         holder.view.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +48,7 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
             }
         });
 
+        //listener for clicking on the button
         holder.subscribeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +61,7 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return healthDroidUsers.size();
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
