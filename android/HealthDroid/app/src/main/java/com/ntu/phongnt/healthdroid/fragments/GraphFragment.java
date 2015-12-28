@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,16 @@ public class GraphFragment extends Fragment {
         chart.setData(new LineData());
         FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
 
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        chart.setExtraOffsets(5, 20, 20, 20);
         chart.setTouchEnabled(true);
         chart.setScaleEnabled(true);
         chart.setDragEnabled(true);
