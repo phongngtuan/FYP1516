@@ -41,12 +41,21 @@ public class SubscriptionEndpoint {
             Ref<HealthDroidUser> subscriberRef = Ref.create(subscriber);
             Ref<HealthDroidUser> targetUserRef = Ref.create(targetUser);
 
-            subscriptionRecord.setTarget(targetUserRef);
-            subscriptionRecord.setSubscriber(subscriberRef);
-            ofy().save().entity(subscriptionRecord).now();
+            List<SubscriptionRecord> records =
+                    ofy().load().type(SubscriptionRecord.class).
+                            ancestor(targetUser).
+                            filter("subscriber", subscriber).
+                            list();
+            if (records != null && !records.isEmpty()) {
+                subscriptionRecord = records.get(0);
+            } else {
+                subscriptionRecord.setTarget(targetUserRef);
+                subscriptionRecord.setSubscriber(subscriberRef);
+                ofy().save().entity(subscriptionRecord).now();
 
-            subscriber.subscribe(Ref.create(subscriptionRecord));
-            ofy().save().entity(subscriber).now();
+                subscriber.subscribe(Ref.create(subscriptionRecord));
+                ofy().save().entity(subscriber).now();
+            }
         }
 
         return subscriptionRecord;
