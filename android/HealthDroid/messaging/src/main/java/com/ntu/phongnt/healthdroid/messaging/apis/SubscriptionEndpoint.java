@@ -10,7 +10,7 @@ import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.cmd.Query;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.entities.SubscriptionRecord;
-import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
+import com.ntu.phongnt.healthdroid.messaging.secured.AppConstants;
 
 import java.util.List;
 
@@ -24,8 +24,8 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
                 ownerName = "data.healthdroid.phongnt.ntu.com",
                 packagePath = ""
         ),
-        clientIds = {Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID, Constants.IOS_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-        audiences = {Constants.ANDROID_AUDIENCE},
+        clientIds = {AppConstants.WEB_CLIENT_ID, AppConstants.ANDROID_CLIENT_ID, AppConstants.IOS_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+        audiences = {AppConstants.ANDROID_AUDIENCE},
         scopes = {"https://www.googleapis.com/auth/userinfo.email"}
 )
 

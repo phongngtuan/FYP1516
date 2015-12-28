@@ -13,6 +13,7 @@ import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.ntu.phongnt.healthdroid.messaging.entities.RegistrationRecord;
+import com.ntu.phongnt.healthdroid.messaging.secured.AppConstants;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,7 +40,10 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
                 ownerDomain = "messaging.healthdroid.phongnt.ntu.com",
                 ownerName = "messaging.healthdroid.phongnt.ntu.com",
                 packagePath = ""
-        )
+        ),
+        clientIds = {AppConstants.WEB_CLIENT_ID, AppConstants.ANDROID_CLIENT_ID, AppConstants.IOS_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+        audiences = {AppConstants.ANDROID_AUDIENCE},
+        scopes = {"https://www.googleapis.com/auth/userinfo.email"}
 )
 public class MessagingEndpoint {
     private static final Logger log = Logger.getLogger(MessagingEndpoint.class.getName());
@@ -47,8 +51,9 @@ public class MessagingEndpoint {
     /**
      * Api Keys can be obtained from the google cloud console
      */
-    private static final String API_KEY = System.getProperty("gcm.api.key");
-
+    //TODO consider using this
+//    private static final String API_KEY = System.getProperty("gcm.api.key");
+    private static final String API_KEY = AppConstants.GCM_API_KEY;
     /**
      * Send to the first 10 devices (You can modify this to send to any number of devices or a specific device)
      *
@@ -67,6 +72,7 @@ public class MessagingEndpoint {
         Message msg = new Message.Builder().addData("message", message).build();
         List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
         for (RegistrationRecord record : records) {
+            System.out.println(record.getRegId());
             Result result = sender.send(msg, record.getRegId(), 5);
             if (result.getMessageId() != null) {
                 log.info("Message sent to " + record.getRegId());

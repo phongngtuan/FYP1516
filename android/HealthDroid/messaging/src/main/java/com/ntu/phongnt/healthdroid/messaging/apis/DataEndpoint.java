@@ -11,7 +11,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.Query;
 import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.messaging.secured.Constants;
+import com.ntu.phongnt.healthdroid.messaging.secured.AppConstants;
 
 import java.util.Date;
 import java.util.List;
@@ -26,13 +26,13 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
                 ownerName = "data.healthdroid.phongnt.ntu.com",
                 packagePath = ""
         ),
-        clientIds = {Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID, Constants.IOS_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-        audiences = {Constants.ANDROID_AUDIENCE},
+        clientIds = {AppConstants.WEB_CLIENT_ID, AppConstants.ANDROID_CLIENT_ID, AppConstants.IOS_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+        audiences = {AppConstants.ANDROID_AUDIENCE},
         scopes = {"https://www.googleapis.com/auth/userinfo.email"}
 )
 
 public class DataEndpoint {
-    private static final String API_KEY = Constants.GCM_API_KEY;
+    private static final String API_KEY = AppConstants.GCM_API_KEY;
 
     @ApiMethod(name = "add", path = "data")
     public DataRecord addData(@Named("value") int value, @Named("date") Date date, User user) throws OAuthRequestException {
