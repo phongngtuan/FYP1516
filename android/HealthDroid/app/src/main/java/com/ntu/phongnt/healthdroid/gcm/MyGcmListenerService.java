@@ -16,11 +16,11 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         //TODO Implement actual work to be done when receiving some pushed notification from cloud
         Log.d(TAG, from);
-        Log.d(TAG, data.getString("reading"));
+//        Log.d(TAG, data.getString("reading"));
         Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.powered_by_google_dark)
+                .setSmallIcon(R.drawable.places_ic_search)
                 .setContentTitle("My Tittle")
-                .setContentText("My Content").build();
+                .setContentText(data.getString("message")).build();
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, notification);
     }
