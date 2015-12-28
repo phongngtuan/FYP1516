@@ -103,6 +103,7 @@ public class MainActivity extends SignInActivity
         }
 
         //Instance variables initializations
+        //receiver
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -110,9 +111,9 @@ public class MainActivity extends SignInActivity
                 Toast.makeText(context, "Sent token to server", Toast.LENGTH_SHORT).show();
             }
         };
-
         IntentFilter intentFilter = new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
+
         settings = getSharedPreferences("HealthDroid", 0);
         credential = GoogleAccountCredential.usingAudience(
                 this,

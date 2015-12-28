@@ -16,6 +16,10 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         //TODO Implement actual work to be done when receiving some pushed notification from cloud
         Log.d(TAG, from);
+        Log.d(TAG, data.toString());
+        String collapse_key = data.getString("collapse_key");
+        Log.d(TAG, collapse_key);
+
 //        Log.d(TAG, data.getString("reading"));
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.places_ic_search)
