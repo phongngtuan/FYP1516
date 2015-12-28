@@ -3,13 +3,17 @@ package com.ntu.phongnt.healthdroid;
 import android.accounts.AccountManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -31,6 +36,7 @@ import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
+import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.util.UserUtil;
 
@@ -52,6 +58,9 @@ public class MainActivity extends SignInActivity
     private static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
+
+    private BroadcastReceiver broadcastReceiver = null;
+
     private String accountName = null;
     private HealthDroidUser healthDroidUser = null;
     private List<SubscriptionRecord> subscriptionRecords = null;
@@ -63,6 +72,7 @@ public class MainActivity extends SignInActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Layout
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -85,14 +95,24 @@ public class MainActivity extends SignInActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Start IntentService to register this application with GCM.
         if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
             Log.i(TAG, "Here");
         }
 
         //Instance variables initializations
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "broadcast received");
+                Toast.makeText(context, "Sent token to server", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        IntentFilter intentFilter = new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
         settings = getSharedPreferences("HealthDroid", 0);
         credential = GoogleAccountCredential.usingAudience(
                 this,
@@ -291,5 +311,4 @@ public class MainActivity extends SignInActivity
             healthDroidUser = resultedHealthDroidUser;
         }
     }
-
 }
