@@ -36,7 +36,7 @@ public class UserFragment extends Fragment {
     private RecyclerView recyclerView = null;
     private int mColumnCount = 1;
 
-    private List<HealthDroidUser> listUser = new ArrayList<HealthDroidUser>();
+    private List<HealthDroidUserWrapper> listUser = new ArrayList<HealthDroidUserWrapper>();
     private GoogleAccountCredential credential = null;
     private List<SubscriptionRecord> subscriptionRecords = null;
 
@@ -75,14 +75,14 @@ public class UserFragment extends Fragment {
         HealthDroidUserViewInteractionListener listener = new HealthDroidUserViewInteractionListener() {
             //TODO: implement
             @Override
-            public void onItemClick(HealthDroidUser user) {
-                Toast.makeText(getActivity(), user.getEmail(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(HealthDroidUserWrapper user) {
+                Toast.makeText(getActivity(), user.healthDroidUser.getEmail(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onSubscribeClick(HealthDroidUser user) {
-                subscribe(user);
-                Toast.makeText(getActivity(), user.getEmail() + "subscribed", Toast.LENGTH_SHORT).show();
+            public void onSubscribeClick(HealthDroidUserWrapper user) {
+                subscribe(user.healthDroidUser);
+                Toast.makeText(getActivity(), user.healthDroidUser.getEmail() + "subscribed", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -141,9 +141,9 @@ public class UserFragment extends Fragment {
 
     public interface HealthDroidUserViewInteractionListener {
         // TODO: Update argument type and name
-        void onItemClick(HealthDroidUser user);
+        void onItemClick(HealthDroidUserWrapper user);
 
-        void onSubscribeClick(HealthDroidUser user);
+        void onSubscribeClick(HealthDroidUserWrapper user);
     }
 
     private class SubscribeTask extends AsyncTask<HealthDroidUser, Void, SubscriptionRecord> {
@@ -158,6 +158,20 @@ public class UserFragment extends Fragment {
                 e.printStackTrace();
             }
             return subscriptionRecord;
+        }
+
+        @Override
+        protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
+            super.onPostExecute(subscriptionRecord);
+            com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser target = subscriptionRecord.getTarget();
+            String email = target.getEmail();
+            for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
+                if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
+                    Log.d(TAG, "Disabling a subscribe button for user " + email);
+                    healthDroidUserWrapper.subscribed = true;
+                }
+            }
+            notifyChange();
         }
     }
 
@@ -185,15 +199,33 @@ public class UserFragment extends Fragment {
         }
     }
 
-    private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUser>> {
+    public class HealthDroidUserWrapper {
+        public HealthDroidUser healthDroidUser = null;
+        public Boolean subscribed = false;
+
+        public HealthDroidUserWrapper(HealthDroidUser healthDroidUser, Boolean subscribed) {
+            this.healthDroidUser = healthDroidUser;
+            this.subscribed = subscribed;
+        }
+
+        public HealthDroidUserWrapper(HealthDroidUser healthDroidUser) {
+            this.healthDroidUser = healthDroidUser;
+        }
+    }
+
+    private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUserWrapper>> {
         @Override
-        protected List<HealthDroidUser> doInBackground(GoogleAccountCredential... params) {
+        protected List<HealthDroidUserWrapper> doInBackground(GoogleAccountCredential... params) {
             GoogleAccountCredential credential = params[0];
             User userService = UserUtil.getUserService(credential);
             try {
                 List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
                 Log.d(TAG, "Received " + healthDroidUsers.size() + " users");
-                return healthDroidUsers;
+                List<HealthDroidUserWrapper> wrapperList = new ArrayList<HealthDroidUserWrapper>();
+                for (HealthDroidUser user : healthDroidUsers) {
+                    wrapperList.add(new HealthDroidUserWrapper(user));
+                }
+                return wrapperList;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -201,12 +233,10 @@ public class UserFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<HealthDroidUser> healthDroidUsers) {
-            super.onPostExecute(healthDroidUsers);
-            if (healthDroidUsers != null)
-                for (HealthDroidUser user : healthDroidUsers) {
-                    listUser.add(user);
-                }
+        protected void onPostExecute(List<HealthDroidUserWrapper> resultedHealthDroidUsers) {
+            super.onPostExecute(resultedHealthDroidUsers);
+            if (resultedHealthDroidUsers != null)
+                listUser.addAll(resultedHealthDroidUsers);
             notifyChange();
         }
     }

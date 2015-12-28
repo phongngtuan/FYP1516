@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 
 import java.util.List;
@@ -16,10 +15,10 @@ import java.util.List;
 public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecyclerViewAdapter.UserViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private final List<HealthDroidUser> healthDroidUsers;
+    private final List<UserFragment.HealthDroidUserWrapper> healthDroidUsers;
     private final UserFragment.HealthDroidUserViewInteractionListener itemClickListener;
 
-    public MyUserRecyclerViewAdapter(List<HealthDroidUser> items, UserFragment.HealthDroidUserViewInteractionListener listener) {
+    public MyUserRecyclerViewAdapter(List<UserFragment.HealthDroidUserWrapper> items, UserFragment.HealthDroidUserViewInteractionListener listener) {
         healthDroidUsers = items;
         itemClickListener = listener;
     }
@@ -34,9 +33,9 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
     @Override
     public void onBindViewHolder(final UserViewHolder holder, int position) {
         holder.healthDroidUser = healthDroidUsers.get(position);
-        holder.idView.setText(healthDroidUsers.get(position).getId());
+        holder.idView.setText(healthDroidUsers.get(position).healthDroidUser.getId());
 
-        holder.subscribeButton.setEnabled(false);
+        holder.subscribeButton.setEnabled(!holder.healthDroidUser.subscribed);
 
         //listener for interaction on whole view
         holder.view.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +67,7 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
         public final View view;
         public final TextView idView;
         public final Button subscribeButton;
-        public HealthDroidUser healthDroidUser;
+        public UserFragment.HealthDroidUserWrapper healthDroidUser;
 
         public UserViewHolder(View view) {
             super(view);
