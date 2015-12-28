@@ -163,15 +163,19 @@ public class UserFragment extends Fragment {
         @Override
         protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
             super.onPostExecute(subscriptionRecord);
-            com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser target = subscriptionRecord.getTarget();
-            String email = target.getEmail();
-            for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
-                if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
-                    Log.d(TAG, "Disabling a subscribe button for user " + email);
-                    healthDroidUserWrapper.subscribed = true;
-                }
-            }
+            notifySubscribed(subscriptionRecord);
             notifyChange();
+        }
+    }
+
+    private void notifySubscribed(SubscriptionRecord subscriptionRecord) {
+        com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser target = subscriptionRecord.getTarget();
+        String email = target.getEmail();
+        for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
+            if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
+                Log.d(TAG, "Disabling a subscribe button for user " + email);
+                healthDroidUserWrapper.subscribed = true;
+            }
         }
     }
 
@@ -196,6 +200,10 @@ public class UserFragment extends Fragment {
             super.onPostExecute(resultedSubscriptionRecords);
             subscriptionRecords = resultedSubscriptionRecords;
             Log.d(TAG, subscriptionRecords.toString());
+            for (SubscriptionRecord record : resultedSubscriptionRecords) {
+                notifySubscribed(record);
+            }
+            notifyChange();
         }
     }
 
