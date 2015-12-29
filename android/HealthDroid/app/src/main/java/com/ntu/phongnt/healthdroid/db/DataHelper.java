@@ -58,6 +58,10 @@ public class DataHelper extends SQLiteOpenHelper {
         return -1;
     }
 
+    public static int getWeek(String date) {
+        return getProperty(date, Calendar.WEEK_OF_YEAR);
+    }
+
     public static int getMonth(String date) {
         return getProperty(date, Calendar.MONTH);
     }
@@ -93,6 +97,15 @@ public class DataHelper extends SQLiteOpenHelper {
         throw new RuntimeException("How did we get here?");
     }
 
+    public static class DataEntry {
+        public String createdAt;
+        public Float value;
+
+        public DataEntry(String createdAt, Float value) {
+            this.createdAt = createdAt;
+            this.value = value;
+        }
+    }
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 RFC3339_TEMPLATE, Locale.getDefault());

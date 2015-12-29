@@ -28,8 +28,8 @@ import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 public class GraphFragment extends Fragment implements TimeRangeInteractionListener {
     public static String TAG = "GraphFragment";
@@ -155,57 +155,37 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     private class LoadCursorTask extends BaseTask<Void> {
         @Override
         protected void onPostExecute(Cursor cursor) {
-            HashMap<String, Float> monthToValue = new HashMap<String, Float>();
-            HashMap<String, Integer> monthToCount = new HashMap<String, Integer>();
+            List<DataHelper.DataEntry> data = prepareData(cursor);
 
-            if (cursor.moveToFirst()) {
-                do {
-                    float data = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
-                    String createdAt = cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT));
-                    int month = DataHelper.getMonth(createdAt);
-                    int year = DataHelper.getYear(createdAt);
-                    String key = String.format("%02d", month) + "/" + String.format("%02d", year);
-                    Float value = monthToValue.get(key);
-                    if (value == null) {
-                        monthToValue.put(key, data);
-                        monthToCount.put(key, 1);
-                    } else {
-                        int count = monthToCount.get(key);
-                        monthToValue.put(key, value + data);
-                        monthToCount.put(key, count + 1);
-                    }
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
+            //get by month
+            TreeMap<String, Float> reducedData = new TreeMap<String, Float>();
+            TreeMap<String, Integer> reducedDataCount = new TreeMap<String, Integer>();
+            for (DataHelper.DataEntry entry : data) {
+                String createdAt = entry.createdAt;
+                Float value = entry.value;
 
-            //Determine the range
-            ArrayList<String> keys = new ArrayList<String>(monthToValue.keySet());
-            Collections.sort(keys);
-            String[] first = keys.get(keys.size() - 1).split("/");
-            String[] last = keys.get(0).split("/");
-            int firstMonth = Integer.parseInt(first[0]);
-            int firstYear = Integer.parseInt(first[1]);
-            int lastMonth = Integer.parseInt(last[0]);
-            int lastYear = Integer.parseInt(last[1]);
-            int range = (lastYear - firstYear) * 12 + lastMonth - firstMonth;
-            if (range < 10) {
-                lastMonth = lastMonth + 10;
-                if (lastMonth > 12) {
-                    lastYear += 1;
-                    lastMonth %= 12;
-                }
+                String key = createKeyByMonth(createdAt);
+                accumulate(reducedData, reducedDataCount, value, key);
             }
+
+            DateRangeByMonth rangeByMonth = new DateRangeByMonth(reducedData.firstKey(), reducedData.lastKey());
 
             //Add entries to graph
-            Log.d(TAG, "range = " + range);
+            Log.d(TAG, "range = " + rangeByMonth.getRange());
 
-            int month = firstMonth;
-            int year = firstYear;
+            addDataToChart(reducedData, reducedDataCount, rangeByMonth);
 
-            while (month != lastMonth || year != lastYear) {
+            chart.invalidate();
+        }
+
+        private void addDataToChart(TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, DateRangeByMonth rangeByMonth) {
+            int month = rangeByMonth.firstMonth;
+            int year = rangeByMonth.firstYear;
+
+            while (month != rangeByMonth.lastMonth || year != rangeByMonth.lastYear) {
                 String key = String.format("%02d", month) + "/" + String.format("%02d", year);
-                if (monthToValue.containsKey(key))
-                    addEntry((float) monthToValue.get(key) / monthToCount.get(key), key);
+                if (reducedData.containsKey(key))
+                    addEntry((float) reducedData.get(key) / reducedDataCount.get(key), key);
                 else
                     addEntry(0, key);
                 month += 1;
@@ -214,13 +194,74 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
                     month %= 12;
                 }
             }
-
-            chart.invalidate();
         }
+
+        @NonNull
+        private String createKeyByMonth(String createdAt) {
+            int month = DataHelper.getMonth(createdAt);
+            int year = DataHelper.getYear(createdAt);
+            return String.format("%02d", month) + "/" + String.format("%04d", year);
+        }
+
+        private void accumulate(TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, Float value, String key) {
+            if (!reducedData.containsKey(key)) {
+                reducedData.put(key, value);
+                reducedDataCount.put(key, 1);
+            } else {
+                reducedData.put(key, value + reducedData.get(key));
+                reducedDataCount.put(key, 1 + reducedDataCount.get(key));
+            }
+        }
+
+        private List<DataHelper.DataEntry> prepareData(Cursor cursor) {
+            List<DataHelper.DataEntry> data = new ArrayList<DataHelper.DataEntry>();
+            if (cursor.moveToFirst()) {
+                do {
+                    String createdAt = cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT));
+                    float value = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
+                    data.add(new DataHelper.DataEntry(createdAt, value));
+                }
+                while (cursor.moveToNext());
+            }
+            cursor.close();
+            return data;
+        }
+
 
         @Override
         protected Cursor doInBackground(Void... params) {
             return (doQuery());
+        }
+    }
+
+    private class DateRangeByMonth {
+        public int firstMonth;
+        public int firstYear;
+        public int lastMonth;
+        public int lastYear;
+
+        public DateRangeByMonth(String first, String last) {
+            String[] firstKey = first.split("/");
+            String[] lastKey = last.split("/");
+            firstMonth = Integer.parseInt(firstKey[0]);
+            firstYear = Integer.parseInt(firstKey[1]);
+            lastMonth = Integer.parseInt(lastKey[0]);
+            lastYear = Integer.parseInt(lastKey[1]);
+            normalize();
+        }
+
+        public void normalize() {
+            if (getRange() < 10) {
+                lastMonth = lastMonth + 10;
+                if (lastMonth > 12) {
+                    lastYear += 1;
+                    lastMonth %= 12;
+                }
+            }
+        }
+
+        public int getRange() {
+            return (lastYear - firstYear) * 12 + lastMonth - firstMonth;
         }
     }
 
