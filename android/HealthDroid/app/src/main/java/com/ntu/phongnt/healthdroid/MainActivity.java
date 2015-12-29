@@ -1,8 +1,6 @@
 package com.ntu.phongnt.healthdroid;
 
 import android.accounts.AccountManager;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +9,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -114,7 +114,7 @@ public class MainActivity extends SignInActivity
         }
 
         if (savedInstanceState == null) {
-            FragmentManager fragmentManager = getFragmentManager();
+            FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.fragment_container, homeFragment);
             fragmentTransaction.commit();
@@ -192,35 +192,35 @@ public class MainActivity extends SignInActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            homeFragment = (HomeFragment) getFragmentManager().findFragmentByTag("HOME_FRAGMENT");
+            homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("HOME_FRAGMENT");
             if (homeFragment == null) {
                 homeFragment = new HomeFragment();
             }
             if (!homeFragment.isVisible())
-                getFragmentManager().beginTransaction()
+                getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, homeFragment, "HOME_FRAGMENT").commit();
         } else if (id == R.id.nav_graph) {
-            graphFragment = (GraphFragment) getFragmentManager().findFragmentByTag("GRAPH_FRAGMENT");
+            graphFragment = (GraphFragment) getSupportFragmentManager().findFragmentByTag("GRAPH_FRAGMENT");
             if (graphFragment == null) {
                 graphFragment = new GraphFragment();
             }
             if (!graphFragment.isVisible())
-                getFragmentManager().beginTransaction()
+                getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, graphFragment, "GRAPH_FRAGMENT").commit();
         } else if (id == R.id.nav_data) {
-            dataFragment = (DataFragment) getFragmentManager().findFragmentByTag("DATA_FRAGMENT");
+            dataFragment = (DataFragment) getSupportFragmentManager().findFragmentByTag("DATA_FRAGMENT");
             if (dataFragment == null) {
                 dataFragment = new DataFragment();
             }
             if (!dataFragment.isVisible())
-                getFragmentManager().beginTransaction()
+                getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, dataFragment, "DATA_FRAGMENT").commit();
         } else if (id == R.id.nav_user) {
-            userFragment = (UserFragment) getFragmentManager().findFragmentByTag("USER_FRAGMENT");
+            userFragment = (UserFragment) getSupportFragmentManager().findFragmentByTag("USER_FRAGMENT");
             if (userFragment == null)
                 userFragment = UserFragment.newInstance(1, credential);
             if (!userFragment.isVisible())
-                getFragmentManager().beginTransaction().
+                getSupportFragmentManager().beginTransaction().
                         replace(R.id.fragment_container, userFragment, "USER_FRAGMENT").commit();
         } else if (id == R.id.nav_share) {
 
