@@ -76,19 +76,19 @@ public class DataHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE readings (value REAL, created_at date)");
         ContentValues cv = new ContentValues();
         cv.put(VALUE, 1);
-        cv.put(CREATED_AT, getDateTime());
+        cv.put(CREATED_AT, "2015-10-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 2);
-        cv.put(CREATED_AT, getDateTime());
+        cv.put(CREATED_AT, "2015-11-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 4);
-        cv.put(CREATED_AT, getDateTime());
+        cv.put(CREATED_AT, "2015-12-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 8);
-        cv.put(CREATED_AT, getDateTime());
+        cv.put(CREATED_AT, "2015-12-24T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
     }
 

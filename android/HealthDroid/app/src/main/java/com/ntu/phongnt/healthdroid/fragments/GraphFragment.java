@@ -21,13 +21,12 @@ import android.widget.FrameLayout;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.util.DataEntryByMonthFormatter;
+import com.ntu.phongnt.healthdroid.util.DataEntryFormatter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -107,37 +106,6 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         }
     }
 
-    private void addEntry(float value) {
-        addEntry(value, "");
-    }
-
-    private void addEntry(float value, String label) {
-        LineData data = chart.getData();
-
-        if (data != null) {
-            LineDataSet dataSet = data.getDataSetByIndex(0);
-            if (dataSet == null) {
-                dataSet = createSet();
-                dataSet.setDrawFilled(true);
-                dataSet.setDrawCubic(true);
-                data.addDataSet(dataSet);
-                dataSet.setValueTextColor(Color.WHITE);
-            }
-            data.addXValue(label);
-            data.addEntry(
-                    new Entry(value, dataSet.getEntryCount()),
-                    0
-            );
-            chart.notifyDataSetChanged();
-            chart.setVisibleXRangeMaximum(20);
-            chart.moveViewToX(data.getXValCount() - 7);
-        }
-    }
-
-    private LineDataSet createSet() {
-        return new LineDataSet(new ArrayList<Entry>(), "value");
-    }
-
     abstract private class BaseTask<T> extends AsyncTask<T, Void, Cursor> {
         protected Cursor doQuery() {
             Cursor result =
@@ -155,7 +123,8 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     private class LoadCursorTask extends BaseTask<Void> {
         @Override
         protected void onPostExecute(Cursor cursor) {
-            List<DataHelper.DataEntry> data = prepareData(cursor);
+            DataEntryByMonthFormatter formatter = new DataEntryByMonthFormatter(cursor);
+            List<DataHelper.DataEntry> data = formatter.prepareData();
 
             //get by month
             TreeMap<String, Float> reducedData = new TreeMap<String, Float>();
@@ -164,69 +133,19 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
                 String createdAt = entry.createdAt;
                 Float value = entry.value;
 
-                String key = createKeyByMonth(createdAt);
-                accumulate(reducedData, reducedDataCount, value, key);
+                String key = formatter.createKey(createdAt);
+                formatter.accumulate(reducedData, reducedDataCount, value, key);
             }
 
-            DateRangeByMonth rangeByMonth = new DateRangeByMonth(reducedData.firstKey(), reducedData.lastKey());
+            DataEntryFormatter.DateRangeByMonth rangeByMonth = new DataEntryFormatter.DateRangeByMonth(reducedData.firstKey(), reducedData.lastKey());
 
             //Add entries to graph
             Log.d(TAG, "range = " + rangeByMonth.getRange());
 
-            addDataToChart(reducedData, reducedDataCount, rangeByMonth);
+            formatter.addDataToChart(chart, reducedData, reducedDataCount, rangeByMonth);
 
             chart.invalidate();
         }
-
-        private void addDataToChart(TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, DateRangeByMonth rangeByMonth) {
-            int month = rangeByMonth.firstMonth;
-            int year = rangeByMonth.firstYear;
-
-            while (month != rangeByMonth.lastMonth || year != rangeByMonth.lastYear) {
-                String key = String.format("%02d", month) + "/" + String.format("%02d", year);
-                if (reducedData.containsKey(key))
-                    addEntry((float) reducedData.get(key) / reducedDataCount.get(key), key);
-                else
-                    addEntry(0, key);
-                month += 1;
-                if (month > 12) {
-                    year += 1;
-                    month %= 12;
-                }
-            }
-        }
-
-        @NonNull
-        private String createKeyByMonth(String createdAt) {
-            int month = DataHelper.getMonth(createdAt);
-            int year = DataHelper.getYear(createdAt);
-            return String.format("%02d", month) + "/" + String.format("%04d", year);
-        }
-
-        private void accumulate(TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, Float value, String key) {
-            if (!reducedData.containsKey(key)) {
-                reducedData.put(key, value);
-                reducedDataCount.put(key, 1);
-            } else {
-                reducedData.put(key, value + reducedData.get(key));
-                reducedDataCount.put(key, 1 + reducedDataCount.get(key));
-            }
-        }
-
-        private List<DataHelper.DataEntry> prepareData(Cursor cursor) {
-            List<DataHelper.DataEntry> data = new ArrayList<DataHelper.DataEntry>();
-            if (cursor.moveToFirst()) {
-                do {
-                    String createdAt = cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT));
-                    float value = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
-                    data.add(new DataHelper.DataEntry(createdAt, value));
-                }
-                while (cursor.moveToNext());
-            }
-            cursor.close();
-            return data;
-        }
-
 
         @Override
         protected Cursor doInBackground(Void... params) {
@@ -234,36 +153,6 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         }
     }
 
-    private class DateRangeByMonth {
-        public int firstMonth;
-        public int firstYear;
-        public int lastMonth;
-        public int lastYear;
-
-        public DateRangeByMonth(String first, String last) {
-            String[] firstKey = first.split("/");
-            String[] lastKey = last.split("/");
-            firstMonth = Integer.parseInt(firstKey[0]);
-            firstYear = Integer.parseInt(firstKey[1]);
-            lastMonth = Integer.parseInt(lastKey[0]);
-            lastYear = Integer.parseInt(lastKey[1]);
-            normalize();
-        }
-
-        public void normalize() {
-            if (getRange() < 10) {
-                lastMonth = lastMonth + 10;
-                if (lastMonth > 12) {
-                    lastYear += 1;
-                    lastMonth %= 12;
-                }
-            }
-        }
-
-        public int getRange() {
-            return (lastYear - firstYear) * 12 + lastMonth - firstMonth;
-        }
-    }
 
     public static class TimeRangeDialogFragment extends DialogFragment {
         public TimeRangeInteractionListener listener = null;
