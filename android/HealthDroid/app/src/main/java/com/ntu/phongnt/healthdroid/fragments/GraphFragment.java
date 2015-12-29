@@ -1,12 +1,16 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,8 +31,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class GraphFragment extends Fragment {
+public class GraphFragment extends Fragment implements TimeRangeInteractionListener {
     public static String TAG = "GraphFragment";
+    public static final String DAY = "Day";
+    public static final String WEEK = "Week";
+    public static final String MONTH = "Month";
+    public static final String[] choices = {DAY, WEEK, MONTH};
     private LineChart chart = null;
     private DataHelper db = null;
 
@@ -41,18 +49,22 @@ public class GraphFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
         View view = inflater.inflate(R.layout.content_graph, container, false);
-        chart = new LineChart(inflater.getContext());
-        chart.setData(new LineData());
-        FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                TimeRangeDialogFragment dialogFragment = new TimeRangeDialogFragment();
+                dialogFragment.listener = GraphFragment.this;
+                dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
+
+        chart = new LineChart(inflater.getContext());
+        chart.setData(new LineData());
+        FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
 
         chart.setExtraOffsets(5, 20, 20, 20);
         chart.setTouchEnabled(true);
@@ -81,6 +93,18 @@ public class GraphFragment extends Fragment {
 
         chart_container.addView(chart);
         return view;
+    }
+
+    @Override
+    public void onTimeRangeSelected(int timeRange) {
+        switch (choices[timeRange]) {
+            case DAY:
+                break;
+            case WEEK:
+                break;
+            case MONTH:
+                break;
+        }
     }
 
     private void addEntry(float value) {
@@ -197,6 +221,40 @@ public class GraphFragment extends Fragment {
         @Override
         protected Cursor doInBackground(Void... params) {
             return (doQuery());
+        }
+    }
+
+    public static class TimeRangeDialogFragment extends DialogFragment {
+        public TimeRangeInteractionListener listener = null;
+
+        public TimeRangeDialogFragment() {
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            Log.d(TAG, "Creating dialog");
+            builder
+                    .setItems(choices, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            listener.onTimeRangeSelected(which);
+                        }
+                    })
+                    .setPositiveButton("Wai?", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+            return builder.create();
         }
     }
 }
