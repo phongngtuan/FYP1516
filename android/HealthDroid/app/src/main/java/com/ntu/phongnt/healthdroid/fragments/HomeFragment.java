@@ -29,6 +29,7 @@ import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.util.DateHelper;
 
 import java.io.IOException;
 import java.util.Date;
@@ -117,7 +118,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
             SharedPreferences.Editor editor = dataPreferences.edit();
 
             String lastUpdatedPreference = dataPreferences.getString(DataHelper.LAST_UPDATED, DataHelper.ZERO_TIME);
-            Date lastUpdate = DataHelper.getDate(lastUpdatedPreference);
+            Date lastUpdate = DateHelper.getDate(lastUpdatedPreference);
             Date latestDateFromData = new Date();
             latestDateFromData.setTime(lastUpdate.getTime());
 
@@ -144,7 +145,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
                 int count = 0;
                 SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
                 for (DataRecord d : dataRecordList) {
-                    Date dateFromData = DataHelper.getDate(d.getDate().toStringRfc3339());
+                    Date dateFromData = DateHelper.getDate(d.getDate().toStringRfc3339());
                     if (dateFromData.after(lastUpdate)) {
                         count++;
                         latestDateFromData = dateFromData;
@@ -156,7 +157,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
                                 values);
                     }
                 }
-                editor.putString(DataHelper.LAST_UPDATED, DataHelper.toString(latestDateFromData));
+                editor.putString(DataHelper.LAST_UPDATED, DateHelper.toString(latestDateFromData));
                 editor.apply();
                 Log.d(TAG, "last Updated = " + lastUpdate);
                 Log.d(TAG, "Updated count= " + count);

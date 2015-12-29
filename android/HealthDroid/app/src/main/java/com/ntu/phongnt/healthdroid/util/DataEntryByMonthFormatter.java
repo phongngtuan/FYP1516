@@ -4,52 +4,25 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.ntu.phongnt.healthdroid.db.DataHelper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
 
-public class DataEntryByMonthFormatter {
-    private Cursor cursor = null;
-
+public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
     public DataEntryByMonthFormatter(Cursor cursor) {
         this.cursor = cursor;
     }
 
-    public List<DataHelper.DataEntry> prepareData() {
-        List<DataHelper.DataEntry> data = new ArrayList<>();
-        if (cursor.moveToFirst()) {
-            do {
-                String createdAt = cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT));
-                float value = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
-                data.add(new DataHelper.DataEntry(createdAt, value));
-            }
-            while (cursor.moveToNext());
-        }
-        cursor.close();
-        return data;
-    }
-
+    @Override
     @NonNull
     public String createKey(String createdAt) {
-        int month = DataHelper.getMonth(createdAt);
-        int year = DataHelper.getYear(createdAt);
+        int month = DateHelper.getMonth(createdAt);
+        int year = DateHelper.getYear(createdAt);
         return String.format("%02d", month) + "/" + String.format("%04d", year);
     }
 
-
-    public void accumulate(TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, Float value, String key) {
-        if (!reducedData.containsKey(key)) {
-            reducedData.put(key, value);
-            reducedDataCount.put(key, 1);
-        } else {
-            reducedData.put(key, value + reducedData.get(key));
-            reducedDataCount.put(key, 1 + reducedDataCount.get(key));
-        }
-    }
-
-    public void addDataToChart(LineChart lineChart, TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, DataEntryFormatter.DateRangeByMonth rangeByMonth) {
+    @Override
+    public void addDataToChart(LineChart lineChart, TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount) {
+        DateRangeByMonth rangeByMonth = new DateRangeByMonth(reducedData.firstKey(), reducedData.lastKey());
         int month = rangeByMonth.firstMonth;
         int year = rangeByMonth.firstYear;
 
@@ -64,6 +37,39 @@ public class DataEntryByMonthFormatter {
                 year += 1;
                 month %= 12;
             }
+        }
+    }
+
+    public static class DateRangeByMonth implements DateHelper.DateRange {
+        public int firstMonth;
+        public int firstYear;
+        public int lastMonth;
+        public int lastYear;
+
+        public DateRangeByMonth(String first, String last) {
+            String[] firstKey = first.split("/");
+            String[] lastKey = last.split("/");
+            firstMonth = Integer.parseInt(firstKey[0]);
+            firstYear = Integer.parseInt(firstKey[1]);
+            lastMonth = Integer.parseInt(lastKey[0]);
+            lastYear = Integer.parseInt(lastKey[1]);
+            normalize();
+        }
+
+        @Override
+        public void normalize() {
+            if (getRange() < 10) {
+                lastMonth = lastMonth + 10;
+                if (lastMonth > 12) {
+                    lastYear += 1;
+                    lastMonth %= 12;
+                }
+            }
+        }
+
+        @Override
+        public int getRange() {
+            return (lastYear - firstYear) * 12 + lastMonth - firstMonth;
         }
     }
 }

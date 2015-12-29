@@ -6,9 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -22,7 +20,6 @@ public class DataHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "healthdroid";
     private static final int DATABASE_VERSION = 1;
     private static DataHelper dataHelper;
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat(RFC3339_TEMPLATE, Locale.getDefault());
 
     private DataHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -32,42 +29,6 @@ public class DataHelper extends SQLiteOpenHelper {
         if (dataHelper == null)
             dataHelper = new DataHelper(context.getApplicationContext());
         return dataHelper;
-    }
-
-    public static Date getDate(String date) {
-        try {
-            return dateFormat.parse(date);
-        } catch (ParseException e) {
-            Log.d("DataHelper", "Cannot parse string: " + date);
-        }
-        return null;
-    }
-
-    public static String toString(Date date) {
-        return dateFormat.format(date);
-    }
-
-    public static int getProperty(String date, int property) {
-        Calendar calendar = Calendar.getInstance();
-        try {
-            calendar.setTime(dateFormat.parse(date));
-            return calendar.get(property);
-        } catch (ParseException e) {
-            Log.d("DataHelper", "Cannot parse string: " + date);
-        }
-        return -1;
-    }
-
-    public static int getWeek(String date) {
-        return getProperty(date, Calendar.WEEK_OF_YEAR);
-    }
-
-    public static int getMonth(String date) {
-        return getProperty(date, Calendar.MONTH);
-    }
-
-    public static int getYear(String date) {
-        return getProperty(date, Calendar.YEAR);
     }
 
     @Override
@@ -97,15 +58,6 @@ public class DataHelper extends SQLiteOpenHelper {
         throw new RuntimeException("How did we get here?");
     }
 
-    public static class DataEntry {
-        public String createdAt;
-        public Float value;
-
-        public DataEntry(String createdAt, Float value) {
-            this.createdAt = createdAt;
-            this.value = value;
-        }
-    }
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 RFC3339_TEMPLATE, Locale.getDefault());

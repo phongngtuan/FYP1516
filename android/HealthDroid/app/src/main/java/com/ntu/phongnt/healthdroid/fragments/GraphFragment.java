@@ -24,8 +24,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
-import com.ntu.phongnt.healthdroid.util.DataEntryByMonthFormatter;
+import com.ntu.phongnt.healthdroid.util.DataEntryByWeekFormatter;
 import com.ntu.phongnt.healthdroid.util.DataEntryFormatter;
+import com.ntu.phongnt.healthdroid.util.DateHelper;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -123,13 +124,14 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     private class LoadCursorTask extends BaseTask<Void> {
         @Override
         protected void onPostExecute(Cursor cursor) {
-            DataEntryByMonthFormatter formatter = new DataEntryByMonthFormatter(cursor);
-            List<DataHelper.DataEntry> data = formatter.prepareData();
+//            DataEntryFormatter formatter = new DataEntryByMonthFormatter(cursor);
+            DataEntryFormatter formatter = new DataEntryByWeekFormatter(cursor);
+            List<DateHelper.DataEntry> data = formatter.prepareData();
 
             //get by month
             TreeMap<String, Float> reducedData = new TreeMap<String, Float>();
             TreeMap<String, Integer> reducedDataCount = new TreeMap<String, Integer>();
-            for (DataHelper.DataEntry entry : data) {
+            for (DateHelper.DataEntry entry : data) {
                 String createdAt = entry.createdAt;
                 Float value = entry.value;
 
@@ -137,12 +139,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
                 formatter.accumulate(reducedData, reducedDataCount, value, key);
             }
 
-            DataEntryFormatter.DateRangeByMonth rangeByMonth = new DataEntryFormatter.DateRangeByMonth(reducedData.firstKey(), reducedData.lastKey());
-
-            //Add entries to graph
-            Log.d(TAG, "range = " + rangeByMonth.getRange());
-
-            formatter.addDataToChart(chart, reducedData, reducedDataCount, rangeByMonth);
+            formatter.addDataToChart(chart, reducedData, reducedDataCount);
 
             chart.invalidate();
         }

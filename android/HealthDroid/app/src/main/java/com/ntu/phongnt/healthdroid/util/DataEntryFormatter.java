@@ -1,34 +1,19 @@
 package com.ntu.phongnt.healthdroid.util;
 
-public class DataEntryFormatter {
-    public static class DateRangeByMonth {
-        public int firstMonth;
-        public int firstYear;
-        public int lastMonth;
-        public int lastYear;
+import android.support.annotation.NonNull;
 
-        public DateRangeByMonth(String first, String last) {
-            String[] firstKey = first.split("/");
-            String[] lastKey = last.split("/");
-            firstMonth = Integer.parseInt(firstKey[0]);
-            firstYear = Integer.parseInt(firstKey[1]);
-            lastMonth = Integer.parseInt(lastKey[0]);
-            lastYear = Integer.parseInt(lastKey[1]);
-            normalize();
-        }
+import com.github.mikephil.charting.charts.LineChart;
 
-        public void normalize() {
-            if (getRange() < 10) {
-                lastMonth = lastMonth + 10;
-                if (lastMonth > 12) {
-                    lastYear += 1;
-                    lastMonth %= 12;
-                }
-            }
-        }
+import java.util.List;
+import java.util.TreeMap;
 
-        public int getRange() {
-            return (lastYear - firstYear) * 12 + lastMonth - firstMonth;
-        }
-    }
+public interface DataEntryFormatter {
+    List<DateHelper.DataEntry> prepareData();
+
+    @NonNull
+    String createKey(String createdAt);
+
+    void accumulate(TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, Float value, String key);
+
+    void addDataToChart(LineChart lineChart, TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount);
 }
