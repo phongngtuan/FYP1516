@@ -24,12 +24,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.util.DataEntryByMonthFormatter;
 import com.ntu.phongnt.healthdroid.util.DataEntryByWeekFormatter;
 import com.ntu.phongnt.healthdroid.util.DataEntryFormatter;
-import com.ntu.phongnt.healthdroid.util.DateHelper;
-
-import java.util.List;
-import java.util.TreeMap;
 
 public class GraphFragment extends Fragment implements TimeRangeInteractionListener {
     public static String TAG = "GraphFragment";
@@ -39,6 +36,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     public static final String[] choices = {DAY, WEEK, MONTH};
     private LineChart chart = null;
     private DataHelper db = null;
+    private String formatter_choice = MONTH;
 
     public GraphFragment() {
         super();
@@ -77,7 +75,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         db = DataHelper.getInstance(getActivity());
 
-        new LoadCursorTask().execute();
+        new DisplayDataByMonthTask().execute();
 
         //Appearance
         XAxis x1 = chart.getXAxis();
@@ -101,8 +99,12 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
             case DAY:
                 break;
             case WEEK:
+                formatter_choice = WEEK;
+                new DisplayDataByWeekTask().execute();
                 break;
             case MONTH:
+                formatter_choice = MONTH;
+                new DisplayDataByMonthTask().execute();
                 break;
         }
     }
@@ -121,26 +123,14 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         }
     }
 
-    private class LoadCursorTask extends BaseTask<Void> {
+    private class DisplayDataByMonthTask extends BaseTask<Void> {
         @Override
         protected void onPostExecute(Cursor cursor) {
-//            DataEntryFormatter formatter = new DataEntryByMonthFormatter(cursor);
-            DataEntryFormatter formatter = new DataEntryByWeekFormatter(cursor);
-            List<DateHelper.DataEntry> data = formatter.prepareData();
-
-            //get by month
-            TreeMap<String, Float> reducedData = new TreeMap<String, Float>();
-            TreeMap<String, Integer> reducedDataCount = new TreeMap<String, Integer>();
-            for (DateHelper.DataEntry entry : data) {
-                String createdAt = entry.createdAt;
-                Float value = entry.value;
-
-                String key = formatter.createKey(createdAt);
-                formatter.accumulate(reducedData, reducedDataCount, value, key);
-            }
-
-            formatter.addDataToChart(chart, reducedData, reducedDataCount);
-
+            chart.getLineData().removeDataSet(0);
+            chart.getXAxis().getValues().clear();
+            DataEntryFormatter formatter = new DataEntryByMonthFormatter(cursor);
+            formatter.format(chart);
+            chart.notifyDataSetChanged();
             chart.invalidate();
         }
 
@@ -150,6 +140,22 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         }
     }
 
+    private class DisplayDataByWeekTask extends BaseTask<Void> {
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            chart.getLineData().removeDataSet(0);
+            chart.getXAxis().getValues().clear();
+            DataEntryFormatter formatter = new DataEntryByWeekFormatter(cursor);
+            formatter.format(chart);
+            chart.notifyDataSetChanged();
+            chart.invalidate();
+        }
+
+        @Override
+        protected Cursor doInBackground(Void... params) {
+            return (doQuery());
+        }
+    }
 
     public static class TimeRangeDialogFragment extends DialogFragment {
         public TimeRangeInteractionListener listener = null;
