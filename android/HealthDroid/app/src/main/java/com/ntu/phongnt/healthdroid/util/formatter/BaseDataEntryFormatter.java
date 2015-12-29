@@ -1,9 +1,10 @@
-package com.ntu.phongnt.healthdroid.util;
+package com.ntu.phongnt.healthdroid.util.formatter;
 
 import android.database.Cursor;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.util.DateHelper;
 
 import java.util.ArrayList;
 import java.util.List;

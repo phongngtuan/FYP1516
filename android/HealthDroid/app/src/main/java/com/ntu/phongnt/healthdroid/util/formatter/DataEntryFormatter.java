@@ -1,8 +1,9 @@
-package com.ntu.phongnt.healthdroid.util;
+package com.ntu.phongnt.healthdroid.util.formatter;
 
 import android.support.annotation.NonNull;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.ntu.phongnt.healthdroid.util.DateHelper;
 
 import java.util.List;
 import java.util.TreeMap;

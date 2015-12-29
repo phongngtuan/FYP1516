@@ -24,9 +24,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
-import com.ntu.phongnt.healthdroid.util.DataEntryByMonthFormatter;
-import com.ntu.phongnt.healthdroid.util.DataEntryByWeekFormatter;
-import com.ntu.phongnt.healthdroid.util.DataEntryFormatter;
+import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByMonthFormatter;
+import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByWeekFormatter;
+import com.ntu.phongnt.healthdroid.util.formatter.DataEntryFormatter;
 
 public class GraphFragment extends Fragment implements TimeRangeInteractionListener {
     public static String TAG = "GraphFragment";
