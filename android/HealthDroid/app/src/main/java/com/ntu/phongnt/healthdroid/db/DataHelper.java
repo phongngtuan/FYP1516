@@ -49,7 +49,15 @@ public class DataHelper extends SQLiteOpenHelper {
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 8);
+        cv.put(CREATED_AT, "2015-12-23T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 8);
         cv.put(CREATED_AT, "2015-12-24T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 8);
+        cv.put(CREATED_AT, "2015-12-25T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
     }
 

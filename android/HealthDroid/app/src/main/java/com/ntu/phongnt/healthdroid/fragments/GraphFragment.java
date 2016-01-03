@@ -24,6 +24,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByDayFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByMonthFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByWeekFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryFormatter;
@@ -97,6 +98,8 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     public void onTimeRangeSelected(int timeRange) {
         switch (choices[timeRange]) {
             case DAY:
+                formatter_choice = DAY;
+                new DisplayDataByDayTask().execute();
                 break;
             case WEEK:
                 formatter_choice = WEEK;
@@ -120,6 +123,23 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
                                     null, null, null, null, DataHelper.VALUE);
             Log.i("GraphFragment", String.valueOf(result.getCount()));
             return (result);
+        }
+    }
+
+    private class DisplayDataByDayTask extends BaseTask<Void> {
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            chart.getLineData().removeDataSet(0);
+            chart.getXAxis().getValues().clear();
+            DataEntryFormatter formatter = new DataEntryByDayFormatter(cursor);
+            formatter.format(chart);
+            chart.notifyDataSetChanged();
+            chart.invalidate();
+        }
+
+        @Override
+        protected Cursor doInBackground(Void... params) {
+            return (doQuery());
         }
     }
 
