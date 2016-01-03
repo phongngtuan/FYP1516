@@ -59,9 +59,4 @@ public class DateHelper {
         }
     }
 
-    public interface DateRange {
-        public void normalize();
-
-        public int getRange();
-    }
 }

@@ -3,12 +3,14 @@ package com.ntu.phongnt.healthdroid.util.formatter;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.github.mikephil.charting.charts.LineChart;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
-import com.ntu.phongnt.healthdroid.util.LineChartHelper;
+import com.ntu.phongnt.healthdroid.util.DateRange;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.TreeMap;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class DataEntryByWeekFormatter extends BaseDataEntryFormatter {
     public DataEntryByWeekFormatter(Cursor cursor) {
@@ -25,55 +27,41 @@ public class DataEntryByWeekFormatter extends BaseDataEntryFormatter {
     }
 
     @Override
-    public void addDataToChart(LineChart lineChart, TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount) {
-        DateRangeByWeek rangeByWeek = new DateRangeByWeek(reducedData.firstKey(), reducedData.lastKey());
-        int week = rangeByWeek.firstWeek;
-        int year = rangeByWeek.firstYear;
-
-        while (week != rangeByWeek.lastWeek || year != rangeByWeek.lastYear) {
-            String key = String.format("%02d", week) + "/" + String.format("%04d", year);
-            if (reducedData.containsKey(key))
-                LineChartHelper.addEntry(lineChart, (float) reducedData.get(key) / reducedDataCount.get(key), key);
-            else
-                LineChartHelper.addEntry(lineChart, 0, key);
-            week += 1;
-            if (week > 52) {
-                year += 1;
-                week -= 52;
-            }
-        }
+    public DateRange getDateRange(String firstDate, String lastDate) {
+        return new DateRangeByWeek(firstDate, lastDate);
     }
 
-    public static class DateRangeByWeek implements DateHelper.DateRange {
-        public int firstWeek;
-        public int firstYear;
-        public int lastWeek;
-        public int lastYear;
+    @Override
+    public DateFormat getDateFormat() {
+        return new SimpleDateFormat("ww/yyyy", Locale.getDefault());
+    }
 
-        public DateRangeByWeek(String first, String last) {
-            String[] firstKey = first.split("/");
-            String[] lastKey = last.split("/");
-            firstWeek = Integer.parseInt(firstKey[0]);
-            firstYear = Integer.parseInt(firstKey[1]);
-            lastWeek = Integer.parseInt(lastKey[0]);
-            lastYear = Integer.parseInt(lastKey[1]);
+    public static class DateRangeByWeek extends DateRange {
+        public DateRangeByWeek(String firstDate, String lastDate) {
+            String[] firstKey = firstDate.split("/");
+            String[] lastKey = lastDate.split("/");
+            int firstWeek = Integer.parseInt(firstKey[0]);
+            int firstYear = Integer.parseInt(firstKey[1]);
+            int lastWeek = Integer.parseInt(lastKey[0]);
+            int lastYear = Integer.parseInt(lastKey[1]);
+
+            GregorianCalendar first = new GregorianCalendar();
+            GregorianCalendar last = new GregorianCalendar();
+
+            first.set(Calendar.WEEK_OF_YEAR, firstWeek);
+            first.set(Calendar.YEAR, firstYear);
+            last.set(Calendar.WEEK_OF_YEAR, lastWeek);
+            last.set(Calendar.YEAR, lastYear);
+
+            setFirst(first);
+            setLast(last);
+
             normalize();
         }
 
         @Override
-        public void normalize() {
-            if (getRange() < 10) {
-                lastWeek = lastWeek + 10;
-                if (lastWeek > 52) {
-                    lastYear += 1;
-                    lastWeek -= 52;
-                }
-            }
-        }
-
-        @Override
-        public int getRange() {
-            return (lastYear - firstYear) * 52 + lastWeek - firstWeek;
+        public int getTimeUnit() {
+            return Calendar.WEEK_OF_YEAR;
         }
     }
 }

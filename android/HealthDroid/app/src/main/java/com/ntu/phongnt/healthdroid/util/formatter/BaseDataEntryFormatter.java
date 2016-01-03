@@ -5,14 +5,42 @@ import android.database.Cursor;
 import com.github.mikephil.charting.charts.LineChart;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
+import com.ntu.phongnt.healthdroid.util.DateRange;
+import com.ntu.phongnt.healthdroid.util.LineChartHelper;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeMap;
 
 public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
     Cursor cursor = null;
+
+    @SuppressWarnings("ResourceType")
+    @Override
+    public void addDataToChart(LineChart lineChart, TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount) {
+        DateRange rangeByDay = getDateRange(reducedData.firstKey(), reducedData.lastKey());
+        GregorianCalendar first = new GregorianCalendar();
+        first.setTime(rangeByDay.getFirst().getTime());
+
+        GregorianCalendar last = new GregorianCalendar();
+        last.setTime(rangeByDay.getLast().getTime());
+        last.add(Calendar.DAY_OF_YEAR, 1);
+
+        DateFormat format = getDateFormat();
+        while (first.before(last)) {
+            String key = format.format(first.getTime());
+            if (reducedData.containsKey(key))
+                LineChartHelper.addEntry(lineChart, (float) reducedData.get(key) / reducedDataCount.get(key), key);
+            else
+                LineChartHelper.addEntry(lineChart, 0, key);
+            first.add(rangeByDay.getTimeUnit(), 1);
+        }
+    }
+
 
     @Override
     public void format(LineChart chart) {

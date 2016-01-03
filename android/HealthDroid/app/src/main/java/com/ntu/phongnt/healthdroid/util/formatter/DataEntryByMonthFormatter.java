@@ -3,11 +3,13 @@ package com.ntu.phongnt.healthdroid.util.formatter;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.github.mikephil.charting.charts.LineChart;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
-import com.ntu.phongnt.healthdroid.util.LineChartHelper;
+import com.ntu.phongnt.healthdroid.util.DateRange;
 
-import java.util.TreeMap;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
     public DataEntryByMonthFormatter(Cursor cursor) {
@@ -23,55 +25,41 @@ public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
     }
 
     @Override
-    public void addDataToChart(LineChart lineChart, TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount) {
-        DateRangeByMonth rangeByMonth = new DateRangeByMonth(reducedData.firstKey(), reducedData.lastKey());
-        int month = rangeByMonth.firstMonth;
-        int year = rangeByMonth.firstYear;
-
-        while (month != rangeByMonth.lastMonth || year != rangeByMonth.lastYear) {
-            String key = String.format("%02d", month) + "/" + String.format("%02d", year);
-            if (reducedData.containsKey(key))
-                LineChartHelper.addEntry(lineChart, (float) reducedData.get(key) / reducedDataCount.get(key), key);
-            else
-                LineChartHelper.addEntry(lineChart, 0, key);
-            month += 1;
-            if (month > 12) {
-                year += 1;
-                month %= 12;
-            }
-        }
+    public DateRange getDateRange(String firstDate, String lastDate) {
+        return new DateRangeByMonth(firstDate, lastDate);
     }
 
-    public static class DateRangeByMonth implements DateHelper.DateRange {
-        public int firstMonth;
-        public int firstYear;
-        public int lastMonth;
-        public int lastYear;
+    @Override
+    public DateFormat getDateFormat() {
+        return new SimpleDateFormat("MM/yyyy");
+    }
 
-        public DateRangeByMonth(String first, String last) {
-            String[] firstKey = first.split("/");
-            String[] lastKey = last.split("/");
-            firstMonth = Integer.parseInt(firstKey[0]);
-            firstYear = Integer.parseInt(firstKey[1]);
-            lastMonth = Integer.parseInt(lastKey[0]);
-            lastYear = Integer.parseInt(lastKey[1]);
+    public static class DateRangeByMonth extends DateRange {
+        public DateRangeByMonth(String firstDate, String lastDate) {
+            String[] firstKey = firstDate.split("/");
+            String[] lastKey = lastDate.split("/");
+            int firstMonth = Integer.parseInt(firstKey[0]);
+            int firstYear = Integer.parseInt(firstKey[1]);
+            int lastMonth = Integer.parseInt(lastKey[0]);
+            int lastYear = Integer.parseInt(lastKey[1]);
+
+            GregorianCalendar first = new GregorianCalendar();
+            first.set(Calendar.MONTH, firstMonth);
+            first.set(Calendar.YEAR, firstYear);
+
+            GregorianCalendar last = new GregorianCalendar();
+            last.set(Calendar.MONTH, lastMonth);
+            last.set(Calendar.YEAR, lastYear);
+
+            setFirst(first);
+            setLast(last);
+
             normalize();
         }
 
         @Override
-        public void normalize() {
-            if (getRange() < 10) {
-                lastMonth = lastMonth + 10;
-                if (lastMonth > 12) {
-                    lastYear += 1;
-                    lastMonth %= 12;
-                }
-            }
-        }
-
-        @Override
-        public int getRange() {
-            return (lastYear - firstYear) * 12 + lastMonth - firstMonth;
+        public int getTimeUnit() {
+            return Calendar.MONTH;
         }
     }
 }
