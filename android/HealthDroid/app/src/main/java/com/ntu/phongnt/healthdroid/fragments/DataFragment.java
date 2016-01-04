@@ -10,6 +10,7 @@ import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
 
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.db.DataContract;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
 
 public class DataFragment extends ListFragment {
@@ -29,8 +30,14 @@ public class DataFragment extends ListFragment {
                         getActivity(),
                         R.layout.row,
                         current,
-                        new String[]{DataHelper.VALUE, DataHelper.CREATED_AT},
-                        new int[]{R.id.value, R.id.created_at},
+                        new String[]{
+                                DataContract.DataEntry._ID,
+                                DataContract.DataEntry.COLUMN_NAME_VALUE,
+                                DataContract.DataEntry.COLUMN_NAME_DATE
+                        },
+                        new int[]{
+                                R.id.value,
+                                R.id.created_at},
                         0);
         setListAdapter(adapter);
 
@@ -51,10 +58,17 @@ public class DataFragment extends ListFragment {
             Cursor result =
                     db
                             .getReadableDatabase()
-                            .query(DataHelper.TABLE,
-                                    new String[]{"ROWID AS _id",
-                                            DataHelper.VALUE, DataHelper.CREATED_AT},
-                                    null, null, null, null, DataHelper.VALUE);
+                            .query(DataContract.DataEntry.TABLE_NAME,
+                                    new String[]{
+                                            DataContract.DataEntry._ID,
+                                            DataContract.DataEntry.COLUMN_NAME_VALUE,
+                                            DataContract.DataEntry.COLUMN_NAME_DATE
+                                    },
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    DataContract.DataEntry.COLUMN_NAME_DATE);
 
             Log.i("DataFragment", String.valueOf(result.getCount()));
 

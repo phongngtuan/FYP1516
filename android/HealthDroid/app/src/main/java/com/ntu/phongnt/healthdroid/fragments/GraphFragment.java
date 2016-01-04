@@ -23,6 +23,7 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.db.DataContract;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByDayFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByMonthFormatter;
@@ -117,10 +118,15 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
             Cursor result =
                     db
                             .getReadableDatabase()
-                            .query(DataHelper.TABLE,
-                                    new String[]{"ROWID AS _id",
-                                            DataHelper.VALUE, DataHelper.CREATED_AT},
-                                    null, null, null, null, DataHelper.VALUE);
+                            .query(DataContract.DataEntry.TABLE_NAME,
+                                    new String[]{DataContract.DataEntry._ID,
+                                            DataContract.DataEntry.COLUMN_NAME_VALUE,
+                                            DataContract.DataEntry.COLUMN_NAME_DATE},
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    DataContract.DataEntry.COLUMN_NAME_DATE);
             Log.i("GraphFragment", String.valueOf(result.getCount()));
             return (result);
         }

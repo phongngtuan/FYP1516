@@ -3,7 +3,7 @@ package com.ntu.phongnt.healthdroid.util.formatter;
 import android.database.Cursor;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.db.DataContract;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
 import com.ntu.phongnt.healthdroid.util.DateRange;
 import com.ntu.phongnt.healthdroid.util.LineChartHelper;
@@ -64,10 +64,10 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
         });
         TreeMap<String, Integer> reducedDataCount = new TreeMap<String, Integer>();
         for (DateHelper.DataEntry entry : data) {
-            String createdAt = entry.createdAt;
+            String date = entry.date;
             Float value = entry.value;
 
-            String key = createKey(createdAt);
+            String key = createKey(date);
             accumulate(reducedData, reducedDataCount, value, key);
         }
 
@@ -79,9 +79,9 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
         List<DateHelper.DataEntry> data = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
-                String createdAt = cursor.getString(cursor.getColumnIndex(DataHelper.CREATED_AT));
-                float value = cursor.getFloat(cursor.getColumnIndex(DataHelper.VALUE));
-                data.add(new DateHelper.DataEntry(createdAt, value));
+                String date = cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_DATE));
+                float value = cursor.getFloat(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE));
+                data.add(new DateHelper.DataEntry(date, value));
             }
             while (cursor.moveToNext());
         }

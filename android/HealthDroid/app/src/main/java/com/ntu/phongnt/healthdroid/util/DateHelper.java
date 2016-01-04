@@ -50,11 +50,11 @@ public class DateHelper {
     }
 
     public static class DataEntry {
-        public String createdAt;
+        public String date;
         public Float value;
 
-        public DataEntry(String createdAt, Float value) {
-            this.createdAt = createdAt;
+        public DataEntry(String date, Float value) {
+            this.date = date;
             this.value = value;
         }
     }

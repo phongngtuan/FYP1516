@@ -28,6 +28,7 @@ import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
+import com.ntu.phongnt.healthdroid.db.DataContract;
 import com.ntu.phongnt.healthdroid.db.DataHelper;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
 
@@ -150,10 +151,10 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
                         count++;
                         latestDateFromData = dateFromData;
                         ContentValues values = new ContentValues();
-                        values.put(DataHelper.VALUE, d.getValue());
-                        values.put(DataHelper.CREATED_AT, d.getDate().toStringRfc3339());
-                        sqLiteDatabase.insert(DataHelper.TABLE,
-                                DataHelper.VALUE,
+                        values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getValue());
+                        values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getDate().toStringRfc3339());
+                        sqLiteDatabase.insert(DataContract.DataEntry.TABLE_NAME,
+                                DataContract.DataEntry.COLUMN_NAME_DATE,
                                 values);
                     }
                 }
