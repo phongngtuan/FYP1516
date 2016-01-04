@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -19,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -38,6 +42,7 @@ import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.util.UserUtil;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends SignInActivity
@@ -50,6 +55,8 @@ public class MainActivity extends SignInActivity
     private GraphFragment graphFragment = null;
     private DataFragment dataFragment = null;
     private UserFragment userFragment = null;
+
+    private ImageView profileImage = null;
 
     private static final int REQUEST_ACCOUNT_PICKER = 2;
     private static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
@@ -82,6 +89,7 @@ public class MainActivity extends SignInActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        profileImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
 
         // Start IntentService to register this application with GCM.
         if (checkPlayServices()) {
@@ -168,6 +176,10 @@ public class MainActivity extends SignInActivity
     protected void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "in handle sign in result");
         account = result.getSignInAccount();
+        if (account != null) {
+            Uri personPhoto = account.getPhotoUrl();
+            new LoadProfileImange(profileImage).execute(personPhoto.toString());
+        }
     }
 
     @Override
@@ -272,6 +284,31 @@ public class MainActivity extends SignInActivity
         editor.apply();
         credential.setSelectedAccountName(accountName);
         this.accountName = accountName;
+    }
+
+    private class LoadProfileImange extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public LoadProfileImange(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            try {
+                URL url = new URL(urls[0]);
+                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                return bmp;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            bmImage.setImageBitmap(bitmap);
+        }
     }
 
     private class RegisterUserToEndpoint extends AsyncTask<Void, Void, HealthDroidUser> {
