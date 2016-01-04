@@ -17,7 +17,8 @@ public class DataHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + DataContract.DataEntry.TABLE_NAME + " (" +
                     DataContract.DataEntry._ID + " INTEGER PRIMARY KEY, " +
                     DataContract.DataEntry.COLUMN_NAME_VALUE + " REAL" + COMMA_SEP +
-                    DataContract.DataEntry.COLUMN_NAME_DATE + " DATE" +
+                    DataContract.DataEntry.COLUMN_NAME_DATE + " DATE" + COMMA_SEP +
+                    DataContract.DataEntry.COLUMN_NAME_USER + " TEXT" +
                     " )";
 
     public static final String RFC3339_TEMPLATE = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
@@ -45,28 +46,37 @@ public class DataHelper extends SQLiteOpenHelper {
         String TABLE = DataContract.DataEntry.TABLE_NAME;
         String VALUE = DataContract.DataEntry.COLUMN_NAME_VALUE;
         String DATE = DataContract.DataEntry.COLUMN_NAME_DATE;
+        String USER = DataContract.DataEntry.COLUMN_NAME_USER;
+
+        //TODO: Hard coded value for dev purpose, change later
         cv.put(VALUE, 1);
         cv.put(DATE, "2015-10-26T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 2);
         cv.put(DATE, "2015-11-26T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 4);
         cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 8);
         cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 8);
         cv.put(DATE, "2015-12-24T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
         cv.put(VALUE, 8);
         cv.put(DATE, "2015-12-25T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
     }
 

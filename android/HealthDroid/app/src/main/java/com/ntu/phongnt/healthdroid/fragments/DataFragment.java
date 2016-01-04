@@ -31,13 +31,12 @@ public class DataFragment extends ListFragment {
                         R.layout.row,
                         current,
                         new String[]{
-                                DataContract.DataEntry._ID,
                                 DataContract.DataEntry.COLUMN_NAME_VALUE,
                                 DataContract.DataEntry.COLUMN_NAME_DATE
                         },
                         new int[]{
                                 R.id.value,
-                                R.id.created_at},
+                                R.id.date},
                         0);
         setListAdapter(adapter);
 

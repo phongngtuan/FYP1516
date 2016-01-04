@@ -1,5 +1,6 @@
 package com.ntu.phongnt.healthdroid.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -32,6 +33,10 @@ public class UserHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.d("DBHelper", "Creating User table");
         db.execSQL(SQL_CREATE_USERS);
+
+        ContentValues cv = new ContentValues();
+        //TODO: Hard coded again, fix later
+        cv.put(UserContract.User.COLUMN_NAME_EMAIL, "phongnt.ptnk@gmail.com");
     }
 
     @Override
