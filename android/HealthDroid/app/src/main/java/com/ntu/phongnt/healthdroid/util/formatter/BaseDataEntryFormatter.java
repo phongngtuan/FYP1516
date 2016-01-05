@@ -19,6 +19,17 @@ import java.util.TreeMap;
 
 public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
     Cursor cursor = null;
+    String label = null;
+
+    public BaseDataEntryFormatter(Cursor cursor, String label) {
+        this.cursor = cursor;
+        this.label = label;
+    }
+
+    public BaseDataEntryFormatter(Cursor cursor) {
+        this.cursor = cursor;
+        this.label = "N/A";
+    }
 
     @SuppressWarnings("ResourceType")
     @Override
@@ -32,15 +43,8 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
         last.add(Calendar.DAY_OF_YEAR, 1);
 
         DateFormat format = getDateFormat();
-        ChartAdapter adapter = new LineChartAdapter(lineChart, "example");
-//        while (first.before(last)) {
-//            String key = format.format(first.getTime());
-//            if (reducedData.containsKey(key))
-//                LineChartHelper.addEntry(lineChart, (float) reducedData.get(key) / reducedDataCount.get(key), key);
-//            else
-//                LineChartHelper.addEntry(lineChart, 0, key);
-//            first.add(rangeByDay.getTimeUnit(), 1);
-//        }
+        ChartAdapter adapter = new LineChartAdapter(lineChart, this.label);
+
         while (first.before(last)) {
             String key = format.format(first.getTime());
             if (reducedData.containsKey(key))
@@ -53,7 +57,7 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
 
 
     @Override
-    public void format(LineChart chart) {
+    public void format(LineChart chart, String label) {
         List<DateHelper.DataEntry> data = prepareData();
 
         //get by month
@@ -81,6 +85,7 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
             accumulate(reducedData, reducedDataCount, value, key);
         }
 
+        //TODO: check the scope of method in this class
         addDataToChart(chart, reducedData, reducedDataCount);
     }
 

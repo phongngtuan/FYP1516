@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 public interface DataEntryFormatter {
-    void format(LineChart chart);
+    void format(LineChart chart, String label);
 
     List<DateHelper.DataEntry> prepareData();
 

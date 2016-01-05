@@ -13,8 +13,13 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class DataEntryByWeekFormatter extends BaseDataEntryFormatter {
+
+    public DataEntryByWeekFormatter(Cursor cursor, String label) {
+        super(cursor, label);
+    }
+
     public DataEntryByWeekFormatter(Cursor cursor) {
-        this.cursor = cursor;
+        super(cursor);
     }
 
     @NonNull

@@ -78,7 +78,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         db = DataHelper.getInstance(getActivity());
 
-        new DisplayDataByMonthTask().execute();
+        new DisplayDataByMonthTask("myTestingvalue").execute();
 
         //Legend
         Legend legend = chart.getLegend();
@@ -105,20 +105,26 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         switch (choices[timeRange]) {
             case DAY:
                 formatter_choice = DAY;
-                new DisplayDataByDayTask().execute();
+                new DisplayDataByDayTask("testDay").execute();
                 break;
             case WEEK:
                 formatter_choice = WEEK;
-                new DisplayDataByWeekTask().execute();
+                new DisplayDataByWeekTask("testWeek").execute();
                 break;
             case MONTH:
                 formatter_choice = MONTH;
-                new DisplayDataByMonthTask().execute();
+                new DisplayDataByMonthTask("testMonth").execute();
                 break;
         }
     }
 
     abstract private class GetCursorTask<T> extends AsyncTask<T, Void, Cursor> {
+        String username;
+
+        public GetCursorTask(String username) {
+            this.username = username;
+        }
+
         protected Cursor doQuery() {
             Cursor result =
                     db
@@ -138,6 +144,10 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     }
 
     private abstract class DisplayDataTask extends GetCursorTask<String> {
+        public DisplayDataTask(String username) {
+            super(username);
+        }
+
         @Override
         protected Cursor doInBackground(String... params) {
             return (doQuery());
@@ -148,7 +158,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
             chart.getLineData().removeDataSet(0);
             chart.getXAxis().getValues().clear();
             DataEntryFormatter formatter = getDataEntryFormatter(cursor);
-            formatter.format(chart);
+            formatter.format(chart, username);
             chart.notifyDataSetChanged();
             chart.invalidate();
         }
@@ -158,23 +168,35 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
 
     private class DisplayDataByDayTask extends DisplayDataTask {
+        public DisplayDataByDayTask(String username) {
+            super(username);
+        }
+
         @Override
         DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByDayFormatter(cursor);
+            return new DataEntryByDayFormatter(cursor, username);
         }
     }
 
     private class DisplayDataByWeekTask extends DisplayDataTask {
+        public DisplayDataByWeekTask(String username) {
+            super(username);
+        }
+
         @Override
         DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByWeekFormatter(cursor);
+            return new DataEntryByWeekFormatter(cursor, username);
         }
     }
 
     private class DisplayDataByMonthTask extends DisplayDataTask {
+        public DisplayDataByMonthTask(String username) {
+            super(username);
+        }
+
         @Override
         DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByMonthFormatter(cursor);
+            return new DataEntryByMonthFormatter(cursor, username);
         }
     }
 
