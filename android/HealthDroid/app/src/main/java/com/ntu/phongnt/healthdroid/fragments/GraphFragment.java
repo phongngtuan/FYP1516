@@ -118,7 +118,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         }
     }
 
-    abstract private class BaseTask<T> extends AsyncTask<T, Void, Cursor> {
+    abstract private class GetCursorTask<T> extends AsyncTask<T, Void, Cursor> {
         protected Cursor doQuery() {
             Cursor result =
                     db
@@ -137,54 +137,44 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         }
     }
 
-    private class DisplayDataByDayTask extends BaseTask<Void> {
+    private abstract class DisplayDataTask extends GetCursorTask<String> {
+        @Override
+        protected Cursor doInBackground(String... params) {
+            return (doQuery());
+        }
+
         @Override
         protected void onPostExecute(Cursor cursor) {
             chart.getLineData().removeDataSet(0);
             chart.getXAxis().getValues().clear();
-            DataEntryFormatter formatter = new DataEntryByDayFormatter(cursor);
+            DataEntryFormatter formatter = getDataEntryFormatter(cursor);
             formatter.format(chart);
             chart.notifyDataSetChanged();
             chart.invalidate();
         }
 
+        abstract DataEntryFormatter getDataEntryFormatter(Cursor cursor);
+    }
+
+
+    private class DisplayDataByDayTask extends DisplayDataTask {
         @Override
-        protected Cursor doInBackground(Void... params) {
-            return (doQuery());
+        DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
+            return new DataEntryByDayFormatter(cursor);
         }
     }
 
-    private class DisplayDataByMonthTask extends BaseTask<Void> {
+    private class DisplayDataByWeekTask extends DisplayDataTask {
         @Override
-        protected void onPostExecute(Cursor cursor) {
-            chart.getLineData().removeDataSet(0);
-            chart.getXAxis().getValues().clear();
-            DataEntryFormatter formatter = new DataEntryByMonthFormatter(cursor);
-            formatter.format(chart);
-            chart.notifyDataSetChanged();
-            chart.invalidate();
-        }
-
-        @Override
-        protected Cursor doInBackground(Void... params) {
-            return (doQuery());
+        DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
+            return new DataEntryByWeekFormatter(cursor);
         }
     }
 
-    private class DisplayDataByWeekTask extends BaseTask<Void> {
+    private class DisplayDataByMonthTask extends DisplayDataTask {
         @Override
-        protected void onPostExecute(Cursor cursor) {
-            chart.getLineData().removeDataSet(0);
-            chart.getXAxis().getValues().clear();
-            DataEntryFormatter formatter = new DataEntryByWeekFormatter(cursor);
-            formatter.format(chart);
-            chart.notifyDataSetChanged();
-            chart.invalidate();
-        }
-
-        @Override
-        protected Cursor doInBackground(Void... params) {
-            return (doQuery());
+        DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
+            return new DataEntryByMonthFormatter(cursor);
         }
     }
 
