@@ -6,7 +6,8 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.ntu.phongnt.healthdroid.db.DataContract;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
 import com.ntu.phongnt.healthdroid.util.DateRange;
-import com.ntu.phongnt.healthdroid.util.LineChartHelper;
+import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
+import com.ntu.phongnt.healthdroid.util.chart.LineChartAdapter;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -31,12 +32,21 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
         last.add(Calendar.DAY_OF_YEAR, 1);
 
         DateFormat format = getDateFormat();
+        ChartAdapter adapter = new LineChartAdapter(lineChart, "example");
+//        while (first.before(last)) {
+//            String key = format.format(first.getTime());
+//            if (reducedData.containsKey(key))
+//                LineChartHelper.addEntry(lineChart, (float) reducedData.get(key) / reducedDataCount.get(key), key);
+//            else
+//                LineChartHelper.addEntry(lineChart, 0, key);
+//            first.add(rangeByDay.getTimeUnit(), 1);
+//        }
         while (first.before(last)) {
             String key = format.format(first.getTime());
             if (reducedData.containsKey(key))
-                LineChartHelper.addEntry(lineChart, (float) reducedData.get(key) / reducedDataCount.get(key), key);
+                adapter.addEntry((float) reducedData.get(key) / reducedDataCount.get(key), key);
             else
-                LineChartHelper.addEntry(lineChart, 0, key);
+                adapter.addEntry(0, key);
             first.add(rangeByDay.getTimeUnit(), 1);
         }
     }

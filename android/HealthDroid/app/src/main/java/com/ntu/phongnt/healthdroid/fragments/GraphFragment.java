@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
@@ -78,6 +79,10 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         db = DataHelper.getInstance(getActivity());
 
         new DisplayDataByMonthTask().execute();
+
+        //Legend
+        Legend legend = chart.getLegend();
+        legend.setTextColor(Color.WHITE);
 
         //Appearance
         XAxis x1 = chart.getXAxis();
