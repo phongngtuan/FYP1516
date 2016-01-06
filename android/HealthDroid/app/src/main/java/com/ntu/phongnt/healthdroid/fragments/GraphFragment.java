@@ -14,6 +14,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -49,6 +51,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
+        setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.content_graph, container, false);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -98,6 +101,12 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         chart_container.addView(chart);
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.graph_menu, menu);
     }
 
     @Override
