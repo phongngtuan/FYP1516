@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -62,8 +63,9 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
             }
         });
 
-        chart = (LineChart) view.findViewById(R.id.chart_container);
+        chart = new LineChart(inflater.getContext());
         chart.setData(new LineData());
+        FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
 
         chart.setExtraOffsets(5, 20, 20, 20);
         chart.setTouchEnabled(true);
@@ -94,6 +96,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         chart.invalidate();
 
+        chart_container.addView(chart);
         return view;
     }
 
