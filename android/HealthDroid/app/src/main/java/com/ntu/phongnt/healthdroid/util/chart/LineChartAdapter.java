@@ -11,35 +11,31 @@ import java.util.ArrayList;
 
 public class LineChartAdapter extends ChartAdapter {
     LineChart chart = null;
-    String username = null;
 
-    LineData data;
-    LineDataSet dataSet;
-
-    public LineChartAdapter(LineChart chart, String username) {
+    public LineChartAdapter(LineChart chart) {
         this.chart = chart;
-        this.username = username;
+    }
 
-        data = this.chart.getData();
+    @Override
+    public void addEntry(String label, float value, int index) {
+        LineData data = chart.getData();
         if (data != null) {
-            LineDataSet dataSet = data.getDataSetByIndex(0);
+            LineDataSet dataSet = data.getDataSetByLabel(label, true);
             if (dataSet == null) {
-                dataSet = new LineDataSet(new ArrayList<Entry>(), username);
+                dataSet = new LineDataSet(new ArrayList<Entry>(), label);
                 dataSet.setDrawFilled(true);
                 dataSet.setValueTextColor(Color.WHITE);
                 data.addDataSet(dataSet);
-                this.dataSet = dataSet;
             }
+            dataSet.addEntry(new Entry(value, index));
+//            data.addEntry(new Entry(value, index), 0);
+            chart.invalidate();
+            chart.notifyDataSetChanged();
         }
     }
 
     @Override
-    public void addEntry(float value, String label) {
-        data.addXValue(label);
-        data.addEntry(
-                new Entry(value, dataSet.getEntryCount()),
-                0
-        );
-        chart.notifyDataSetChanged();
+    public void addXValue(String key) {
+        chart.getData().addXValue(key);
     }
 }

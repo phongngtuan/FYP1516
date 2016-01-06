@@ -1,10 +1,10 @@
 package com.ntu.phongnt.healthdroid.util.formatter;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.ntu.phongnt.healthdroid.db.DataContract;
-import com.ntu.phongnt.healthdroid.util.DateHelper;
 import com.ntu.phongnt.healthdroid.util.DateRange;
 import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
 import com.ntu.phongnt.healthdroid.util.chart.LineChartAdapter;
@@ -17,9 +17,12 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeMap;
 
-public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
+public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyCreator {
     Cursor cursor = null;
     String label = null;
+
+    private TreeMap<String, List<DataAccumulator.DataEntry>> dataByUser = new TreeMap<>();
+    private List<DataAccumulator> dataAccumulators = new ArrayList<>();
 
     public BaseDataEntryFormatter(Cursor cursor, String label) {
         this.cursor = cursor;
@@ -31,87 +34,96 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter {
         this.label = "N/A";
     }
 
-    @SuppressWarnings("ResourceType")
+    protected abstract DateFormat getDateFormat();
+
+    protected abstract DateRange getDateRange(String first, String last);
+
     @Override
-    public void addDataToChart(LineChart lineChart, TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount) {
-        DateRange rangeByDay = getDateRange(reducedData.firstKey(), reducedData.lastKey());
+    public void format(LineChart chart) {
+        getDataByUser();
+        accumulateDataByUser();
+        DateRange dateRange = findRange();
+        addDataToChart(chart, dateRange);
+//        addDataToChart(chart, reducedData, reducedDataCount);
+    }
+
+    //TODO: Use correct type for chart
+    @SuppressWarnings("ResourceType")
+    private void addDataToChart(LineChart chart, DateRange dateRange) {
         GregorianCalendar first = new GregorianCalendar();
-        first.setTime(rangeByDay.getFirst().getTime());
+        first.setTime(dateRange.getFirst().getTime());
 
         GregorianCalendar last = new GregorianCalendar();
-        last.setTime(rangeByDay.getLast().getTime());
+        last.setTime(dateRange.getLast().getTime());
         last.add(Calendar.DAY_OF_YEAR, 1);
 
         DateFormat format = getDateFormat();
-        ChartAdapter adapter = new LineChartAdapter(lineChart, this.label);
+        ChartAdapter adapter = new LineChartAdapter(chart);
 
+        int index = 0;
         while (first.before(last)) {
             String key = format.format(first.getTime());
-            if (reducedData.containsKey(key))
-                adapter.addEntry((float) reducedData.get(key) / reducedDataCount.get(key), key);
-            else
-                adapter.addEntry(0, key);
-            first.add(rangeByDay.getTimeUnit(), 1);
-        }
-    }
+            adapter.addXValue(key);
 
-
-    @Override
-    public void format(LineChart chart, String label) {
-        List<DateHelper.DataEntry> data = prepareData();
-
-        //get by month
-        TreeMap<String, Float> reducedData = new TreeMap<String, Float>(new Comparator<String>() {
-            @Override
-            public int compare(String lhs, String rhs) {
-                String[] lhsKeys = lhs.split("/");
-                String[] rhsKeys = rhs.split("/");
-
-                for (int i = lhsKeys.length - 1; i >= 0; i--) {
-                    int lhsValue = Integer.parseInt(lhsKeys[i]);
-                    int rhsValue = Integer.parseInt(rhsKeys[i]);
-                    if (lhsValue != rhsValue)
-                        return lhsValue - rhsValue;
-                }
-                return 0;
+            for (DataAccumulator accumulator : dataAccumulators) {
+                if (accumulator.reducedData.containsKey(key)) {
+                    adapter.addEntry(
+                            accumulator.label,
+                            (float) accumulator.reducedData.get(key) / accumulator.reducedDataCount.get(key),
+                            index);
+                } else
+                    adapter.addEntry(accumulator.label, 0, index);
             }
-        });
-        TreeMap<String, Integer> reducedDataCount = new TreeMap<String, Integer>();
-        for (DateHelper.DataEntry entry : data) {
-            String date = entry.date;
-            Float value = entry.value;
-
-            String key = createKey(date);
-            accumulate(reducedData, reducedDataCount, value, key);
+            first.add(dateRange.getTimeUnit(), 1);
+            index++;
         }
-
-        //TODO: check the scope of method in this class
-        addDataToChart(chart, reducedData, reducedDataCount);
+        Log.d("Add Data", "Iterated through " + index);
+        chart.notifyDataSetChanged();
+        chart.invalidate();
     }
 
-    @Override
-    public List<DateHelper.DataEntry> prepareData() {
-        List<DateHelper.DataEntry> data = new ArrayList<>();
+    private DateRange findRange() {
+        Comparator<String> comp = new DataAccumulator.DateComparator();
+        String globalFirst = null;
+        String globalLast = null;
+        for (DataAccumulator acc : dataAccumulators) {
+            String first = acc.reducedData.firstKey();
+            String last = acc.reducedData.lastKey();
+            if (globalFirst == null || comp.compare(first, globalFirst) < 0)
+                globalFirst = first;
+            if (globalLast == null || comp.compare(last, globalLast) > 0)
+                globalLast = last;
+        }
+        return getDateRange(globalFirst, globalLast);
+    }
+
+    private void accumulateDataByUser() {
+        for (String user : dataByUser.keySet()) {
+            List<DataAccumulator.DataEntry> data = dataByUser.get(user);
+            DataAccumulator accumulator = new DataAccumulator(user, this);
+            accumulator.accumulate(data);
+            dataAccumulators.add(accumulator);
+        }
+    }
+
+    public void getDataByUser() {
+        List<DataAccumulator.DataEntry> data = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 String date = cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_DATE));
                 float value = cursor.getFloat(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE));
-                data.add(new DateHelper.DataEntry(date, value));
+                String user = cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_USER));
+
+                List<DataAccumulator.DataEntry> userList;
+                if (dataByUser.containsKey(user))
+                    userList = dataByUser.get(user);
+                else
+                    userList = new ArrayList<>();
+                userList.add(new DataAccumulator.DataEntry(date, value, user));
+                dataByUser.put(user, userList);
             }
             while (cursor.moveToNext());
         }
         cursor.close();
-        return data;
-    }
-
-    @Override
-    public void accumulate(TreeMap<String, Float> reducedData, TreeMap<String, Integer> reducedDataCount, Float value, String key) {
-        if (!reducedData.containsKey(key)) {
-            reducedData.put(key, value);
-            reducedDataCount.put(key, 1);
-        } else {
-            reducedData.put(key, value + reducedData.get(key));
-            reducedDataCount.put(key, 1 + reducedDataCount.get(key));
-        }
     }
 }

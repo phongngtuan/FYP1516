@@ -49,14 +49,4 @@ public class DateHelper {
         return getProperty(date, Calendar.YEAR);
     }
 
-    public static class DataEntry {
-        public String date;
-        public Float value;
-
-        public DataEntry(String date, Float value) {
-            this.date = date;
-            this.value = value;
-        }
-    }
-
 }

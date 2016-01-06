@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -63,9 +62,8 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
             }
         });
 
-        chart = new LineChart(inflater.getContext());
+        chart = (LineChart) view.findViewById(R.id.chart_container);
         chart.setData(new LineData());
-        FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
 
         chart.setExtraOffsets(5, 20, 20, 20);
         chart.setTouchEnabled(true);
@@ -78,7 +76,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         db = DataHelper.getInstance(getActivity());
 
-        new DisplayDataByMonthTask("myTestingvalue").execute();
+        new DisplayDataByMonthTask().execute();
 
         //Legend
         Legend legend = chart.getLegend();
@@ -96,7 +94,6 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         chart.invalidate();
 
-        chart_container.addView(chart);
         return view;
     }
 
@@ -105,26 +102,20 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         switch (choices[timeRange]) {
             case DAY:
                 formatter_choice = DAY;
-                new DisplayDataByDayTask("testDay").execute();
+                new DisplayDataByDayTask().execute();
                 break;
             case WEEK:
                 formatter_choice = WEEK;
-                new DisplayDataByWeekTask("testWeek").execute();
+                new DisplayDataByWeekTask().execute();
                 break;
             case MONTH:
                 formatter_choice = MONTH;
-                new DisplayDataByMonthTask("testMonth").execute();
+                new DisplayDataByMonthTask().execute();
                 break;
         }
     }
 
     abstract private class GetCursorTask<T> extends AsyncTask<T, Void, Cursor> {
-        String username;
-
-        public GetCursorTask(String username) {
-            this.username = username;
-        }
-
         protected Cursor doQuery() {
             Cursor result =
                     db
@@ -132,7 +123,8 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
                             .query(DataContract.DataEntry.TABLE_NAME,
                                     new String[]{DataContract.DataEntry._ID,
                                             DataContract.DataEntry.COLUMN_NAME_VALUE,
-                                            DataContract.DataEntry.COLUMN_NAME_DATE},
+                                            DataContract.DataEntry.COLUMN_NAME_DATE,
+                                            DataContract.DataEntry.COLUMN_NAME_USER},
                                     null,
                                     null,
                                     null,
@@ -144,10 +136,6 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     }
 
     private abstract class DisplayDataTask extends GetCursorTask<String> {
-        public DisplayDataTask(String username) {
-            super(username);
-        }
-
         @Override
         protected Cursor doInBackground(String... params) {
             return (doQuery());
@@ -155,11 +143,10 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         @Override
         protected void onPostExecute(Cursor cursor) {
-            chart.getLineData().removeDataSet(0);
+            chart.getLineData().clearValues();
             chart.getXAxis().getValues().clear();
             DataEntryFormatter formatter = getDataEntryFormatter(cursor);
-            formatter.format(chart, username);
-            chart.notifyDataSetChanged();
+            formatter.format(chart);
             chart.invalidate();
         }
 
@@ -168,35 +155,23 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
 
     private class DisplayDataByDayTask extends DisplayDataTask {
-        public DisplayDataByDayTask(String username) {
-            super(username);
-        }
-
         @Override
         DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByDayFormatter(cursor, username);
+            return new DataEntryByDayFormatter(cursor);
         }
     }
 
     private class DisplayDataByWeekTask extends DisplayDataTask {
-        public DisplayDataByWeekTask(String username) {
-            super(username);
-        }
-
         @Override
         DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByWeekFormatter(cursor, username);
+            return new DataEntryByWeekFormatter(cursor);
         }
     }
 
     private class DisplayDataByMonthTask extends DisplayDataTask {
-        public DisplayDataByMonthTask(String username) {
-            super(username);
-        }
-
         @Override
         DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByMonthFormatter(cursor, username);
+            return new DataEntryByMonthFormatter(cursor);
         }
     }
 
