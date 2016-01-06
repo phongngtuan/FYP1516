@@ -1,10 +1,12 @@
-package com.ntu.phongnt.healthdroid.db;
+package com.ntu.phongnt.healthdroid.db.user;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.ntu.phongnt.healthdroid.db.Constants;
 
 public class UserHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";

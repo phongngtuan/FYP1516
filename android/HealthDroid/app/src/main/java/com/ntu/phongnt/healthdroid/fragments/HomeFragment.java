@@ -28,8 +28,8 @@ import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
-import com.ntu.phongnt.healthdroid.db.DataContract;
-import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.db.data.DataContract;
+import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
 
 import java.io.IOException;

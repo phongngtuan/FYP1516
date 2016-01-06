@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.db;
+package com.ntu.phongnt.healthdroid.db.user;
 
 import android.provider.BaseColumns;
 

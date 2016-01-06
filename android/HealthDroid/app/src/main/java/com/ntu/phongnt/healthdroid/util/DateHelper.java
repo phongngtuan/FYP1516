@@ -2,7 +2,7 @@ package com.ntu.phongnt.healthdroid.util;
 
 import android.util.Log;
 
-import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

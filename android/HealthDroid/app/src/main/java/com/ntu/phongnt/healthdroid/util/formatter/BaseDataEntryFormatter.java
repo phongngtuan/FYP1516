@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.ntu.phongnt.healthdroid.db.DataContract;
+import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.util.DateRange;
 import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
 import com.ntu.phongnt.healthdroid.util.chart.LineChartAdapter;

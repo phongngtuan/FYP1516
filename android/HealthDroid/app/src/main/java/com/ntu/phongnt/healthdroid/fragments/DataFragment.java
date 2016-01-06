@@ -10,8 +10,8 @@ import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
 
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.db.DataContract;
-import com.ntu.phongnt.healthdroid.db.DataHelper;
+import com.ntu.phongnt.healthdroid.db.data.DataContract;
+import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 
 public class DataFragment extends ListFragment {
     DataHelper db = null;
