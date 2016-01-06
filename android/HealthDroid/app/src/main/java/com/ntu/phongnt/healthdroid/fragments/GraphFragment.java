@@ -9,13 +9,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -56,17 +56,17 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.content_graph, container, false);
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TimeRangeDialogFragment dialogFragment = new TimeRangeDialogFragment();
-                dialogFragment.listener = GraphFragment.this;
-                dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                TimeRangeDialogFragment dialogFragment = new TimeRangeDialogFragment();
+//                dialogFragment.listener = GraphFragment.this;
+//                dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
+////                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+////                        .setAction("Action", null).show();
+//            }
+//        });
 
         chart = new LineChart(inflater.getContext());
         chart.setData(new LineData());
@@ -109,6 +109,15 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.graph_menu, menu);
+        menu.findItem(R.id.time_range).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                TimeRangeDialogFragment dialogFragment = new TimeRangeDialogFragment();
+                dialogFragment.listener = GraphFragment.this;
+                dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
+                return true;
+            }
+        });
     }
 
     @Override

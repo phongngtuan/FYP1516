@@ -24,4 +24,6 @@
     <string name="nav_data">Data</string>
     <string name="user_id_caption">User</string>
     <string name="nav_user">User</string>
+    <string name="time_range">Time range</string>
+    <string name="data_sets">Data sets</string>
 </resources>
