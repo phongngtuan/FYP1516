@@ -23,7 +23,6 @@ public class LineChartAdapter extends ChartAdapter {
             LineDataSet dataSet = data.getDataSetByLabel(label, true);
             if (dataSet == null) {
                 dataSet = new LineDataSet(new ArrayList<Entry>(), label);
-                dataSet.setDrawFilled(true);
                 dataSet.setValueTextColor(Color.WHITE);
                 data.addDataSet(dataSet);
             }

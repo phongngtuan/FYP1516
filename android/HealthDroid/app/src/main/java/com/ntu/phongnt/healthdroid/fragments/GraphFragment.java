@@ -41,15 +41,17 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
     public static final String[] choices = {DAY, WEEK, MONTH};
     private LineChart chart = null;
     private DataHelper db = null;
-    private String formatter_choice = MONTH;
+    private int formatter_choice;
 
     public GraphFragment() {
         super();
+        formatter_choice = 0;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.content_graph, container, false);
@@ -81,8 +83,6 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         db = DataHelper.getInstance(getActivity());
 
-        new DisplayDataByMonthTask().execute();
-
         //Legend
         Legend legend = chart.getLegend();
         legend.setTextColor(Color.WHITE);
@@ -100,6 +100,8 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         chart.invalidate();
 
         chart_container.addView(chart);
+
+        onTimeRangeSelected(formatter_choice);
         return view;
     }
 
@@ -111,17 +113,16 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
     @Override
     public void onTimeRangeSelected(int timeRange) {
+        //TODO: retain the previous choice here
+        formatter_choice = timeRange;
         switch (choices[timeRange]) {
             case DAY:
-                formatter_choice = DAY;
                 new DisplayDataByDayTask().execute();
                 break;
             case WEEK:
-                formatter_choice = WEEK;
                 new DisplayDataByWeekTask().execute();
                 break;
             case MONTH:
-                formatter_choice = MONTH;
                 new DisplayDataByMonthTask().execute();
                 break;
         }

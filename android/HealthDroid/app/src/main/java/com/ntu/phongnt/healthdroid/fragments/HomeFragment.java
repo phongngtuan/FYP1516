@@ -50,6 +50,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         final View view = inflater.inflate(R.layout.content_home, container, false);
         setRetainInstance(true);
         db = DataHelper.getInstance(getActivity());
