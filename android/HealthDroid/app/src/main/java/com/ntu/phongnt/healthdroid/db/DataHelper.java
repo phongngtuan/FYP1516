@@ -78,6 +78,16 @@ public class DataHelper extends SQLiteOpenHelper {
         cv.put(DATE, "2015-12-25T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 6);
+        cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
+        cv.put(USER, "user@example.com");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 10);
+        cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
+        cv.put(USER, "user@example.com");
+        db.insert(TABLE, VALUE, cv);
     }
 
     @Override

@@ -27,8 +27,10 @@ public class LineChartAdapter extends ChartAdapter {
                 dataSet.setValueTextColor(Color.WHITE);
                 data.addDataSet(dataSet);
             }
-            dataSet.addEntry(new Entry(value, index));
-//            data.addEntry(new Entry(value, index), 0);
+            int dataSetIndex = data.getIndexOfDataSet(dataSet);
+            //TODO: Adding entry to dataSet doesn't work. Don't know why
+            //dataSet.addEntry(new Entry(value, index));
+            data.addEntry(new Entry(value, index), dataSetIndex);
             chart.invalidate();
             chart.notifyDataSetChanged();
         }
