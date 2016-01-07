@@ -1,15 +1,10 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,17 +23,16 @@ import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.fragments.dialogs.DataSetPickerFragment;
+import com.ntu.phongnt.healthdroid.fragments.dialogs.TimeRangeDialogFragment;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByDayFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByMonthFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByWeekFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryFormatter;
 
-public class GraphFragment extends Fragment implements TimeRangeInteractionListener {
+public class GraphFragment extends Fragment implements
+        TimeRangeDialogFragment.TimeRangePickerListener, DataSetPickerFragment.DataSetPickerListener {
     public static String TAG = "GraphFragment";
-    public static final String DAY = "Day";
-    public static final String WEEK = "Week";
-    public static final String MONTH = "Month";
-    public static final String[] choices = {DAY, WEEK, MONTH};
     private LineChart chart = null;
     private DataHelper db = null;
     private int formatter_choice;
@@ -101,7 +95,7 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
 
         chart_container.addView(chart);
 
-        onTimeRangeSelected(formatter_choice);
+        onTimeRangePicked(formatter_choice);
         return view;
     }
 
@@ -118,20 +112,34 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
                 return true;
             }
         });
+        menu.findItem(R.id.data_sets).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                DataSetPickerFragment dialogFragment = new DataSetPickerFragment();
+                dialogFragment.listener = GraphFragment.this;
+                dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
+                return true;
+            }
+        });
     }
 
     @Override
-    public void onTimeRangeSelected(int timeRange) {
+    public void onDataSetPicked(int item) {
+
+    }
+
+    @Override
+    public void onTimeRangePicked(int timeRange) {
         //TODO: retain the previous choice here
         formatter_choice = timeRange;
-        switch (choices[timeRange]) {
-            case DAY:
+        switch (TimeRangeDialogFragment.choices[timeRange]) {
+            case TimeRangeDialogFragment.DAY:
                 new DisplayDataByDayTask().execute();
                 break;
-            case WEEK:
+            case TimeRangeDialogFragment.WEEK:
                 new DisplayDataByWeekTask().execute();
                 break;
-            case MONTH:
+            case TimeRangeDialogFragment.MONTH:
                 new DisplayDataByMonthTask().execute();
                 break;
         }
@@ -197,37 +205,4 @@ public class GraphFragment extends Fragment implements TimeRangeInteractionListe
         }
     }
 
-    public static class TimeRangeDialogFragment extends DialogFragment {
-        public TimeRangeInteractionListener listener = null;
-
-        public TimeRangeDialogFragment() {
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            Log.d(TAG, "Creating dialog");
-            builder
-                    .setItems(choices, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            listener.onTimeRangeSelected(which);
-                        }
-                    })
-                    .setPositiveButton("Wai?", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-            return builder.create();
-        }
-    }
 }
