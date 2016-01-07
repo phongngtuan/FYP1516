@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataSetPickerFragment extends DialogFragment {
@@ -48,11 +49,12 @@ public class DataSetPickerFragment extends DialogFragment {
                 .setPositiveButton("Wai?", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //TODO: Fill in the blank
+                        List<String> selected = new ArrayList<>();
                         for (int i = 0; i < choices.length; i++) {
-                            if (checkedItems[i]) {
-                            }
+                            if (checkedItems[i])
+                                selected.add(choices[i]);
                         }
+                        listener.onDataSetPicked(selected);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -65,6 +67,6 @@ public class DataSetPickerFragment extends DialogFragment {
     }
 
     public interface DataSetPickerListener {
-        void onDataSetPicked(int item);
+        void onDataSetPicked(List<String> items);
     }
 }

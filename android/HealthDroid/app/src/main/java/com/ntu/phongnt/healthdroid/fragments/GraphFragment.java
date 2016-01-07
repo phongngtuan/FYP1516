@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -127,8 +128,8 @@ public class GraphFragment extends Fragment implements
     }
 
     @Override
-    public void onDataSetPicked(int item) {
-
+    public void onDataSetPicked(List<String> items) {
+        Toast.makeText(getActivity(), String.valueOf(items.size()), Toast.LENGTH_SHORT).show();
     }
 
     @Override
