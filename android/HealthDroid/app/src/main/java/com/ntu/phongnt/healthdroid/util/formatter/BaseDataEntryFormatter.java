@@ -7,7 +7,6 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.util.DateRange;
 import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
-import com.ntu.phongnt.healthdroid.util.chart.LineChartAdapter;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -21,9 +20,11 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyC
     private Cursor cursor = null;
     private TreeMap<String, List<DataAccumulator.DataEntry>> dataByUser = new TreeMap<>();
     private List<DataAccumulator> dataAccumulators = new ArrayList<>();
+    private ChartAdapter chartAdapter = null;
 
-    public BaseDataEntryFormatter(Cursor cursor) {
+    public BaseDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter) {
         this.cursor = cursor;
+        this.chartAdapter = chartAdapter;
     }
 
     protected abstract DateFormat getDateFormat();
@@ -54,21 +55,20 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyC
         last.add(Calendar.DAY_OF_YEAR, 1);
 
         DateFormat format = getDateFormat();
-        ChartAdapter adapter = new LineChartAdapter(chart);
 
         int index = 0;
         while (first.before(last)) {
             String key = format.format(first.getTime());
-            adapter.addXValue(key);
+            chartAdapter.addXValue(key);
 
             for (DataAccumulator accumulator : dataAccumulators) {
                 if (accumulator.reducedData.containsKey(key)) {
-                    adapter.addEntry(
+                    chartAdapter.addEntry(
                             accumulator.label,
                             (float) accumulator.reducedData.get(key) / accumulator.reducedDataCount.get(key),
                             index);
                 } else
-                    adapter.addEntry(accumulator.label, 0, index);
+                    chartAdapter.addEntry(accumulator.label, 0, index);
             }
             first.add(dateRange.getTimeUnit(), 1);
             index++;

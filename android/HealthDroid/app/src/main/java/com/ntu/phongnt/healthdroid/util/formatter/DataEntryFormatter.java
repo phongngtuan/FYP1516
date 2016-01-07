@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface DataEntryFormatter {
     void format(LineChart chart);
-
     List<String> getDataSetLabels();
 }

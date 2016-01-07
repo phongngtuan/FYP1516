@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -26,6 +25,8 @@ import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.fragments.dialogs.DataSetPickerFragment;
 import com.ntu.phongnt.healthdroid.fragments.dialogs.TimeRangeDialogFragment;
+import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
+import com.ntu.phongnt.healthdroid.util.chart.LineChartAdapter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByDayFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByMonthFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByWeekFormatter;
@@ -40,6 +41,8 @@ public class GraphFragment extends Fragment implements
     private DataHelper db = null;
     private int formatter_choice;
     private List<String> dataSetChoices = null;
+    private DataEntryFormatter formatter = null;
+    private LineChartAdapter chartAdapter = null;
 
     public GraphFragment() {
         super();
@@ -67,6 +70,7 @@ public class GraphFragment extends Fragment implements
 //        });
 
         chart = new LineChart(inflater.getContext());
+        chartAdapter = new LineChartAdapter(chart);
         chart.setData(new LineData());
         FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
 
@@ -129,7 +133,7 @@ public class GraphFragment extends Fragment implements
 
     @Override
     public void onDataSetPicked(List<String> items) {
-        Toast.makeText(getActivity(), String.valueOf(items.size()), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity(), String.valueOf(items.size()), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -179,35 +183,34 @@ public class GraphFragment extends Fragment implements
         protected void onPostExecute(Cursor cursor) {
             chart.getLineData().clearValues();
             chart.getXAxis().getValues().clear();
-            DataEntryFormatter formatter = getDataEntryFormatter(cursor);
+            formatter = getDataEntryFormatter(cursor, chartAdapter);
             //TODO: The 2 following lines need to be executed in order, may need to refactor this
             formatter.format(chart);
             dataSetChoices = formatter.getDataSetLabels();
             chart.invalidate();
         }
 
-        abstract DataEntryFormatter getDataEntryFormatter(Cursor cursor);
+        abstract DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter);
     }
-
 
     private class DisplayDataByDayTask extends DisplayDataTask {
         @Override
-        DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByDayFormatter(cursor);
+        DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter) {
+            return new DataEntryByDayFormatter(cursor, chartAdapter);
         }
     }
 
     private class DisplayDataByWeekTask extends DisplayDataTask {
         @Override
-        DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByWeekFormatter(cursor);
+        DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter) {
+            return new DataEntryByWeekFormatter(cursor, chartAdapter);
         }
     }
 
     private class DisplayDataByMonthTask extends DisplayDataTask {
         @Override
-        DataEntryFormatter getDataEntryFormatter(Cursor cursor) {
-            return new DataEntryByMonthFormatter(cursor);
+        DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter) {
+            return new DataEntryByMonthFormatter(cursor, chartAdapter);
         }
     }
 

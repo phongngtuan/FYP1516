@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.ntu.phongnt.healthdroid.util.DateHelper;
 import com.ntu.phongnt.healthdroid.util.DateRange;
+import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,8 +15,8 @@ import java.util.Locale;
 
 public class DataEntryByDayFormatter extends BaseDataEntryFormatter {
 
-    public DataEntryByDayFormatter(Cursor cursor) {
-        super(cursor);
+    public DataEntryByDayFormatter(Cursor cursor, ChartAdapter chartAdapter) {
+        super(cursor, chartAdapter);
     }
 
     @NonNull
