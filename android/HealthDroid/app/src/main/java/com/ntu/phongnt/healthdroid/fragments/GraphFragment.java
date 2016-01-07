@@ -115,7 +115,8 @@ public class GraphFragment extends Fragment implements
         menu.findItem(R.id.data_sets).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                DataSetPickerFragment dialogFragment = new DataSetPickerFragment();
+                String[] choices = {"Nguyen", "Tuan", "Phong", "Hihi"};
+                DataSetPickerFragment dialogFragment = DataSetPickerFragment.getInstance(choices);
                 dialogFragment.listener = GraphFragment.this;
                 dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
                 return true;
