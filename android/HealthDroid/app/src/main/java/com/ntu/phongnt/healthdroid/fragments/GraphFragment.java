@@ -134,6 +134,7 @@ public class GraphFragment extends Fragment implements
     @Override
     public void onDataSetPicked(List<String> items) {
 //        Toast.makeText(getActivity(), String.valueOf(items.size()), Toast.LENGTH_SHORT).show();
+        chartAdapter.showDataSetsByLabel(items);
     }
 
     @Override

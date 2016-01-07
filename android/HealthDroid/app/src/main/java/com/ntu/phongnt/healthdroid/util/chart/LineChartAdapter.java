@@ -8,9 +8,11 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LineChartAdapter extends ChartAdapter {
     LineChart chart = null;
+    List<LineDataSet> dataSets = new ArrayList<>();
 
     public LineChartAdapter(LineChart chart) {
         this.chart = chart;
@@ -24,6 +26,7 @@ public class LineChartAdapter extends ChartAdapter {
             if (dataSet == null) {
                 dataSet = new LineDataSet(new ArrayList<Entry>(), label);
                 dataSet.setValueTextColor(Color.WHITE);
+                dataSets.add(dataSet);
                 data.addDataSet(dataSet);
             }
             int dataSetIndex = data.getIndexOfDataSet(dataSet);
@@ -38,5 +41,17 @@ public class LineChartAdapter extends ChartAdapter {
     @Override
     public void addXValue(String key) {
         chart.getData().addXValue(key);
+    }
+
+    @Override
+    public void showDataSetsByLabel(List<String> labels) {
+        LineData data = chart.getData();
+        data.getDataSets().clear();
+        for (LineDataSet dataSet : this.dataSets) {
+            if (labels.contains(dataSet.getLabel()))
+                data.addDataSet(dataSet);
+        }
+        chart.notifyDataSetChanged();
+        chart.invalidate();
     }
 }
