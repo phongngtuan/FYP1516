@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/time_range"
+        android:icon="@drawable/ic_trending_up_white_48dp"
         android:title="@string/time_range"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/data_sets"
+        android:icon="@drawable/ic_filter_list_white_48dp"
         android:title="@string/data_sets"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 </menu>
