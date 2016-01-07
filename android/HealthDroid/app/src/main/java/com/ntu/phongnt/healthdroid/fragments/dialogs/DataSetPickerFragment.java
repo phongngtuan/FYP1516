@@ -10,6 +10,8 @@ import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 
+import java.util.List;
+
 public class DataSetPickerFragment extends DialogFragment {
     public DataSetPickerListener listener = null;
     private String[] choices;
@@ -18,8 +20,14 @@ public class DataSetPickerFragment extends DialogFragment {
     public static DataSetPickerFragment getInstance(String[] choices) {
         DataSetPickerFragment fragment = new DataSetPickerFragment();
         fragment.choices = choices;
-        fragment.checkedItems = new boolean[choices.length];
+        fragment.checkedItems = new boolean[fragment.choices.length];
         return fragment;
+    }
+
+    public static DataSetPickerFragment getInstance(List<String> choices) {
+        String[] choicesArray = new String[choices.size()];
+        choices.toArray(choicesArray);
+        return getInstance(choicesArray);
     }
 
     public DataSetPickerFragment() {

@@ -13,10 +13,6 @@ import java.util.GregorianCalendar;
 
 public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
 
-    public DataEntryByMonthFormatter(Cursor cursor, String label) {
-        super(cursor, label);
-    }
-
     public DataEntryByMonthFormatter(Cursor cursor) {
         super(cursor);
     }

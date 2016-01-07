@@ -30,12 +30,15 @@ import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByMonthFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByWeekFormatter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryFormatter;
 
+import java.util.List;
+
 public class GraphFragment extends Fragment implements
         TimeRangeDialogFragment.TimeRangePickerListener, DataSetPickerFragment.DataSetPickerListener {
     public static String TAG = "GraphFragment";
     private LineChart chart = null;
     private DataHelper db = null;
     private int formatter_choice;
+    private List<String> dataSetChoices = null;
 
     public GraphFragment() {
         super();
@@ -115,8 +118,7 @@ public class GraphFragment extends Fragment implements
         menu.findItem(R.id.data_sets).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                String[] choices = {"Nguyen", "Tuan", "Phong", "Hihi"};
-                DataSetPickerFragment dialogFragment = DataSetPickerFragment.getInstance(choices);
+                DataSetPickerFragment dialogFragment = DataSetPickerFragment.getInstance(dataSetChoices);
                 dialogFragment.listener = GraphFragment.this;
                 dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
                 return true;
@@ -177,7 +179,9 @@ public class GraphFragment extends Fragment implements
             chart.getLineData().clearValues();
             chart.getXAxis().getValues().clear();
             DataEntryFormatter formatter = getDataEntryFormatter(cursor);
+            //TODO: The 2 following lines need to be executed in order, may need to refactor this
             formatter.format(chart);
+            dataSetChoices = formatter.getDataSetLabels();
             chart.invalidate();
         }
 

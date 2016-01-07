@@ -14,10 +14,6 @@ import java.util.Locale;
 
 public class DataEntryByWeekFormatter extends BaseDataEntryFormatter {
 
-    public DataEntryByWeekFormatter(Cursor cursor, String label) {
-        super(cursor, label);
-    }
-
     public DataEntryByWeekFormatter(Cursor cursor) {
         super(cursor);
     }

@@ -13,14 +13,10 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class DataEntryByDayFormatter extends BaseDataEntryFormatter {
-    public DataEntryByDayFormatter(Cursor cursor, String label) {
-        super(cursor, label);
-    }
 
     public DataEntryByDayFormatter(Cursor cursor) {
         super(cursor);
     }
-
 
     @NonNull
     @Override

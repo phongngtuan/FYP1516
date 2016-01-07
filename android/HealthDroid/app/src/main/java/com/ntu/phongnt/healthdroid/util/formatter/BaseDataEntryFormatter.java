@@ -18,20 +18,12 @@ import java.util.List;
 import java.util.TreeMap;
 
 public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyCreator {
-    Cursor cursor = null;
-    String label = null;
-
+    private Cursor cursor = null;
     private TreeMap<String, List<DataAccumulator.DataEntry>> dataByUser = new TreeMap<>();
     private List<DataAccumulator> dataAccumulators = new ArrayList<>();
 
-    public BaseDataEntryFormatter(Cursor cursor, String label) {
-        this.cursor = cursor;
-        this.label = label;
-    }
-
     public BaseDataEntryFormatter(Cursor cursor) {
         this.cursor = cursor;
-        this.label = "N/A";
     }
 
     protected abstract DateFormat getDateFormat();
@@ -44,7 +36,11 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyC
         accumulateDataByUser();
         DateRange dateRange = findRange();
         addDataToChart(chart, dateRange);
-//        addDataToChart(chart, reducedData, reducedDataCount);
+    }
+
+    @Override
+    public List<String> getDataSetLabels() {
+        return new ArrayList<>(dataByUser.keySet());
     }
 
     //TODO: Use correct type for chart
@@ -107,7 +103,6 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyC
     }
 
     public void getDataByUser() {
-        List<DataAccumulator.DataEntry> data = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 String date = cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_DATE));
