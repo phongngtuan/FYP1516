@@ -47,6 +47,8 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyC
     //TODO: Use correct type for chart
     @SuppressWarnings("ResourceType")
     private void addDataToChart(LineChart chart, DateRange dateRange) {
+        chartAdapter.clearDataSets();
+
         GregorianCalendar first = new GregorianCalendar();
         first.setTime(dateRange.getFirst().getTime());
 

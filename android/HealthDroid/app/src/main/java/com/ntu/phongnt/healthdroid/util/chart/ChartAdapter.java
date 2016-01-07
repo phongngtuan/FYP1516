@@ -7,6 +7,8 @@ public abstract class ChartAdapter {
 
     public abstract void addXValue(String key);
 
+    public abstract void clearDataSets();
+
     public abstract void showDataSetsByLabel(List<String> labels);
 
 }

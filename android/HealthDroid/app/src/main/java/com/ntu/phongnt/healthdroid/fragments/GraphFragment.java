@@ -182,8 +182,6 @@ public class GraphFragment extends Fragment implements
 
         @Override
         protected void onPostExecute(Cursor cursor) {
-            chart.getLineData().clearValues();
-            chart.getXAxis().getValues().clear();
             formatter = getDataEntryFormatter(cursor, chartAdapter);
             //TODO: The 2 following lines need to be executed in order, may need to refactor this
             formatter.format(chart);

@@ -62,6 +62,11 @@ public class LineChartAdapter extends ChartAdapter {
     }
 
     @Override
+    public void clearDataSets() {
+        this.dataSets.clear();
+    }
+
+    @Override
     public void showDataSetsByLabel(List<String> labels) {
         LineData data = chart.getData();
         data.getDataSets().clear();
