@@ -12,10 +12,11 @@ import java.util.List;
 
 public class LineChartAdapter extends ChartAdapter {
     LineChart chart = null;
-    List<LineDataSet> dataSets = new ArrayList<>();
+    List<LineDataSet> dataSets = null;
 
     public LineChartAdapter(LineChart chart) {
         this.chart = chart;
+        this.dataSets = new ArrayList<>();
     }
 
     public static int[] colors = {
@@ -64,6 +65,8 @@ public class LineChartAdapter extends ChartAdapter {
     @Override
     public void clearDataSets() {
         this.dataSets.clear();
+        this.chart.getXAxis().getValues().clear();
+        chart.getData().getDataSets().clear();
     }
 
     @Override
