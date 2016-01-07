@@ -18,6 +18,20 @@ public class LineChartAdapter extends ChartAdapter {
         this.chart = chart;
     }
 
+    public static int[] colors = {
+//            Color.BLACK,
+//            Color.DKGRAY,
+//            Color.GRAY,
+//            Color.LTGRAY,
+            Color.WHITE,
+            Color.RED,
+            Color.GREEN,
+            Color.BLUE,
+            Color.YELLOW,
+            Color.CYAN,
+            Color.MAGENTA
+    };
+
     @Override
     public void addEntry(String label, float value, int index) {
         LineData data = chart.getData();
@@ -25,7 +39,11 @@ public class LineChartAdapter extends ChartAdapter {
             LineDataSet dataSet = data.getDataSetByLabel(label, true);
             if (dataSet == null) {
                 dataSet = new LineDataSet(new ArrayList<Entry>(), label);
-                dataSet.setValueTextColor(Color.WHITE);
+                final int color = colors[dataSets.size() % colors.length];
+                dataSet.setValueTextColor(color);
+                dataSet.setFillColor(color);
+                dataSet.setCircleColor(color);
+                dataSet.setColor(color);
                 dataSets.add(dataSet);
                 data.addDataSet(dataSet);
             }
