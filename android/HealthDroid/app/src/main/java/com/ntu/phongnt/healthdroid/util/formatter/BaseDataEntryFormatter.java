@@ -69,7 +69,9 @@ public abstract class BaseDataEntryFormatter implements DataEntryFormatter, KeyC
                             accumulator.label,
                             (float) accumulator.reducedData.get(key) / accumulator.reducedDataCount.get(key),
                             index);
-                } else
+                }
+                //TODO: remove the else clause to only display values in db i.e. nonzero
+                else
                     chartAdapter.addEntry(accumulator.label, 0, index);
             }
             first.add(dateRange.getTimeUnit(), 1);
