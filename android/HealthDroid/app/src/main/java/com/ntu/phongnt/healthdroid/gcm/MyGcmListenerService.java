@@ -79,6 +79,7 @@ public class MyGcmListenerService extends GcmListenerService {
                     ContentValues values = new ContentValues();
                     values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getValue());
                     values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getDate().toStringRfc3339());
+                    values.put(DataContract.DataEntry.COLUMN_NAME_USER, d.getUser().getEmail());
                     sqLiteDatabase.insert(DataContract.DataEntry.TABLE_NAME,
                             DataContract.DataEntry.COLUMN_NAME_DATE,
                             values);

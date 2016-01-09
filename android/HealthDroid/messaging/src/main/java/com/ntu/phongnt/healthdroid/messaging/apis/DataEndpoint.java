@@ -48,20 +48,21 @@ public class DataEndpoint {
         DataRecord dataRecord = new DataRecord();
         if (user != null) {
             Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getEmail());
+            HealthDroidUser healthDroidUser = ofy().load().key(healthDroidUserKey).now();
+
             dataRecord.setValue(value);
             dataRecord.setDate(date);
             dataRecord.setCreatedAt(new Date());
             dataRecord.setIdentifier(healthDroidUserKey.toString());
-            dataRecord.setUser(healthDroidUserKey);
+            dataRecord.setUser(healthDroidUser);
             ofy().save().entity(dataRecord).now();
             assert dataRecord.id != null;
 
 //            //TODO: Need to refactor this, copy paste for now
             Sender sender = new Sender(API_KEY);
             Message msg = new Message.Builder().collapseKey("data_updated").build();
-            HealthDroidUser publisher = ofy().load().key(healthDroidUserKey).now();
-            System.out.println("DEBUG: Publisher " + publisher.getEmail());
-            List<SubscriptionRecord> subscriptionRecords = ofy().load().type(SubscriptionRecord.class).ancestor(publisher).list();
+            System.out.println("DEBUG: Publisher " + healthDroidUser.getEmail());
+            List<SubscriptionRecord> subscriptionRecords = ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
             System.out.println("DEBUG: Subscription records count: " + subscriptionRecords.size());
             for (SubscriptionRecord subscriptionRecord : subscriptionRecords) {
                 HealthDroidUser subscriber = subscriptionRecord.getSubscriber();

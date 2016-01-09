@@ -1,12 +1,8 @@
 package com.ntu.phongnt.healthdroid.messaging.entities;
 
-import com.google.api.server.spi.config.AnnotationBoolean;
-import com.google.api.server.spi.config.ApiResourceProperty;
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
-import com.googlecode.objectify.annotation.Parent;
 
 import java.util.Date;
 
@@ -16,9 +12,7 @@ public class DataRecord {
     @Id
     public Long id;
 
-    @Parent
-    @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
-    private Key<HealthDroidUser> user;
+    private HealthDroidUser user;
     private Date date;
     @Index
     private Date createdAt;
@@ -27,6 +21,14 @@ public class DataRecord {
     private String identifier;
 
     public DataRecord() {
+    }
+
+    public HealthDroidUser getUser() {
+        return user;
+    }
+
+    public void setUser(HealthDroidUser user) {
+        this.user = user;
     }
 
     public float getValue() {
@@ -43,14 +45,6 @@ public class DataRecord {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
-    }
-
-    public Key<HealthDroidUser> getUser() {
-        return user;
-    }
-
-    public void setUser(Key<HealthDroidUser> user) {
-        this.user = user;
     }
 
     public Date getDate() {
