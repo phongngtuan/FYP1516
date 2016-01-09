@@ -1,14 +1,9 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,15 +18,11 @@ import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
-import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
-import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
-import com.ntu.phongnt.healthdroid.util.DateHelper;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 public class HomeFragment extends Fragment implements Button.OnClickListener {
     private static String TAG = "HomeFragment";
@@ -71,7 +62,6 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        new GetDataRecordsFromEndpoint().execute();
     }
 
     private class PostDataRecordsToEndpoint extends AsyncTask<Integer, Void, Void> {
@@ -91,57 +81,6 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
                 }
             }
             return null;
-        }
-    }
-
-    private class GetDataRecordsFromEndpoint extends AsyncTask<Void, Void, Void> {
-        //TODO: Complete the features
-        //TODO: Quite a big task, need refactoring
-        @Override
-        protected Void doInBackground(Void... params) {
-            SharedPreferences dataPreferences = getActivity().
-                    getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = dataPreferences.edit();
-
-            String lastUpdatedPreference = dataPreferences.getString(DataHelper.LAST_UPDATED, DataHelper.ZERO_TIME);
-            Date lastUpdate = DateHelper.getDate(lastUpdatedPreference);
-            Date latestDateFromData = new Date();
-            latestDateFromData.setTime(lastUpdate.getTime());
-            Data dataService = DataFactory.getInstance();
-
-            try {
-                List<DataRecord> dataRecordList = dataService.get().execute().getItems();
-
-                Log.i(TAG, "dataRecord size = " + dataRecordList.size());
-                int count = 0;
-                SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
-                for (DataRecord d : dataRecordList) {
-                    Date dateFromData = DateHelper.getDate(d.getDate().toStringRfc3339());
-                    if (dateFromData.after(lastUpdate)) {
-                        count++;
-                        latestDateFromData = dateFromData;
-                        ContentValues values = new ContentValues();
-                        values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getValue());
-                        values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getDate().toStringRfc3339());
-                        sqLiteDatabase.insert(DataContract.DataEntry.TABLE_NAME,
-                                DataContract.DataEntry.COLUMN_NAME_DATE,
-                                values);
-                    }
-                }
-                editor.putString(DataHelper.LAST_UPDATED, DateHelper.toString(latestDateFromData));
-                editor.apply();
-                Log.d(TAG, "last Updated = " + lastUpdate);
-                Log.d(TAG, "Updated count= " + count);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Toast toast = Toast.makeText(getActivity(), accountName, Toast.LENGTH_SHORT);
-            toast.show();
         }
     }
 }
