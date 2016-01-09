@@ -27,12 +27,9 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.messaging.registration.Registration;
+import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 
 import java.io.IOException;
 
@@ -117,20 +114,7 @@ public class RegistrationIntentService extends IntentService {
         @Override
         protected Void doInBackground(String... params) {
             token = params[0];
-            if (registrationService == null) {
-                Registration.Builder builder = new Registration.Builder(
-                        AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(),
-                        null)
-                        .setRootUrl("http://192.168.1.28:8080/_ah/api/")
-                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                            @Override
-                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                                abstractGoogleClientRequest.setDisableGZipContent(true);
-                            }
-                        });
-                registrationService = builder.build();
-            }
+            registrationService = RegistrationFactory.getInstance();
             try {
                 registrationService.register(token).execute();
                 Log.d(TAG, "Sent token to server!");

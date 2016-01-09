@@ -20,8 +20,8 @@ import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.adapter.MyUserRecyclerViewAdapter;
-import com.ntu.phongnt.healthdroid.util.SubscriptionUtil;
-import com.ntu.phongnt.healthdroid.util.UserUtil;
+import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
+import com.ntu.phongnt.healthdroid.services.UserFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -149,7 +149,7 @@ public class UserFragment extends Fragment {
     private class SubscribeTask extends AsyncTask<HealthDroidUser, Void, SubscriptionRecord> {
         @Override
         protected SubscriptionRecord doInBackground(HealthDroidUser... params) {
-            Subscription subscriptionService = SubscriptionUtil.getSubscriptionService(credential);
+            Subscription subscriptionService = SubscriptionFactory.build(credential);
             SubscriptionRecord subscriptionRecord = null;
             HealthDroidUser targetUser = params[0];
             try {
@@ -182,7 +182,7 @@ public class UserFragment extends Fragment {
     private class GetSubscriptionsTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
         @Override
         protected List<SubscriptionRecord> doInBackground(Void... params) {
-            Subscription subscriptionService = SubscriptionUtil.getSubscriptionService(credential);
+            Subscription subscriptionService = SubscriptionFactory.build(credential);
             List<SubscriptionRecord> subscriptionRecords = null;
             try {
                 //TODO: uncomment this to use get insteaad of list
@@ -225,7 +225,7 @@ public class UserFragment extends Fragment {
         @Override
         protected List<HealthDroidUserWrapper> doInBackground(GoogleAccountCredential... params) {
             GoogleAccountCredential credential = params[0];
-            User userService = UserUtil.getUserService(credential);
+            User userService = UserFactory.getInstance();
             try {
                 List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
                 Log.d(TAG, "Received " + healthDroidUsers.size() + " users");

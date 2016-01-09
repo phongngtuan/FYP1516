@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.util;
+package com.ntu.phongnt.healthdroid.services;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -9,10 +9,14 @@ import com.ntu.phongnt.healthdroid.data.user.User;
 
 import java.io.IOException;
 
-public class UserUtil {
-    public static final String USER_SERVICE = "UserFragment";
+public class UserFactory {
+    private static User instance = null;
 
-    public static User getUserService(GoogleAccountCredential credential) {
+    public static User getInstance() {
+        return instance;
+    }
+
+    public static User build(GoogleAccountCredential credential) {
         User.Builder builder = new User.Builder(
                 AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(),
@@ -24,7 +28,8 @@ public class UserUtil {
                         abstractGoogleClientRequest.setDisableGZipContent(true);
                     }
                 });
-        return builder.build();
+        instance = builder.build();
+        return instance;
     }
 
 }

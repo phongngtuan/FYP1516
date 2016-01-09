@@ -39,7 +39,9 @@ import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
-import com.ntu.phongnt.healthdroid.util.UserUtil;
+import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
+import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
+import com.ntu.phongnt.healthdroid.services.UserFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -251,11 +253,19 @@ public class MainActivity extends SignInActivity
         if (credential.getSelectedAccountName() == null) {
             if (savedAccountName != null) {
                 credential.setSelectedAccountName(savedAccountName);
+                constructServices(credential);
+
                 new RegisterUserToEndpoint().execute();
             } else
                 startActivityForResult(credential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER);
         }
+    }
+
+    private void constructServices(GoogleAccountCredential credential) {
+        SubscriptionFactory.build(credential);
+        UserFactory.build(credential);
+        RegistrationFactory.build(credential);
     }
 
     public GoogleAccountCredential getCredential() {
@@ -314,7 +324,8 @@ public class MainActivity extends SignInActivity
     private class RegisterUserToEndpoint extends AsyncTask<Void, Void, HealthDroidUser> {
         @Override
         protected HealthDroidUser doInBackground(Void... params) {
-            User userService = UserUtil.getUserService(getCredential());
+//            User userService = UserFactory.build(getCredential());
+            User userService = UserFactory.getInstance();
             HealthDroidUser healthDroidUser = null;
             try {
                 List<HealthDroidUser> users = userService.get().set("userId", credential.getSelectedAccountName()).execute().getItems();
