@@ -18,11 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
@@ -30,6 +26,7 @@ import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.util.DateHelper;
 
 import java.io.IOException;
@@ -84,19 +81,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
             GoogleAccountCredential credential =
                     ((MainActivity) getActivity()).getCredential();
             if (credential.getSelectedAccountName() != null) {
-                Data.Builder builder = new Data.Builder(
-                        AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(),
-                        credential)
-                        .setRootUrl("http://192.168.1.28:8080/_ah/api/")
-                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                            @Override
-                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                                abstractGoogleClientRequest.setDisableGZipContent(true);
-                            }
-                        });
-
-                Data dataService = builder.build();
+                Data dataService = DataFactory.getInstance();
                 for (Integer value : params) {
                     try {
                         dataService.add(new DateTime(new Date()), value).execute();
@@ -114,7 +99,6 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
         //TODO: Quite a big task, need refactoring
         @Override
         protected Void doInBackground(Void... params) {
-            Data dataService = null;
             SharedPreferences dataPreferences = getActivity().
                     getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = dataPreferences.edit();
@@ -123,22 +107,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
             Date lastUpdate = DateHelper.getDate(lastUpdatedPreference);
             Date latestDateFromData = new Date();
             latestDateFromData.setTime(lastUpdate.getTime());
-
-            if (dataService == null) {
-                //TODO: Consider moving builder stuff to a util class
-                Data.Builder builder = new Data.Builder(
-                        AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(),
-                        null)
-                        .setRootUrl("http://192.168.1.28:8080/_ah/api/")
-                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                            @Override
-                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                                abstractGoogleClientRequest.setDisableGZipContent(true);
-                            }
-                        });
-                dataService = builder.build();
-            }
+            Data dataService = DataFactory.getInstance();
 
             try {
                 List<DataRecord> dataRecordList = dataService.get().execute().getItems();

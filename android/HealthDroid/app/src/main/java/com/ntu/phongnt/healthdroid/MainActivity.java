@@ -39,6 +39,7 @@ import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
+import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
@@ -248,7 +249,7 @@ public class MainActivity extends SignInActivity
         return true;
     }
 
-    public void pickAccount() {
+    private void pickAccount() {
         String savedAccountName = settings.getString(PREF_ACCOUNT_NAME, null);
         if (credential.getSelectedAccountName() == null) {
             if (savedAccountName != null) {
@@ -266,6 +267,7 @@ public class MainActivity extends SignInActivity
         SubscriptionFactory.build(credential);
         UserFactory.build(credential);
         RegistrationFactory.build(credential);
+        DataFactory.build(credential);
     }
 
     public GoogleAccountCredential getCredential() {
@@ -324,7 +326,6 @@ public class MainActivity extends SignInActivity
     private class RegisterUserToEndpoint extends AsyncTask<Void, Void, HealthDroidUser> {
         @Override
         protected HealthDroidUser doInBackground(Void... params) {
-//            User userService = UserFactory.build(getCredential());
             User userService = UserFactory.getInstance();
             HealthDroidUser healthDroidUser = null;
             try {
