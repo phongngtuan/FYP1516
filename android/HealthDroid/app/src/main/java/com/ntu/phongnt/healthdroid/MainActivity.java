@@ -94,13 +94,6 @@ public class MainActivity extends SignInActivity
         navigationView.setNavigationItemSelectedListener(this);
         profileImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
 
-        // Start IntentService to register this application with GCM.
-        if (checkPlayServices()) {
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-            Log.i(TAG, "Here");
-        }
-
         //Instance variables initializations
         //receiver
         broadcastReceiver = new BroadcastReceiver() {
@@ -147,15 +140,27 @@ public class MainActivity extends SignInActivity
                             data.getExtras().getString(
                                     AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
-                        Log.d(TAG, "Authorized complete");
-                        Log.d(TAG, "Account name: " + accountName);
-                        setSelectedAccountName(accountName);
-                        // User is authorized.
-                        new RegisterUserToEndpoint().execute();
+                        handleAccountSelected(accountName);
                     }
                 }
                 break;
         }
+    }
+
+    private void handleAccountSelected(String accountName) {
+        Log.d(TAG, "Authorized complete");
+        Log.d(TAG, "Account name: " + accountName);
+        setSelectedAccountName(accountName);
+        constructServices(credential);
+
+        // Start IntentService to register this application with GCM.
+        if (checkPlayServices()) {
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+            Log.i(TAG, "Here");
+        }
+        //Register this user to endpoint
+        new RegisterUserToEndpoint().execute();
     }
 
     @Override
@@ -251,17 +256,17 @@ public class MainActivity extends SignInActivity
 
     private void pickAccount() {
         String savedAccountName = settings.getString(PREF_ACCOUNT_NAME, null);
-        if (credential.getSelectedAccountName() == null) {
-            if (savedAccountName != null) {
-                credential.setSelectedAccountName(savedAccountName);
-                constructServices(credential);
-
-                new RegisterUserToEndpoint().execute();
-            } else
+        if (credential.getSelectedAccountName() == null)
+            if (savedAccountName == null)
                 startActivityForResult(credential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER);
-        }
+            else {
+                handleAccountSelected(savedAccountName);
+            }
     }
+//
+//
+//    }
 
     private void constructServices(GoogleAccountCredential credential) {
         SubscriptionFactory.build(credential);
