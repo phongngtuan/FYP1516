@@ -181,7 +181,7 @@ public class MainActivity extends SignInActivity
         account = result.getSignInAccount();
         if (account != null) {
             Uri personPhoto = account.getPhotoUrl();
-            new LoadProfileImange(profileImage).execute(personPhoto.toString());
+            new LoadProfileImageTask(profileImage).execute(personPhoto.toString());
         }
     }
 
@@ -298,10 +298,10 @@ public class MainActivity extends SignInActivity
         this.accountName = accountName;
     }
 
-    private class LoadProfileImange extends AsyncTask<String, Void, Bitmap> {
+    private class LoadProfileImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
-        public LoadProfileImange(ImageView bmImage) {
+        public LoadProfileImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 
