@@ -1,5 +1,9 @@
 package com.ntu.phongnt.healthdroid.messaging.apis;
 
+import com.google.android.gcm.server.Constants;
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Result;
+import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -11,10 +15,14 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.Query;
 import com.ntu.phongnt.healthdroid.messaging.entities.DataRecord;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
+import com.ntu.phongnt.healthdroid.messaging.entities.RegistrationRecord;
+import com.ntu.phongnt.healthdroid.messaging.entities.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.messaging.secured.AppConstants;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 
@@ -33,9 +41,10 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
 
 public class DataEndpoint {
     private static final String API_KEY = AppConstants.GCM_API_KEY;
+    private static final Logger log = Logger.getLogger(MessagingEndpoint.class.getName());
 
     @ApiMethod(name = "add", path = "data")
-    public DataRecord addData(@Named("value") int value, @Named("date") Date date, User user) throws OAuthRequestException {
+    public DataRecord addData(@Named("value") int value, @Named("date") Date date, User user) throws OAuthRequestException, IOException {
         DataRecord dataRecord = new DataRecord();
         if (user != null) {
             Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getEmail());
@@ -46,6 +55,41 @@ public class DataEndpoint {
             dataRecord.setUser(healthDroidUserKey);
             ofy().save().entity(dataRecord).now();
             assert dataRecord.id != null;
+
+//            //TODO: Need to refactor this, copy paste for now
+            Sender sender = new Sender(API_KEY);
+            Message msg = new Message.Builder().collapseKey("data_updated").build();
+            HealthDroidUser publisher = ofy().load().key(healthDroidUserKey).now();
+            System.out.println("DEBUG: Publisher " + publisher.getEmail());
+            List<SubscriptionRecord> subscriptionRecords = ofy().load().type(SubscriptionRecord.class).ancestor(publisher).list();
+            System.out.println("DEBUG: Subscription records count: " + subscriptionRecords.size());
+            for (SubscriptionRecord subscriptionRecord : subscriptionRecords) {
+                HealthDroidUser subscriber = subscriptionRecord.getSubscriber();
+                List<RegistrationRecord> registrationRecords = ofy().load().type(RegistrationRecord.class).ancestor(subscriber).list();
+                System.out.println("DEBUG: Registrations count: " + registrationRecords.size());
+                for (RegistrationRecord record : registrationRecords) {
+                    System.out.println("DBUG: Sending");
+                    Result result = sender.send(msg, record.getRegId(), 5);
+                    if (result.getMessageId() != null) {
+                        log.info("Message sent to " + record.getRegId());
+                        String canonicalRedId = result.getCanonicalRegistrationId();
+                        if (canonicalRedId != null) {
+                            log.info("Registration Id changed for " + record.getRegId() + " updating to " + canonicalRedId);
+                            record.setRegId(canonicalRedId);
+                            ofy().save().entity(record).now();
+                        }
+                    } else {
+                        String error = result.getErrorCodeName();
+                        if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
+                            log.warning("Registration Id " + record.getRegId() + "no longer registered with GCM, removing from datastore");
+                            ofy().delete().entity(record).now();
+                        } else {
+                            log.warning("Error when sending message : " + error);
+                        }
+                    }
+                }
+            }
+            //copy-paste ends
         } else {
             throw new OAuthRequestException("Data Endpoints exception: User= " + user);
         }

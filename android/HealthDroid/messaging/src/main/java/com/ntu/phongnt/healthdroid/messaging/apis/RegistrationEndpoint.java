@@ -10,7 +10,12 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.oauth.OAuthRequestException;
+import com.google.appengine.api.users.User;
+import com.googlecode.objectify.Ref;
+import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.entities.RegistrationRecord;
+import com.ntu.phongnt.healthdroid.messaging.secured.AppConstants;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,7 +41,10 @@ import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
                 ownerDomain = "messaging.healthdroid.phongnt.ntu.com",
                 ownerName = "messaging.healthdroid.phongnt.ntu.com",
                 packagePath = ""
-        )
+        ),
+        clientIds = {AppConstants.WEB_CLIENT_ID, AppConstants.ANDROID_CLIENT_ID, AppConstants.IOS_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+        audiences = {AppConstants.ANDROID_AUDIENCE},
+        scopes = {"https://www.googleapis.com/auth/userinfo.email"}
 )
 public class RegistrationEndpoint {
 
@@ -48,14 +56,22 @@ public class RegistrationEndpoint {
      * @param regId The Google Cloud Messaging registration Id to add
      */
     @ApiMethod(name = "register")
-    public void registerDevice(@Named("regId") String regId) {
+    public void registerDevice(@Named("regId") String regId, User user) throws OAuthRequestException {
+        if (user == null)
+            throw new OAuthRequestException("Registration failed");
+
         if (findRecord(regId) != null) {
             log.info("Device " + regId + " already registered, skipping register");
             return;
         }
-        RegistrationRecord record = new RegistrationRecord();
-        record.setRegId(regId);
-        ofy().save().entity(record).now();
+        HealthDroidUser subscriber = HealthDroidUser.getUser(user.getEmail());
+        if (subscriber != null) {
+            Ref<HealthDroidUser> subscriberRef = Ref.create(subscriber);
+            RegistrationRecord record = new RegistrationRecord();
+            record.setUser(subscriberRef);
+            record.setRegId(regId);
+            ofy().save().entity(record).now();
+        }
     }
 
     /**
