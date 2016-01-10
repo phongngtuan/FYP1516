@@ -38,7 +38,6 @@ public class UserFragment extends Fragment {
 
     private List<HealthDroidUserWrapper> listUser = new ArrayList<HealthDroidUserWrapper>();
     private GoogleAccountCredential credential = null;
-    private List<SubscriptionRecord> subscriptionRecords = null;
 
     public UserFragment() {
     }
@@ -110,35 +109,6 @@ public class UserFragment extends Fragment {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof HealthDroidUserViewInteractionListener) {
-//            mListener = (HealthDroidUserViewInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement HealthDroidUserViewInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        if (activity instanceof HealthDroidUserViewInteractionListener) {
-//            mListener = (HealthDroidUserViewInteractionListener) activity;
-//        } else {
-//            throw new RuntimeException(activity.toString()
-//                    + " must implement HealthDroidUserViewInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-
     public interface HealthDroidUserViewInteractionListener {
         // TODO: Update argument type and name
         void onItemClick(HealthDroidUserWrapper user);
@@ -149,7 +119,7 @@ public class UserFragment extends Fragment {
     private class SubscribeTask extends AsyncTask<HealthDroidUser, Void, SubscriptionRecord> {
         @Override
         protected SubscriptionRecord doInBackground(HealthDroidUser... params) {
-            Subscription subscriptionService = SubscriptionFactory.build(credential);
+            Subscription subscriptionService = SubscriptionFactory.getInstance();
             SubscriptionRecord subscriptionRecord = null;
             HealthDroidUser targetUser = params[0];
             try {
@@ -163,14 +133,13 @@ public class UserFragment extends Fragment {
         @Override
         protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
             super.onPostExecute(subscriptionRecord);
-            notifySubscribed(subscriptionRecord);
+            notifySubscribed(subscriptionRecord.getTarget());
             notifyChange();
         }
     }
 
-    private void notifySubscribed(SubscriptionRecord subscriptionRecord) {
-        com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser target = subscriptionRecord.getTarget();
-        String email = target.getEmail();
+    private void notifySubscribed(com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user) {
+        String email = user.getEmail();
         for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
             if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
                 Log.d(TAG, "Disabling a subscribe button for user " + email);
@@ -179,31 +148,27 @@ public class UserFragment extends Fragment {
         }
     }
 
-    private class GetSubscriptionsTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
+    private class GetSubscriptionsTask extends AsyncTask<Void, Void, List<com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser>> {
         @Override
-        protected List<SubscriptionRecord> doInBackground(Void... params) {
-            Subscription subscriptionService = SubscriptionFactory.build(credential);
-            List<SubscriptionRecord> subscriptionRecords = null;
+        protected List<com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser> doInBackground(Void... params) {
+            Subscription subscriptionService = SubscriptionFactory.getInstance();
+            List<com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser> subscribedUsers = null;
             try {
-                //TODO: uncomment this to use get insteaad of list
-//                subscriptionRecords = subscriptionService.get().execute().getItems();
-                subscriptionRecords = subscriptionService.list().execute().getItems();
-                Log.d(TAG, "Get subscription records count: " + subscriptionRecords.size());
+                subscribedUsers = subscriptionService.subscribed().execute().getItems();
+                Log.d(TAG, "Get subscription records count: " + subscribedUsers.size());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return subscriptionRecords;
+            return subscribedUsers;
         }
 
         @Override
-        protected void onPostExecute(List<SubscriptionRecord> resultedSubscriptionRecords) {
-            super.onPostExecute(resultedSubscriptionRecords);
-            subscriptionRecords = resultedSubscriptionRecords;
-            Log.d(TAG, subscriptionRecords.toString());
-            for (SubscriptionRecord record : resultedSubscriptionRecords) {
-                notifySubscribed(record);
-            }
+        protected void onPostExecute(List<com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser> healthDroidUsers) {
+            super.onPostExecute(healthDroidUsers);
+            for (com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user : healthDroidUsers)
+                notifySubscribed(user);
             notifyChange();
+
         }
     }
 
@@ -224,7 +189,6 @@ public class UserFragment extends Fragment {
     private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUserWrapper>> {
         @Override
         protected List<HealthDroidUserWrapper> doInBackground(GoogleAccountCredential... params) {
-            GoogleAccountCredential credential = params[0];
             User userService = UserFactory.getInstance();
             try {
                 List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
