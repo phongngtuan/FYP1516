@@ -62,7 +62,7 @@ public class MainActivity extends SignInActivity
     private ImageView profileImage = null;
 
     private static final int REQUEST_ACCOUNT_PICKER = 2;
-    private static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
+    public static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
 
@@ -334,7 +334,9 @@ public class MainActivity extends SignInActivity
             User userService = UserFactory.getInstance();
             HealthDroidUser healthDroidUser = null;
             try {
-                List<HealthDroidUser> users = userService.get().set("userId", credential.getSelectedAccountName()).execute().getItems();
+                List<HealthDroidUser> users = userService.get()
+                        .set("userId", credential.getSelectedAccountName())
+                        .execute().getItems();
                 if (users.isEmpty() || users.get(0).isEmpty()) {
                     healthDroidUser = userService.add().execute();
                     Log.d(TAG, "Registered user");

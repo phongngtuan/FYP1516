@@ -1,6 +1,7 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,12 +21,15 @@ import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.adapter.MyUserRecyclerViewAdapter;
+import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class UserFragment extends Fragment {
 
@@ -140,12 +144,23 @@ public class UserFragment extends Fragment {
 
     private void notifySubscribed(com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user) {
         String email = user.getEmail();
+        Set<String> subscribedUsers = new TreeSet<>();
         for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
             if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
                 Log.d(TAG, "Disabling a subscribe button for user " + email);
                 healthDroidUserWrapper.subscribed = true;
+                subscribedUsers.add(healthDroidUserWrapper.healthDroidUser.getEmail());
             }
         }
+        //TODO: there is duplicated code, consider refactor
+        SharedPreferences dataPreferences =
+                getActivity().getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = dataPreferences.edit();
+        editor.putStringSet(
+                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
+                subscribedUsers
+        );
+        editor.apply();
     }
 
     private class GetSubscriptionsTask extends AsyncTask<Void, Void, List<com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser>> {

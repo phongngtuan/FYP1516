@@ -1,8 +1,10 @@
 package com.ntu.phongnt.healthdroid.messaging.entities;
 
+import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Parent;
 
 import java.util.Date;
 
@@ -12,7 +14,8 @@ public class DataRecord {
     @Id
     public Long id;
 
-    private HealthDroidUser user;
+    @Parent
+    private Ref<HealthDroidUser> user;
     private Date date;
     @Index
     private Date createdAt;
@@ -24,11 +27,11 @@ public class DataRecord {
     }
 
     public HealthDroidUser getUser() {
-        return user;
+        return user.get();
     }
 
     public void setUser(HealthDroidUser user) {
-        this.user = user;
+        this.user = Ref.create(user);
     }
 
     public float getValue() {

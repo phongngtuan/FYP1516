@@ -20,6 +20,7 @@ import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
+import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 
 import java.io.IOException;
 import java.util.Date;
@@ -62,6 +63,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        new GetDataRecordsFromEndpointTask(getActivity()).execute();
     }
 
     private class PostDataRecordsToEndpoint extends AsyncTask<Integer, Void, Void> {
