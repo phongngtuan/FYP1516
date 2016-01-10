@@ -12,6 +12,8 @@ import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.entities.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.messaging.secured.AppConstants;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
@@ -38,9 +40,6 @@ public class SubscriptionEndpoint {
         HealthDroidUser subscriber = HealthDroidUser.getUser(user.getEmail());
 
         if (subscriber != null && targetUser != null) {
-            Ref<HealthDroidUser> subscriberRef = Ref.create(subscriber);
-            Ref<HealthDroidUser> targetUserRef = Ref.create(targetUser);
-
             List<SubscriptionRecord> records =
                     ofy().load().type(SubscriptionRecord.class).
                             ancestor(targetUser).
@@ -49,33 +48,42 @@ public class SubscriptionEndpoint {
             if (records != null && !records.isEmpty()) {
                 subscriptionRecord = records.get(0);
             } else {
-                subscriptionRecord.setTarget(targetUserRef);
-                subscriptionRecord.setSubscriber(subscriberRef);
+                subscriptionRecord.setTarget(targetUser);
+                subscriptionRecord.setSubscriber(subscriber);
                 ofy().save().entity(subscriptionRecord).now();
-
-                subscriber.subscribe(Ref.create(subscriptionRecord));
-                ofy().save().entity(subscriber).now();
             }
         }
 
         return subscriptionRecord;
     }
 
-    @ApiMethod(name = "list")
-    public List<SubscriptionRecord> listSubscriptions() {
-        return SubscriptionRecord.getAllSubscriptions();
-    }
+//    @ApiMethod(name = "list")
+//    public List<SubscriptionRecord> listSubscriptions() {
+//        return SubscriptionRecord.getAllSubscriptions();
+//    }
 
-    @ApiMethod(name = "get")
-    public List<SubscriptionRecord> getSubscribed(User user) {
+    @ApiMethod(name = "subscribed")
+    public Collection<HealthDroidUser> getSubscribed(User user) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(user.getEmail());
-        return ofy().load().type(SubscriptionRecord.class).filter("subscriber", healthDroidUser).list();
+        List<SubscriptionRecord> subscriptionRecords =
+                ofy().load().type(SubscriptionRecord.class).filter("subscriber", healthDroidUser).list();
+        List<Ref<HealthDroidUser>> subscribedRefs = new ArrayList<>();
+        for (SubscriptionRecord record : subscriptionRecords) {
+            subscribedRefs.add(record.target);
+        }
+        return ofy().load().refs(subscribedRefs).values();
     }
 
     @ApiMethod(name = "subscribers")
-    public List<SubscriptionRecord> subscribers(@Named("userId") String userId) {
+    public Collection<HealthDroidUser> subscribers(@Named("userId") String userId) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
-        return ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
+        List<SubscriptionRecord> subscriptionRecords =
+                ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
+        List<Ref<HealthDroidUser>> subscriberRefs = new ArrayList<>();
+        for (SubscriptionRecord record : subscriptionRecords) {
+            subscriberRefs.add(record.subscriber);
+        }
+        return ofy().load().refs(subscriberRefs).values();
     }
 
     @ApiMethod(name = "unsubscribe")

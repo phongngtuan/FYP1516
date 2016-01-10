@@ -6,40 +6,41 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Parent;
 
-import java.util.List;
-
-import static com.ntu.phongnt.healthdroid.messaging.OfyService.ofy;
-
 @Entity
 public class SubscriptionRecord {
     @Id
-    private Long id;
+    Long id;
     @Index
-    private Ref<HealthDroidUser> subscriber;
+    public transient Ref<HealthDroidUser> subscriber;
     @Parent
-    private Ref<HealthDroidUser> target;
+    public transient Ref<HealthDroidUser> target;
 
     public SubscriptionRecord() {
 
     }
 
     public HealthDroidUser getSubscriber() {
-        return ofy().load().ref(subscriber).now();
+        return subscriber.get();
     }
 
-    public void setSubscriber(Ref<HealthDroidUser> subscriber) {
-        this.subscriber = subscriber;
+    public void setSubscriber(HealthDroidUser subscriber) {
+        this.subscriber = Ref.create(subscriber);
     }
 
     public HealthDroidUser getTarget() {
-        return ofy().load().ref(target).now();
+        return target.get();
     }
 
-    public void setTarget(Ref<HealthDroidUser> target) {
-        this.target = target;
+    public void setTarget(HealthDroidUser target) {
+        this.target = Ref.create(target);
     }
-
-    public static List<SubscriptionRecord> getAllSubscriptions() {
-        return ofy().load().type(SubscriptionRecord.class).list();
-    }
+//
+//    public String getSubsciptions() {
+//        return subscriber.getValue().getEmail()
+//                + target.getValue().getEmail();
+//    }
+//
+//    public static List<SubscriptionRecord> getAllSubscriptions() {
+//        return ofy().load().type(SubscriptionRecord.class).list();
+//    }
 }

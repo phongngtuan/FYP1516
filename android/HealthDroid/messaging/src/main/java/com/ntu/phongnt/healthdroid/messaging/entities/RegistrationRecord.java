@@ -31,8 +31,8 @@ public class RegistrationRecord {
         this.user = user;
     }
 
-    public Ref<HealthDroidUser> getUser() {
-        return user;
+    public HealthDroidUser getUser() {
+        return user.get();
     }
 
     public String getRegId() {
