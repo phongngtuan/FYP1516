@@ -75,9 +75,9 @@ public class UserFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_list, container, false);
 
         HealthDroidUserViewInteractionListener listener = new HealthDroidUserViewInteractionListener() {
-            //TODO: implement
             @Override
             public void onItemClick(HealthDroidUserWrapper user) {
+                //TODO: implement
                 Toast.makeText(getActivity(), user.healthDroidUser.getEmail(), Toast.LENGTH_SHORT).show();
             }
 
@@ -122,7 +122,7 @@ public class UserFragment extends Fragment {
     }
 
     public interface HealthDroidUserViewInteractionListener {
-        // TODO: Update argument type and name
+
         void onItemClick(HealthDroidUserWrapper user);
 
         void onSubscribeClick(HealthDroidUserWrapper user, boolean alreadySubscribed);
@@ -142,11 +142,6 @@ public class UserFragment extends Fragment {
                 e.printStackTrace();
             }
             return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
         }
     }
 
