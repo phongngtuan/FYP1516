@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
@@ -40,8 +41,7 @@ public class UserFragment extends Fragment {
     private RecyclerView recyclerView = null;
     private int mColumnCount = 1;
 
-    private List<HealthDroidUserWrapper> listUser = new ArrayList<HealthDroidUserWrapper>();
-    private GoogleAccountCredential credential = null;
+    private List<HealthDroidUserWrapper> listUser = new ArrayList<>();
 
     public UserFragment() {
     }
@@ -51,7 +51,6 @@ public class UserFragment extends Fragment {
     public static UserFragment newInstance(int columnCount, GoogleAccountCredential credential) {
         //TODO: clean this up
         UserFragment fragment = new UserFragment();
-        fragment.credential = credential;
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -83,9 +82,14 @@ public class UserFragment extends Fragment {
             }
 
             @Override
-            public void onSubscribeClick(HealthDroidUserWrapper user) {
-                subscribe(user.healthDroidUser);
-                Toast.makeText(getActivity(), user.healthDroidUser.getEmail() + "subscribed", Toast.LENGTH_SHORT).show();
+            public void onSubscribeClick(HealthDroidUserWrapper user, boolean alreadySubscribed) {
+                if (alreadySubscribed) {
+                    subscribe(user.healthDroidUser);
+                    Toast.makeText(getActivity(), user.healthDroidUser.getEmail() + " subscribed", Toast.LENGTH_SHORT).show();
+                } else {
+                    unsubscribe(user.healthDroidUser);
+                    Toast.makeText(getActivity(), user.healthDroidUser.getEmail() + " unsubscribed", Toast.LENGTH_SHORT).show();
+                }
             }
         };
 
@@ -109,6 +113,10 @@ public class UserFragment extends Fragment {
         new SubscribeTask().execute(user);
     }
 
+    private void unsubscribe(HealthDroidUser user) {
+        new UnsubscribeTask().execute(user);
+    }
+
     private void notifyChange() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -117,7 +125,29 @@ public class UserFragment extends Fragment {
         // TODO: Update argument type and name
         void onItemClick(HealthDroidUserWrapper user);
 
-        void onSubscribeClick(HealthDroidUserWrapper user);
+        void onSubscribeClick(HealthDroidUserWrapper user, boolean alreadySubscribed);
+    }
+
+    private class UnsubscribeTask extends AsyncTask<HealthDroidUser, Void, Void> {
+        @Override
+        protected Void doInBackground(HealthDroidUser... params) {
+            Subscription subscriptionService = SubscriptionFactory.getInstance();
+            HealthDroidUser targetUser = params[0];
+            MainActivity mainActivity = (MainActivity) getActivity();
+            String user = mainActivity.getCredential().getSelectedAccountName();
+            try {
+                subscriptionService.unsubscribe(user).setTarget(targetUser.getEmail()).execute();
+                notifyUnsubscribed(targetUser.getEmail());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
     }
 
     private class SubscribeTask extends AsyncTask<HealthDroidUser, Void, SubscriptionRecord> {
@@ -142,6 +172,35 @@ public class UserFragment extends Fragment {
         }
     }
 
+    private void notifyUnsubscribed(String email) {
+        for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
+            if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
+                Log.d(TAG, "Disabling a subscribe button for user " + email);
+                healthDroidUserWrapper.subscribed = false;
+            }
+        }
+
+        //TODO: there is duplicated code, consider refactor
+        SharedPreferences dataPreferences =
+                getActivity().getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
+        Set<String> subscribedUsers = dataPreferences.getStringSet(
+                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
+                new TreeSet<String>()
+        );
+        subscribedUsers.remove(email);
+        SharedPreferences.Editor editor = dataPreferences.edit();
+        editor.putStringSet(
+                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
+                subscribedUsers
+        );
+        editor.apply();
+        Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
+    }
+
+    private void notifyUnsubscribed(com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user) {
+        notifyUnsubscribed(user.getEmail());
+    }
+
     private void notifySubscribed(com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user) {
         String email = user.getEmail();
         Set<String> subscribedUsers = new TreeSet<>();
@@ -161,6 +220,7 @@ public class UserFragment extends Fragment {
                 subscribedUsers
         );
         editor.apply();
+        Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
     }
 
     private class GetSubscriptionsTask extends AsyncTask<Void, Void, List<com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser>> {
