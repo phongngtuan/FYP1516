@@ -55,6 +55,18 @@ public class SubscriptionEndpoint {
         return subscriptionRecord;
     }
 
+    @ApiMethod(name = "accept")
+    public SubscriptionRecord acceptSubscription(@Named("subscriptionId") Long subscriptionId, User user) {
+        HealthDroidUser healthDroidUser = HealthDroidUser.getUser(user.getEmail());
+        SubscriptionRecord subscriptionRecord =
+                ofy().load().type(SubscriptionRecord.class).parent(healthDroidUser).id(subscriptionId).now();
+        if (subscriptionRecord != null) {
+            subscriptionRecord.setIsAccepted(true);
+            ofy().save().entity(subscriptionRecord);
+        }
+        return subscriptionRecord;
+    }
+
     @ApiMethod(name = "list")
     public List<SubscriptionRecord> listSubscriptions() {
         return ofy().load().type(SubscriptionRecord.class).list();
