@@ -55,10 +55,10 @@ public class SubscriptionEndpoint {
         return subscriptionRecord;
     }
 
-//    @ApiMethod(name = "list")
-//    public List<SubscriptionRecord> listSubscriptions() {
-//        return SubscriptionRecord.getAllSubscriptions();
-//    }
+    @ApiMethod(name = "list")
+    public List<SubscriptionRecord> listSubscriptions() {
+        return ofy().load().type(SubscriptionRecord.class).list();
+    }
 
     @ApiMethod(name = "subscribed")
     public Collection<SubscriptionRecord> getSubscribed(User user) {
