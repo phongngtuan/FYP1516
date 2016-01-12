@@ -26,4 +26,7 @@
     <string name="nav_user">User</string>
     <string name="time_range">Time range</string>
     <string name="data_sets">Data sets</string>
+    <string name="subscribe_label">Subscribe</string>
+    <string name="pending_label">Pending</string>
+    <string name="unsubscribe_label">Unsubscribe</string>
 </resources>

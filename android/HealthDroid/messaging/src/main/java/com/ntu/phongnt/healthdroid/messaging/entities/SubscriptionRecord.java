@@ -10,13 +10,18 @@ import com.googlecode.objectify.annotation.Parent;
 public class SubscriptionRecord {
     @Id
     Long id;
+    private Boolean isAccepted;
     @Index
-    public transient Ref<HealthDroidUser> subscriber;
+    private transient Ref<HealthDroidUser> subscriber;
     @Parent
-    public transient Ref<HealthDroidUser> target;
+    private transient Ref<HealthDroidUser> target;
 
     public SubscriptionRecord() {
+        isAccepted = false;
+    }
 
+    public SubscriptionRecord(boolean isAccepted) {
+        this.isAccepted = isAccepted;
     }
 
     public HealthDroidUser getSubscriber() {
@@ -34,13 +39,12 @@ public class SubscriptionRecord {
     public void setTarget(HealthDroidUser target) {
         this.target = Ref.create(target);
     }
-//
-//    public String getSubsciptions() {
-//        return subscriber.getValue().getEmail()
-//                + target.getValue().getEmail();
-//    }
-//
-//    public static List<SubscriptionRecord> getAllSubscriptions() {
-//        return ofy().load().type(SubscriptionRecord.class).list();
-//    }
+
+    public boolean isAccepted() {
+        return isAccepted;
+    }
+
+    public void setIsAccepted(boolean isAccepted) {
+        this.isAccepted = isAccepted;
+    }
 }

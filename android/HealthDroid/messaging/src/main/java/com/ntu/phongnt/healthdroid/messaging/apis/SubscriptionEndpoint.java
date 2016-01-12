@@ -6,13 +6,11 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.appengine.api.users.User;
-import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.cmd.Query;
 import com.ntu.phongnt.healthdroid.messaging.entities.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.messaging.entities.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.messaging.secured.AppConstants;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,27 +61,15 @@ public class SubscriptionEndpoint {
 //    }
 
     @ApiMethod(name = "subscribed")
-    public Collection<HealthDroidUser> getSubscribed(User user) {
+    public Collection<SubscriptionRecord> getSubscribed(User user) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(user.getEmail());
-        List<SubscriptionRecord> subscriptionRecords =
-                ofy().load().type(SubscriptionRecord.class).filter("subscriber", healthDroidUser).list();
-        List<Ref<HealthDroidUser>> subscribedRefs = new ArrayList<>();
-        for (SubscriptionRecord record : subscriptionRecords) {
-            subscribedRefs.add(record.target);
-        }
-        return ofy().load().refs(subscribedRefs).values();
+        return ofy().load().type(SubscriptionRecord.class).filter("subscriber", healthDroidUser).list();
     }
 
     @ApiMethod(name = "subscribers")
-    public Collection<HealthDroidUser> subscribers(@Named("userId") String userId) {
+    public Collection<SubscriptionRecord> subscribers(@Named("userId") String userId) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
-        List<SubscriptionRecord> subscriptionRecords =
-                ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
-        List<Ref<HealthDroidUser>> subscriberRefs = new ArrayList<>();
-        for (SubscriptionRecord record : subscriptionRecords) {
-            subscriberRefs.add(record.subscriber);
-        }
-        return ofy().load().refs(subscriberRefs).values();
+        return ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
     }
 
     @ApiMethod(name = "unsubscribe")
