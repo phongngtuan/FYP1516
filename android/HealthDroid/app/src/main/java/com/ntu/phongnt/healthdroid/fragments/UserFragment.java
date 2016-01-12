@@ -263,7 +263,7 @@ public class UserFragment extends Fragment {
         protected void onPostExecute(List<SubscriptionRecord> subscriptionRecords) {
             super.onPostExecute(subscriptionRecords);
             for (SubscriptionRecord record : subscriptionRecords) {
-                if (record.getAccepted())
+                if (record.getIsAccepted())
                     notifySubscriptionConfirmed(record.getTarget());
                 else
                     notifySubscriptionSent(record.getTarget());

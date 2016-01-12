@@ -24,6 +24,10 @@ public class SubscriptionRecord {
         this.isAccepted = isAccepted;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public HealthDroidUser getSubscriber() {
         return subscriber.get();
     }
@@ -40,11 +44,11 @@ public class SubscriptionRecord {
         this.target = Ref.create(target);
     }
 
-    public boolean isAccepted() {
+    public Boolean getIsAccepted() {
         return isAccepted;
     }
 
-    public void setIsAccepted(boolean isAccepted) {
+    public void setIsAccepted(Boolean isAccepted) {
         this.isAccepted = isAccepted;
     }
 }
