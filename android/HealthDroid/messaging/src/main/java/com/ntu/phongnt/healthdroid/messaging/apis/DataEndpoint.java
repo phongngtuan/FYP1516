@@ -59,7 +59,8 @@ public class DataEndpoint {
             ofy().save().entity(dataRecord).now();
             assert dataRecord.id != null;
 
-//            //TODO: Need to refactor this, copy paste for now
+            //TODO: Need to refactor this, copy paste for now
+            //Sending notifications
             Sender sender = new Sender(API_KEY);
             Message msg = new Message.Builder().collapseKey("data_updated").build();
             System.out.println("DEBUG: Publisher " + healthDroidUser.getEmail());
