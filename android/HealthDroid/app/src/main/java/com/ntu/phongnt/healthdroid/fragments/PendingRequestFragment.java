@@ -21,6 +21,7 @@ import com.ntu.phongnt.healthdroid.fragments.adapter.PendingRequestAdapter;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PendingRequestFragment extends Fragment implements PendingRequestAdapter.PendingRequestInteractionListener {
@@ -56,6 +57,28 @@ public class PendingRequestFragment extends Fragment implements PendingRequestAd
     @Override
     public void onRequestAccepted(SubscriptionRecord subscriptionRecord) {
         Toast.makeText(getActivity(), "Accepted req by " + subscriptionRecord.getSubscriber().getEmail(), Toast.LENGTH_SHORT).show();
+        new AcceptPendingRequestTask().execute(subscriptionRecord);
+    }
+
+    private class AcceptPendingRequestTask extends AsyncTask<SubscriptionRecord, Void, List<SubscriptionRecord>> {
+        @Override
+        protected List<SubscriptionRecord> doInBackground(SubscriptionRecord... params) {
+            Subscription subscriptionService = SubscriptionFactory.getInstance();
+            List<SubscriptionRecord> resultedList = new ArrayList<>();
+            for (SubscriptionRecord subscription : params) {
+                try {
+                    SubscriptionRecord returnedObject = subscriptionService.accept(subscription.getId()).execute();
+                    if (returnedObject != null) {
+                        Log.d(TAG, "Accepted pending request (id " + returnedObject.getId() + ")");
+                        resultedList.add(returnedObject);
+                    }
+                } catch (IOException e) {
+                    Log.d(TAG, "Cannot accept pending request " + subscription.getId());
+                    e.printStackTrace();
+                }
+            }
+            return resultedList;
+        }
     }
 
     private class GetPendingRequestTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
