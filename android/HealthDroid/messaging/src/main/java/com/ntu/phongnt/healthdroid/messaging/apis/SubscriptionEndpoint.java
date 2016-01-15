@@ -128,6 +128,12 @@ public class SubscriptionEndpoint {
         return ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
     }
 
+    @ApiMethod(name = "pending")
+    public Collection<SubscriptionRecord> pending(@Named("userId") String userId) {
+        HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);
+        return ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).filter("isAccepted", false).list();
+    }
+
     @ApiMethod(name = "unsubscribe")
     public List<SubscriptionRecord> unsubscribe(@Named("userId") String userId, @Nullable @Named("target") String target) {
         HealthDroidUser healthDroidUser = HealthDroidUser.getUser(userId);

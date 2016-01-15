@@ -10,6 +10,7 @@ import com.googlecode.objectify.annotation.Parent;
 public class SubscriptionRecord {
     @Id
     Long id;
+    @Index
     private Boolean isAccepted;
     @Index
     private transient Ref<HealthDroidUser> subscriber;
