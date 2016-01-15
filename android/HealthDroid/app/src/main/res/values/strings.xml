@@ -30,4 +30,5 @@
     <string name="pending_label">Pending</string>
     <string name="unsubscribe_label">Unsubscribe</string>
     <string name="nav_pending_requests">Pending requests</string>
+    <string name="accept">Accept</string>
 </resources>
