@@ -14,9 +14,18 @@ import java.util.List;
 
 public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestViewHolder> {
     private List<SubscriptionRecord> pendingRequests = new ArrayList<>();
+    private PendingRequestInteractionListener listener;
 
     public List<SubscriptionRecord> getPendingRequests() {
         return pendingRequests;
+    }
+
+    public PendingRequestInteractionListener getListener() {
+        return listener;
+    }
+
+    public void setListener(PendingRequestInteractionListener listener) {
+        this.listener = listener;
     }
 
     public void setPendingRequests(List<SubscriptionRecord> pendingRequests) {
@@ -31,13 +40,25 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestVi
     }
 
     @Override
-    public void onBindViewHolder(PendingRequestViewHolder holder, int position) {
+    public void onBindViewHolder(PendingRequestViewHolder holder, final int position) {
         String user = pendingRequests.get(position).getSubscriber().getEmail();
         holder.userView.setText(user);
+
+        holder.acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onRequestAccepted(pendingRequests.get(position));
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return pendingRequests.size();
+    }
+
+
+    public interface PendingRequestInteractionListener {
+        public void onRequestAccepted(SubscriptionRecord subscriptionRecord);
     }
 }

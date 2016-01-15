@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.MainActivity;
@@ -22,7 +23,7 @@ import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import java.io.IOException;
 import java.util.List;
 
-public class PendingRequestFragment extends Fragment {
+public class PendingRequestFragment extends Fragment implements PendingRequestAdapter.PendingRequestInteractionListener {
     private static final String TAG = "PENDING_REQUEST_FRAG";
     private RecyclerView recyclerView = null;
     private PendingRequestAdapter pendingRequestAdapter = null;
@@ -36,6 +37,7 @@ public class PendingRequestFragment extends Fragment {
             recyclerView = (RecyclerView) view;
             ((RecyclerView) view).setLayoutManager(new LinearLayoutManager(view.getContext()));
             pendingRequestAdapter = new PendingRequestAdapter();
+            pendingRequestAdapter.setListener(this);
             recyclerView.setAdapter(pendingRequestAdapter);
         }
 
@@ -49,6 +51,11 @@ public class PendingRequestFragment extends Fragment {
         GoogleAccountCredential credential =
                 ((MainActivity) getActivity()).getCredential();
         new GetPendingRequestTask(credential.getSelectedAccountName()).execute();
+    }
+
+    @Override
+    public void onRequestAccepted(SubscriptionRecord subscriptionRecord) {
+        Toast.makeText(getActivity(), "Accepted req by " + subscriptionRecord.getSubscriber().getEmail(), Toast.LENGTH_SHORT).show();
     }
 
     private class GetPendingRequestTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
