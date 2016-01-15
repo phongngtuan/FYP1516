@@ -21,12 +21,15 @@ import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
+import com.ntu.phongnt.healthdroid.util.TitleUtil;
 
 import java.io.IOException;
 import java.util.Date;
 
 public class HomeFragment extends Fragment implements Button.OnClickListener {
-    private static String TAG = "HomeFragment";
+    public static String TAG = "HOME_FRAG";
+    public static String TITLE = "Home";
+
     private static HomeFragment instance;
 
     DataHelper db = null;
@@ -57,6 +60,8 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
         });
         userField = (TextView) view.findViewById(R.id.user_id);
 
+        //Set title
+        TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
 
         return view;
     }

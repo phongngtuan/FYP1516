@@ -19,13 +19,15 @@ import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.fragments.adapter.PendingRequestAdapter;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
+import com.ntu.phongnt.healthdroid.util.TitleUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PendingRequestFragment extends Fragment implements PendingRequestAdapter.PendingRequestInteractionListener {
-    private static final String TAG = "PENDING_REQUEST_FRAG";
+    public static final String TAG = "PENDING_REQUEST_FRAG";
+    public static final String TITLE = "Pending requests";
     private RecyclerView recyclerView = null;
     private PendingRequestAdapter pendingRequestAdapter = null;
 
@@ -42,6 +44,7 @@ public class PendingRequestFragment extends Fragment implements PendingRequestAd
             recyclerView.setAdapter(pendingRequestAdapter);
         }
 
+        TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
         setRetainInstance(true);
         return view;
     }

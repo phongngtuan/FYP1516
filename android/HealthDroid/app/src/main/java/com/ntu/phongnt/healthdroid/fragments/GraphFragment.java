@@ -25,6 +25,7 @@ import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.fragments.dialogs.DataSetPickerFragment;
 import com.ntu.phongnt.healthdroid.fragments.dialogs.TimeRangeDialogFragment;
+import com.ntu.phongnt.healthdroid.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
 import com.ntu.phongnt.healthdroid.util.chart.LineChartAdapter;
 import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByDayFormatter;
@@ -36,7 +37,9 @@ import java.util.List;
 
 public class GraphFragment extends Fragment implements
         TimeRangeDialogFragment.TimeRangePickerListener, DataSetPickerFragment.DataSetPickerListener {
-    public static String TAG = "GraphFragment";
+    public static String TAG = "GRAPH_FRAG";
+    public static String TITLE = "Graph";
+
     private LineChart chart = null;
     private DataHelper db = null;
     private int formatter_choice;
@@ -57,6 +60,8 @@ public class GraphFragment extends Fragment implements
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.content_graph, container, false);
 
+        //Set title
+        TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
 //        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override

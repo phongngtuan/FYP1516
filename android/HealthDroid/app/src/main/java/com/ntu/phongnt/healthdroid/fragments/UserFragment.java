@@ -25,6 +25,7 @@ import com.ntu.phongnt.healthdroid.fragments.adapter.MyUserRecyclerViewAdapter;
 import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
+import com.ntu.phongnt.healthdroid.util.TitleUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +37,8 @@ public class UserFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private static final String TAG = "USER_FRAGMENT";
+    public static final String TAG = "USER_FRAG";
+    public static final String TITLE = "Users";
     // TODO: Customize parameters
     private RecyclerView recyclerView = null;
     private int mColumnCount = 1;
@@ -69,11 +71,13 @@ public class UserFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_list, container, false);
 
+        TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
         HealthDroidUserViewInteractionListener listener = new HealthDroidUserViewInteractionListener() {
             @Override
             public void onItemClick(HealthDroidUserWrapper user) {
