@@ -6,9 +6,23 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.fragments.adapter.viewholders.PendingRequestViewHolder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestViewHolder> {
+    private List<SubscriptionRecord> pendingRequests = new ArrayList<>();
+
+    public List<SubscriptionRecord> getPendingRequests() {
+        return pendingRequests;
+    }
+
+    public void setPendingRequests(List<SubscriptionRecord> pendingRequests) {
+        this.pendingRequests = pendingRequests;
+    }
+
     @Override
     public PendingRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -18,11 +32,12 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestVi
 
     @Override
     public void onBindViewHolder(PendingRequestViewHolder holder, int position) {
-        holder.userView.setText("My funny thing " + position);
+        String user = pendingRequests.get(position).getSubscriber().getEmail();
+        holder.userView.setText(user);
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return pendingRequests.size();
     }
 }

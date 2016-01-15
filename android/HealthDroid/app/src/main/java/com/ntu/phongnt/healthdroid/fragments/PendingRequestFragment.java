@@ -24,7 +24,8 @@ import java.util.List;
 
 public class PendingRequestFragment extends Fragment {
     private static final String TAG = "PENDING_REQUEST_FRAG";
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView = null;
+    private PendingRequestAdapter pendingRequestAdapter = null;
 
     @Nullable
     @Override
@@ -34,9 +35,11 @@ public class PendingRequestFragment extends Fragment {
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
             ((RecyclerView) view).setLayoutManager(new LinearLayoutManager(view.getContext()));
-            PendingRequestAdapter pendingRequestAdapter = new PendingRequestAdapter();
+            pendingRequestAdapter = new PendingRequestAdapter();
             recyclerView.setAdapter(pendingRequestAdapter);
         }
+
+        setRetainInstance(true);
         return view;
     }
 
@@ -66,6 +69,12 @@ public class PendingRequestFragment extends Fragment {
                 e.printStackTrace();
             }
             return subscriptionRecords;
+        }
+
+        @Override
+        protected void onPostExecute(List<SubscriptionRecord> subscriptionRecords) {
+            pendingRequestAdapter.setPendingRequests(subscriptionRecords);
+            pendingRequestAdapter.notifyDataSetChanged();
         }
     }
 }
