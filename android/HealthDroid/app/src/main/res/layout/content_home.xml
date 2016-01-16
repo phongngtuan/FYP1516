@@ -25,7 +25,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/send_button"
+        android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Fetch data" />
@@ -36,7 +36,14 @@
         android:layout_height="wrap_content"
         android:hint="value" />
     <Button
-        android:id="@+id/submit_btn"
+        android:text="Send Data"
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:text="Test notification"
+        android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>

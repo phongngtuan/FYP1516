@@ -68,7 +68,7 @@ public class MainActivity extends SignInActivity
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
 
-    private BroadcastReceiver broadcastReceiver = null;
+    private BroadcastReceiver tokenBroadcastReceiver = null;
 
     private String accountName = null;
     private HealthDroidUser healthDroidUser = null;
@@ -97,16 +97,29 @@ public class MainActivity extends SignInActivity
         profileImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
 
         //Instance variables initializations
+        //Broadcasting
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+
         //receiver
-        broadcastReceiver = new BroadcastReceiver() {
+        tokenBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.d(TAG, "broadcast received");
                 Toast.makeText(context, "Sent token to server", Toast.LENGTH_SHORT).show();
             }
         };
-        IntentFilter intentFilter = new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
+        IntentFilter tokenIntentFilter = new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE);
+        broadcastManager.registerReceiver(tokenBroadcastReceiver, tokenIntentFilter);
+
+        BroadcastReceiver pendingRequestBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "Received broadcast: pending request accepted");
+                Toast.makeText(context, "Pending request accepted", Toast.LENGTH_SHORT).show();
+            }
+        };
+        IntentFilter pendingRequestFilter = new IntentFilter(QuickstartPreferences.REQUEST_ACCEPTED);
+        broadcastManager.registerReceiver(pendingRequestBroadcastReceiver, pendingRequestFilter);
 
         settings = getSharedPreferences("HealthDroid", 0);
         credential = GoogleAccountCredential.usingAudience(

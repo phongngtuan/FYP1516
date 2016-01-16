@@ -3,7 +3,10 @@ package com.ntu.phongnt.healthdroid.gcm;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
@@ -26,15 +29,21 @@ public class MyGcmListenerService extends GcmListenerService {
             String id = data.getString("subscriptionId", "");
             String subscriber = data.getString("subscriber", "");
             String target = data.getString("target", "");
-            Notification notification = new Notification.Builder(this)
-                    .setSmallIcon(R.drawable.places_ic_search)
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("My Tittle")
                     .setContentText(
                             target + " accepted id " + id
                     )
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setVibrate(new long[0])
                     .build();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
+
+            //Broadcast this event
+            Intent intent = new Intent(QuickstartPreferences.REQUEST_ACCEPTED);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         } else
             new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();
     }

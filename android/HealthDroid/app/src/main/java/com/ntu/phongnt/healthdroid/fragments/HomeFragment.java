@@ -1,9 +1,13 @@
 package com.ntu.phongnt.healthdroid.fragments;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,9 +50,9 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
         final View view = inflater.inflate(R.layout.content_home, container, false);
         setRetainInstance(true);
         db = DataHelper.getInstance(getActivity());
-        button = (Button) view.findViewById(R.id.send_button);
+        button = (Button) view.findViewById(R.id.button1);
         button.setOnClickListener(this);
-        button = (Button) view.findViewById(R.id.submit_btn);
+        button = (Button) view.findViewById(R.id.button2);
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,6 +66,26 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
 
         //Set title
         TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
+
+        //Playing around
+        Button btn3 = (Button) view.findViewById(R.id.button3);
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Notification notification = new NotificationCompat.Builder(getActivity())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("My Tittle")
+                        .setContentText(
+                                "My notification"
+                        )
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setVibrate(new long[0])
+                        .build();
+                NotificationManager notificationManager =
+                        (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(1, notification);
+            }
+        });
 
         return view;
     }
