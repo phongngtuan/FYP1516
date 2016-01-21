@@ -16,12 +16,12 @@ public class UserFactory {
         return instance;
     }
 
-    public static User build(GoogleAccountCredential credential) {
+    public static User build(GoogleAccountCredential credential, String rootUrl) {
         User.Builder builder = new User.Builder(
                 AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(),
                 credential)
-                .setRootUrl("http://192.168.1.28:8080/_ah/api/")
+                .setRootUrl(rootUrl)
                 .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                     @Override
                     public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {

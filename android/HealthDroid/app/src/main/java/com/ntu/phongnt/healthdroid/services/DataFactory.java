@@ -16,12 +16,12 @@ public class DataFactory {
         return instance;
     }
 
-    public static Data build(GoogleAccountCredential credential) {
+    public static Data build(GoogleAccountCredential credential, String rootUrl) {
         Data.Builder builder = new Data.Builder(
                 AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(),
                 credential)
-                .setRootUrl("http://192.168.1.28:8080/_ah/api/")
+                .setRootUrl(rootUrl)
                 .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                     @Override
                     public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {

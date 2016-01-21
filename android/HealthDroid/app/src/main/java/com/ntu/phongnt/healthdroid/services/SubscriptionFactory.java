@@ -16,12 +16,12 @@ public class SubscriptionFactory {
         return instance;
     }
 
-    public static Subscription build(GoogleAccountCredential credential) {
+    public static Subscription build(GoogleAccountCredential credential, String rootUrl) {
         Subscription.Builder builder = new Subscription.Builder(
                 AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(),
                 credential)
-                .setRootUrl("http://192.168.1.28:8080/_ah/api/")
+                .setRootUrl(rootUrl)
                 .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                     @Override
                     public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {

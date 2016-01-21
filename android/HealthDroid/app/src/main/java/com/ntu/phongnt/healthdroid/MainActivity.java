@@ -291,10 +291,12 @@ public class MainActivity extends SignInActivity
 //    }
 
     private void constructServices(GoogleAccountCredential credential) {
-        SubscriptionFactory.build(credential);
-        UserFactory.build(credential);
-        RegistrationFactory.build(credential);
-        DataFactory.build(credential);
+        String rootUrl = getResources().getString(R.string.rootUrl);
+        Log.d("Root_url", rootUrl);
+        SubscriptionFactory.build(credential, rootUrl);
+        UserFactory.build(credential, rootUrl);
+        RegistrationFactory.build(credential, rootUrl);
+        DataFactory.build(credential, rootUrl);
     }
 
     public GoogleAccountCredential getCredential() {
