@@ -12,6 +12,12 @@ public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
+    public CharSequence getPageTitle(int position) {
+        //TODO: change appropriately
+        return "Graph " + position;
+    }
+
+    @Override
     public Fragment getItem(int position) {
         return new GraphFragment();
     }
