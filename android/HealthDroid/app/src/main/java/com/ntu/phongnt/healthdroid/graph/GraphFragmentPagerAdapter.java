@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
+
 public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     public GraphFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -11,7 +13,7 @@ public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return new DemoFragment();
+        return new GraphFragment();
     }
 
     @Override
