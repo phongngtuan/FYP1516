@@ -40,6 +40,7 @@ import com.ntu.phongnt.healthdroid.fragments.PendingRequestFragment;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
+import com.ntu.phongnt.healthdroid.graph.GraphTabsFragment;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
@@ -59,6 +60,7 @@ public class MainActivity extends SignInActivity
     private GraphFragment graphFragment = null;
     private DataFragment dataFragment = null;
     private UserFragment userFragment = null;
+    private GraphTabsFragment graphTabsFragment = null;
     private PendingRequestFragment pendingRequestFragment = null;
 
     private ImageView profileImage = null;
@@ -265,6 +267,12 @@ public class MainActivity extends SignInActivity
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, pendingRequestFragment, "PENDING_REQUEST_FRAGMENT").commit();
         } else if (id == R.id.nav_share) {
+            graphTabsFragment = (GraphTabsFragment) getSupportFragmentManager().findFragmentByTag("GRAPH_TABS_FRAGMENT");
+            if (graphTabsFragment == null)
+                graphTabsFragment = new GraphTabsFragment();
+            if (!graphTabsFragment.isVisible())
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, graphTabsFragment, "GRAPH_TABS_FRAGMENT").commit();
 
         } else if (id == R.id.nav_send) {
 
