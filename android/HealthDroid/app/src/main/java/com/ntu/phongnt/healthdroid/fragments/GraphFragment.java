@@ -40,6 +40,7 @@ public class GraphFragment extends Fragment implements
     public static String TAG = "GRAPH_FRAG";
     public static String TITLE = "Graph";
 
+    private String type = "N/A";
     private LineChart chart = null;
     private DataHelper db = null;
     private int formatter_choice;
@@ -50,6 +51,20 @@ public class GraphFragment extends Fragment implements
     public GraphFragment() {
         super();
         formatter_choice = 0;
+    }
+
+    public GraphFragment(String type) {
+        super();
+        this.type = type;
+        formatter_choice = 0;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Nullable

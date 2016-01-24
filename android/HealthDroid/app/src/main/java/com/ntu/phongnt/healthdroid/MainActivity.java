@@ -34,7 +34,6 @@ import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.DataFragment;
-import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.fragments.PendingRequestFragment;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
@@ -57,7 +56,6 @@ public class MainActivity extends SignInActivity
     private static final String TAG = "MainActivity";
 
     private HomeFragment homeFragment = null;
-    private GraphFragment graphFragment = null;
     private DataFragment dataFragment = null;
     private UserFragment userFragment = null;
     private GraphTabsFragment graphTabsFragment = null;
@@ -237,13 +235,12 @@ public class MainActivity extends SignInActivity
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, homeFragment, "HOME_FRAGMENT").commit();
         } else if (id == R.id.nav_graph) {
-            graphFragment = (GraphFragment) getSupportFragmentManager().findFragmentByTag("GRAPH_FRAGMENT");
-            if (graphFragment == null) {
-                graphFragment = new GraphFragment();
-            }
-            if (!graphFragment.isVisible())
+            graphTabsFragment = (GraphTabsFragment) getSupportFragmentManager().findFragmentByTag("GRAPH_TABS_FRAGMENT");
+            if (graphTabsFragment == null)
+                graphTabsFragment = new GraphTabsFragment();
+            if (!graphTabsFragment.isVisible())
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, graphFragment, "GRAPH_FRAGMENT").commit();
+                        .replace(R.id.fragment_container, graphTabsFragment, "GRAPH_TABS_FRAGMENT").commit();
         } else if (id == R.id.nav_data) {
             dataFragment = (DataFragment) getSupportFragmentManager().findFragmentByTag("DATA_FRAGMENT");
             if (dataFragment == null) {
@@ -267,13 +264,6 @@ public class MainActivity extends SignInActivity
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, pendingRequestFragment, "PENDING_REQUEST_FRAGMENT").commit();
         } else if (id == R.id.nav_share) {
-            graphTabsFragment = (GraphTabsFragment) getSupportFragmentManager().findFragmentByTag("GRAPH_TABS_FRAGMENT");
-            if (graphTabsFragment == null)
-                graphTabsFragment = new GraphTabsFragment();
-            if (!graphTabsFragment.isVisible())
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, graphTabsFragment, "GRAPH_TABS_FRAGMENT").commit();
-
         } else if (id == R.id.nav_send) {
 
         }

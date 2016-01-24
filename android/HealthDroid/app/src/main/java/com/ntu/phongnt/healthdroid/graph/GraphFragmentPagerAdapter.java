@@ -7,23 +7,30 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
 
 public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
+    public static final int GRAPH_COUNT = 3;
+    GraphFragment[] graphFragments = new GraphFragment[GRAPH_COUNT];
+
     public GraphFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
+        //TODO: do this according to graph subclass later
+        graphFragments[0] = new GraphFragment("Type A");
+        graphFragments[1] = new GraphFragment("Type B");
+        graphFragments[2] = new GraphFragment("Type C");
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         //TODO: change appropriately
-        return "Graph " + position;
+        return graphFragments[position].getType();
     }
 
     @Override
     public Fragment getItem(int position) {
-        return new GraphFragment();
+        return graphFragments[position];
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return GRAPH_COUNT;
     }
 }
