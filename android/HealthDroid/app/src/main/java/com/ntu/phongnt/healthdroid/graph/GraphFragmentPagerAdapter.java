@@ -11,9 +11,9 @@ public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     public GraphFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
         //TODO: do this according to graph subclass later
-        graphFragments[0] = new GraphFragment("Type A");
-        graphFragments[1] = new GraphFragment("Type B");
-        graphFragments[2] = new GraphFragment("Type C");
+        graphFragments[0] = new GraphFragment();
+        graphFragments[1] = new GraphFragment();
+        graphFragments[2] = new GraphFragment();
     }
 
     @Override
