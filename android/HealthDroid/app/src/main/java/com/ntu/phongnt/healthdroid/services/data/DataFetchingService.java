@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.services;
+package com.ntu.phongnt.healthdroid.services.data;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -19,7 +19,7 @@ public class DataFetchingService extends IntentService {
         super("DataFetchingService");
     }
 
-    public static void startFetchingData(Context context, String param1, String param2) {
+    public static void startFetchingData(Context context) {
         Intent intent = new Intent(context, DataFetchingService.class);
         intent.setAction(ACTION_FETCH_DATA);
         context.startService(intent);
@@ -36,7 +36,6 @@ public class DataFetchingService extends IntentService {
     }
 
     private void fetchData() {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+        new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();
     }
 }

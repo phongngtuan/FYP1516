@@ -11,7 +11,6 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 
 public class MyGcmListenerService extends GcmListenerService {
     private static final String TAG = "MyGcmListenerService";
@@ -46,8 +45,9 @@ public class MyGcmListenerService extends GcmListenerService {
             Intent intent = new Intent(QuickstartPreferences.REQUEST_ACCEPTED);
             intent.putExtra(TARGET_USER, targetUser);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        } else
-            new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();
+        }
+//        else
+//            new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();
     }
 
 }

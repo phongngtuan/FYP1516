@@ -28,9 +28,9 @@ import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
-import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
+import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -270,7 +270,6 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
                 subscribedUsers
         );
         editor.apply();
-        new GetDataRecordsFromEndpointTask(getActivity()).execute();
         Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
     }
 

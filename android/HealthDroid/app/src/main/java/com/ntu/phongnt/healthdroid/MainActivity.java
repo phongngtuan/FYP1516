@@ -41,10 +41,11 @@ import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.graph.GraphTabsFragment;
 import com.ntu.phongnt.healthdroid.request.PendingRequestFragment;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
-import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
+import com.ntu.phongnt.healthdroid.services.data.DataFetchingService;
+import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.user.UserFragment;
 
 import java.io.IOException;
@@ -357,6 +358,7 @@ public class MainActivity extends SignInActivity implements
     public void notifySubscriptionChange() {
         for (SubscriptionChangeListener listener : subscriptionChangeListeners)
             listener.subscriptionChanged();
+        DataFetchingService.startFetchingData(this);
     }
 
     private class LoadProfileImageTask extends AsyncTask<String, Void, Bitmap> {

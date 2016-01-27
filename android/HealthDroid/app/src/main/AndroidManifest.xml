@@ -67,7 +67,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".services.DataFetchingService"
+            android:name=".services.data.DataFetchingService"
             android:exported="false"></service>
     </application>
 

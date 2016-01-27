@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.services;
+package com.ntu.phongnt.healthdroid.services.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,6 +14,7 @@ import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
+import com.ntu.phongnt.healthdroid.services.DataFactory;
 
 import java.io.IOException;
 import java.util.Date;
