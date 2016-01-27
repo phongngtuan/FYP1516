@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments.dialogs;
+package com.ntu.phongnt.healthdroid.graph.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
-import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
+import com.ntu.phongnt.healthdroid.graph.GraphFragment;
 
 public class TimeRangeDialogFragment extends DialogFragment {
     public static final String DAY = "Day";

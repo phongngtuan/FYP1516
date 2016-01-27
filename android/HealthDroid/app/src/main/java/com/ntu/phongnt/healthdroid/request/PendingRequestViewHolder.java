@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments.adapter.viewholders;
+package com.ntu.phongnt.healthdroid.request;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

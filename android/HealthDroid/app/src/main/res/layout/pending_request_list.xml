@@ -8,5 +8,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.ntu.phongnt.healthdroid.fragments.PendingRequestFragment"
+    tools:context=".request.PendingRequestFragment"
     tools:listitem="@layout/pending_request_row" />

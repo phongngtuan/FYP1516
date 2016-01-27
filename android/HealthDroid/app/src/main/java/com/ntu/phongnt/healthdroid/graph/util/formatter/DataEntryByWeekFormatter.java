@@ -1,11 +1,11 @@
-package com.ntu.phongnt.healthdroid.util.formatter;
+package com.ntu.phongnt.healthdroid.graph.util.formatter;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.ntu.phongnt.healthdroid.util.DateHelper;
-import com.ntu.phongnt.healthdroid.util.DateRange;
-import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
+import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
+import com.ntu.phongnt.healthdroid.graph.util.DateRange;
+import com.ntu.phongnt.healthdroid.graph.util.chart.ChartAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

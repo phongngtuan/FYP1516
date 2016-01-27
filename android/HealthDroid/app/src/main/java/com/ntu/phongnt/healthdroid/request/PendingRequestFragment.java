@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments;
+package com.ntu.phongnt.healthdroid.request;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,9 +17,8 @@ import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
-import com.ntu.phongnt.healthdroid.fragments.adapter.PendingRequestAdapter;
+import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
-import com.ntu.phongnt.healthdroid.util.TitleUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;

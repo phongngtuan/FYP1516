@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.util.formatter;
+package com.ntu.phongnt.healthdroid.graph.util.formatter;
 
 import java.util.Collection;
 import java.util.Comparator;

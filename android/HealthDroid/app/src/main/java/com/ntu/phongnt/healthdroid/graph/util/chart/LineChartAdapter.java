@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.util.chart;
+package com.ntu.phongnt.healthdroid.graph.util.chart;
 
 import android.graphics.Color;
 

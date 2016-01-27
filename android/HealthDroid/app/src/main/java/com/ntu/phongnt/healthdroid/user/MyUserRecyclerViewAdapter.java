@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments.adapter;
+package com.ntu.phongnt.healthdroid.user;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.fragments.UserFragment;
 
 import java.util.List;
 

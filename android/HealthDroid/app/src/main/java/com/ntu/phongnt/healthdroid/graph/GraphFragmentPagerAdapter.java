@@ -4,8 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.ntu.phongnt.healthdroid.fragments.GraphFragment;
-
 public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     public static final int GRAPH_COUNT = 3;
     GraphFragment[] graphFragments = new GraphFragment[GRAPH_COUNT];

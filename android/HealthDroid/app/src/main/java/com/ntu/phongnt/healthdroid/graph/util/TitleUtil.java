@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.util;
+package com.ntu.phongnt.healthdroid.graph.util;
 
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;

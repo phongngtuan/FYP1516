@@ -1,7 +1,9 @@
-package com.ntu.phongnt.healthdroid.fragments;
+package com.ntu.phongnt.healthdroid.user;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,11 +23,12 @@ import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.fragments.adapter.MyUserRecyclerViewAdapter;
+import com.ntu.phongnt.healthdroid.db.data.DataContract;
+import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
-import com.ntu.phongnt.healthdroid.util.TitleUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -196,8 +199,17 @@ public class UserFragment extends Fragment {
     }
 
     private void notifyUnsubscribed(String email) {
+        //TODO: refactor the flow to do broadcast intent
         for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
             if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
+                //Delete from database
+                Log.d(TAG, "Getting data for user: " + email);
+                SQLiteOpenHelper db = DataHelper.getInstance(getActivity());
+                SQLiteDatabase writableDatabase = db.getWritableDatabase();
+                writableDatabase.delete(DataContract.DataEntry.TABLE_NAME,
+                        DataContract.DataEntry.COLUMN_NAME_USER + "=?",
+                        new String[]{email});
+
                 healthDroidUserWrapper.onSubscriptionCancelled();
             }
         }
@@ -224,6 +236,7 @@ public class UserFragment extends Fragment {
     }
 
     private void notifySubscriptionConfirmed(String email) {
+        Log.d(TAG, "Notifying subscription confirm for user " + email);
         Set<String> subscribedUsers = new TreeSet<>();
         for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
             if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
@@ -241,6 +254,7 @@ public class UserFragment extends Fragment {
                 subscribedUsers
         );
         editor.apply();
+        new GetDataRecordsFromEndpointTask(getActivity()).execute();
         Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
     }
 

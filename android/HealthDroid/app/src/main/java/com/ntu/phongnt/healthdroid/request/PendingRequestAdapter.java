@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments.adapter;
+package com.ntu.phongnt.healthdroid.request;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
-import com.ntu.phongnt.healthdroid.fragments.adapter.viewholders.PendingRequestViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

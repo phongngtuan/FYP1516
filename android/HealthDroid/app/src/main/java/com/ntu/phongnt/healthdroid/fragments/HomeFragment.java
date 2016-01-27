@@ -23,9 +23,9 @@ import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
-import com.ntu.phongnt.healthdroid.util.TitleUtil;
 
 import java.io.IOException;
 import java.util.Date;

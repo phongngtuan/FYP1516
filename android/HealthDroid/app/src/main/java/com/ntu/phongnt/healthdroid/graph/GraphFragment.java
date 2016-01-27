@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments;
+package com.ntu.phongnt.healthdroid.graph;
 
 import android.database.Cursor;
 import android.graphics.Color;
@@ -23,15 +23,15 @@ import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
-import com.ntu.phongnt.healthdroid.fragments.dialogs.DataSetPickerFragment;
-import com.ntu.phongnt.healthdroid.fragments.dialogs.TimeRangeDialogFragment;
-import com.ntu.phongnt.healthdroid.util.TitleUtil;
-import com.ntu.phongnt.healthdroid.util.chart.ChartAdapter;
-import com.ntu.phongnt.healthdroid.util.chart.LineChartAdapter;
-import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByDayFormatter;
-import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByMonthFormatter;
-import com.ntu.phongnt.healthdroid.util.formatter.DataEntryByWeekFormatter;
-import com.ntu.phongnt.healthdroid.util.formatter.DataEntryFormatter;
+import com.ntu.phongnt.healthdroid.graph.dialogs.DataSetPickerFragment;
+import com.ntu.phongnt.healthdroid.graph.dialogs.TimeRangeDialogFragment;
+import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
+import com.ntu.phongnt.healthdroid.graph.util.chart.ChartAdapter;
+import com.ntu.phongnt.healthdroid.graph.util.chart.LineChartAdapter;
+import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryByDayFormatter;
+import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryByMonthFormatter;
+import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryByWeekFormatter;
+import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryFormatter;
 
 import java.util.List;
 
@@ -50,12 +50,6 @@ public class GraphFragment extends Fragment implements
 
     public GraphFragment() {
         super();
-        formatter_choice = 0;
-    }
-
-    public GraphFragment(String type) {
-        super();
-        this.type = type;
         formatter_choice = 0;
     }
 

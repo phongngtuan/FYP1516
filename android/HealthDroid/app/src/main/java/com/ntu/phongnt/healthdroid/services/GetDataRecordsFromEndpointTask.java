@@ -13,7 +13,7 @@ import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
-import com.ntu.phongnt.healthdroid.util.DateHelper;
+import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
 import java.io.IOException;
 import java.util.Date;

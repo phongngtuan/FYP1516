@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.util.TitleUtil;
+import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 
 public class GraphTabsFragment extends Fragment {
     private ViewPager viewPager;
