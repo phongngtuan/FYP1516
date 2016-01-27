@@ -68,6 +68,9 @@
         </service>
         <service
             android:name=".services.data.DataFetchingService"
+            android:exported="false" />
+        <service
+            android:name=".services.subscription.SubscriptionService"
             android:exported="false"></service>
     </application>
 
