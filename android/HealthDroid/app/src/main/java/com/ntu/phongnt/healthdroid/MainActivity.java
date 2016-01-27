@@ -46,7 +46,9 @@ import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
 import com.ntu.phongnt.healthdroid.services.data.DataFetchingService;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
-import com.ntu.phongnt.healthdroid.user.UserFragment;
+import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangeListener;
+import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangePublisher;
+import com.ntu.phongnt.healthdroid.subscription.UserFragment;
 
 import java.io.IOException;
 import java.net.URL;

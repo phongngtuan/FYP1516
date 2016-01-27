@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.user;
+package com.ntu.phongnt.healthdroid.subscription;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,8 +19,6 @@ import android.widget.Toast;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.SubscriptionChangeListener;
-import com.ntu.phongnt.healthdroid.SubscriptionChangePublisher;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;

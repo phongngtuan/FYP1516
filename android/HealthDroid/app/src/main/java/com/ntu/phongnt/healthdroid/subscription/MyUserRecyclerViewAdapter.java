@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.user;
+package com.ntu.phongnt.healthdroid.subscription;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

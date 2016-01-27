@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid;
+package com.ntu.phongnt.healthdroid.subscription;
 
 public interface SubscriptionChangePublisher {
     void registerSubscriptionListener(SubscriptionChangeListener listener);
