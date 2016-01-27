@@ -15,6 +15,7 @@ import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 
 public class MyGcmListenerService extends GcmListenerService {
     private static final String TAG = "MyGcmListenerService";
+    public static final String TARGET_USER = "target";
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -28,12 +29,12 @@ public class MyGcmListenerService extends GcmListenerService {
         if (opCode.equalsIgnoreCase("subscriptionAccepted")) {
             String id = data.getString("subscriptionId", "");
             String subscriber = data.getString("subscriber", "");
-            String target = data.getString("target", "");
+            String targetUser = data.getString("target", "");
             Notification notification = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("My Tittle")
                     .setContentText(
-                            target + " accepted id " + id
+                            targetUser + " accepted id " + id
                     )
                     .setPriority(Notification.PRIORITY_HIGH)
                     .setVibrate(new long[0])
@@ -43,6 +44,7 @@ public class MyGcmListenerService extends GcmListenerService {
 
             //Broadcast this event
             Intent intent = new Intent(QuickstartPreferences.REQUEST_ACCEPTED);
+            intent.putExtra(TARGET_USER, targetUser);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         } else
             new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();

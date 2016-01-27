@@ -37,10 +37,12 @@ import com.ntu.phongnt.healthdroid.fragments.DataFragment;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.fragments.PendingRequestFragment;
 import com.ntu.phongnt.healthdroid.fragments.UserFragment;
+import com.ntu.phongnt.healthdroid.gcm.MyGcmListenerService;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.graph.GraphTabsFragment;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
+import com.ntu.phongnt.healthdroid.services.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
@@ -48,6 +50,8 @@ import com.ntu.phongnt.healthdroid.services.UserFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class MainActivity extends SignInActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -114,8 +118,15 @@ public class MainActivity extends SignInActivity
         BroadcastReceiver pendingRequestBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                SharedPreferences dataPreferences =
+                        getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
+                Set<String> subscribedUsers = dataPreferences.getStringSet(GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY, new TreeSet<String>());
+                String targetUser = intent.getStringExtra(MyGcmListenerService.TARGET_USER);
+                subscribedUsers.add(targetUser);
+                dataPreferences.edit().putStringSet(GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY, subscribedUsers).apply();
+
                 Log.d(TAG, "Received broadcast: pending request accepted");
-                Toast.makeText(context, "Pending request accepted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, targetUser + " accepted following request", Toast.LENGTH_SHORT).show();
             }
         };
         IntentFilter pendingRequestFilter = new IntentFilter(QuickstartPreferences.REQUEST_ACCEPTED);
