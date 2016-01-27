@@ -54,8 +54,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class MainActivity extends SignInActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends SignInActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        SubscriptionChangePublisher {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
@@ -65,7 +66,7 @@ public class MainActivity extends SignInActivity
     private UserFragment userFragment = null;
     private GraphTabsFragment graphTabsFragment = null;
     private PendingRequestFragment pendingRequestFragment = null;
-    private List<SubscriptionListener> subscriptionListeners = new ArrayList<>();
+    private List<SubscriptionChangeListener> subscriptionChangeListeners = new ArrayList<>();
 
     private ImageView profileImage = null;
 
@@ -270,8 +271,7 @@ public class MainActivity extends SignInActivity
         } else if (id == R.id.nav_user) {
             userFragment = (UserFragment) getSupportFragmentManager().findFragmentByTag("USER_FRAGMENT");
             if (userFragment == null) {
-                userFragment = UserFragment.newInstance(1, credential);
-                subscriptionListeners.add(userFragment);
+                userFragment = UserFragment.newInstance(this);
             }
             if (!userFragment.isVisible())
                 getSupportFragmentManager().beginTransaction().
@@ -305,9 +305,6 @@ public class MainActivity extends SignInActivity
                 handleAccountSelected(savedAccountName);
             }
     }
-//
-//
-//    }
 
     private void constructServices(GoogleAccountCredential credential) {
         String rootUrl = getResources().getString(R.string.rootUrl);
@@ -346,8 +343,19 @@ public class MainActivity extends SignInActivity
         this.accountName = accountName;
     }
 
-    private void notifySubscriptionChange() {
-        for (SubscriptionListener listener : subscriptionListeners)
+    @Override
+    public void registerSubscriptionListener(SubscriptionChangeListener listener) {
+        subscriptionChangeListeners.add(listener);
+    }
+
+    @Override
+    public void unregisterSubscriptionListener(SubscriptionChangeListener listener) {
+        subscriptionChangeListeners.remove(listener);
+    }
+
+    @Override
+    public void notifySubscriptionChange() {
+        for (SubscriptionChangeListener listener : subscriptionChangeListeners)
             listener.subscriptionChanged();
     }
 

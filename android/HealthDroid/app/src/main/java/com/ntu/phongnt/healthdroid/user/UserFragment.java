@@ -19,7 +19,8 @@ import android.widget.Toast;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.SubscriptionListener;
+import com.ntu.phongnt.healthdroid.SubscriptionChangeListener;
+import com.ntu.phongnt.healthdroid.SubscriptionChangePublisher;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class UserFragment extends Fragment implements SubscriptionListener {
+public class UserFragment extends Fragment implements SubscriptionChangeListener {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -47,19 +48,15 @@ public class UserFragment extends Fragment implements SubscriptionListener {
     private RecyclerView recyclerView = null;
     private int mColumnCount = 1;
 
+    private SubscriptionChangePublisher subscriptionChangePublisher = null;
     private List<HealthDroidUserWrapper> listUser = new ArrayList<>();
 
     public UserFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static UserFragment newInstance(int columnCount, GoogleAccountCredential credential) {
-        //TODO: clean this up
+    public static UserFragment newInstance(SubscriptionChangePublisher subscriptionChangePublisher) {
         UserFragment fragment = new UserFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
+        fragment.subscriptionChangePublisher = subscriptionChangePublisher;
         return fragment;
     }
 
@@ -73,6 +70,18 @@ public class UserFragment extends Fragment implements SubscriptionListener {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        subscriptionChangePublisher.unregisterSubscriptionListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        subscriptionChangePublisher.registerSubscriptionListener(this);
     }
 
     @Override
@@ -351,8 +360,10 @@ public class UserFragment extends Fragment implements SubscriptionListener {
         @Override
         protected void onPostExecute(List<HealthDroidUserWrapper> resultedHealthDroidUsers) {
             super.onPostExecute(resultedHealthDroidUsers);
-            if (resultedHealthDroidUsers != null)
+            if (resultedHealthDroidUsers != null) {
+                listUser.clear();
                 listUser.addAll(resultedHealthDroidUsers);
+            }
             notifyChange();
         }
     }
