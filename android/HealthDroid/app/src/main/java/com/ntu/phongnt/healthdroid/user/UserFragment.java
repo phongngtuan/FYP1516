@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.SubscriptionListener;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
@@ -36,7 +37,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class UserFragment extends Fragment {
+public class UserFragment extends Fragment implements SubscriptionListener {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -120,6 +121,12 @@ public class UserFragment extends Fragment {
             recyclerView.setAdapter(viewAdapter);
         }
         return view;
+    }
+
+    @Override
+    public void subscriptionChanged() {
+        new ListUserTask().execute((GoogleAccountCredential) null);
+        new GetSubscriptionsTask().execute();
     }
 
     private void subscribe(HealthDroidUser user) {

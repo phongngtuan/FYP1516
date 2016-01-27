@@ -49,6 +49,7 @@ import com.ntu.phongnt.healthdroid.user.UserFragment;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -64,6 +65,7 @@ public class MainActivity extends SignInActivity
     private UserFragment userFragment = null;
     private GraphTabsFragment graphTabsFragment = null;
     private PendingRequestFragment pendingRequestFragment = null;
+    private List<SubscriptionListener> subscriptionListeners = new ArrayList<>();
 
     private ImageView profileImage = null;
 
@@ -120,13 +122,16 @@ public class MainActivity extends SignInActivity
             public void onReceive(Context context, Intent intent) {
                 SharedPreferences dataPreferences =
                         getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-                Set<String> subscribedUsers = dataPreferences.getStringSet(GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY, new TreeSet<String>());
+                Set<String> subscribedUsers =
+                        dataPreferences.getStringSet(GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY, new TreeSet<String>());
                 String targetUser = intent.getStringExtra(MyGcmListenerService.TARGET_USER);
                 subscribedUsers.add(targetUser);
                 dataPreferences.edit().putStringSet(GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY, subscribedUsers).apply();
 
                 Log.d(TAG, "Received broadcast: pending request accepted");
                 Toast.makeText(context, targetUser + " accepted following request", Toast.LENGTH_SHORT).show();
+
+                notifySubscriptionChange();
             }
         };
         IntentFilter pendingRequestFilter = new IntentFilter(QuickstartPreferences.REQUEST_ACCEPTED);
@@ -231,7 +236,6 @@ public class MainActivity extends SignInActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -247,11 +251,13 @@ public class MainActivity extends SignInActivity
                         .replace(R.id.fragment_container, homeFragment, "HOME_FRAGMENT").commit();
         } else if (id == R.id.nav_graph) {
             graphTabsFragment = (GraphTabsFragment) getSupportFragmentManager().findFragmentByTag("GRAPH_TABS_FRAGMENT");
-            if (graphTabsFragment == null)
+            if (graphTabsFragment == null) {
                 graphTabsFragment = new GraphTabsFragment();
+            }
             if (!graphTabsFragment.isVisible())
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, graphTabsFragment, "GRAPH_TABS_FRAGMENT").commit();
+
         } else if (id == R.id.nav_data) {
             dataFragment = (DataFragment) getSupportFragmentManager().findFragmentByTag("DATA_FRAGMENT");
             if (dataFragment == null) {
@@ -260,13 +266,17 @@ public class MainActivity extends SignInActivity
             if (!dataFragment.isVisible())
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, dataFragment, "DATA_FRAGMENT").commit();
+
         } else if (id == R.id.nav_user) {
             userFragment = (UserFragment) getSupportFragmentManager().findFragmentByTag("USER_FRAGMENT");
-            if (userFragment == null)
+            if (userFragment == null) {
                 userFragment = UserFragment.newInstance(1, credential);
+                subscriptionListeners.add(userFragment);
+            }
             if (!userFragment.isVisible())
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.fragment_container, userFragment, "USER_FRAGMENT").commit();
+
         } else if (id == R.id.nav_pending_request) {
             pendingRequestFragment = (PendingRequestFragment) getSupportFragmentManager().findFragmentByTag("PENDING_REQUEST_FRAGMENT");
             if (pendingRequestFragment == null)
@@ -334,6 +344,11 @@ public class MainActivity extends SignInActivity
         editor.apply();
         credential.setSelectedAccountName(accountName);
         this.accountName = accountName;
+    }
+
+    private void notifySubscriptionChange() {
+        for (SubscriptionListener listener : subscriptionListeners)
+            listener.subscriptionChanged();
     }
 
     private class LoadProfileImageTask extends AsyncTask<String, Void, Bitmap> {
