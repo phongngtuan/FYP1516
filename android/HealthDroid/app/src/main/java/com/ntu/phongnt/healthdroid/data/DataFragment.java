@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments;
+package com.ntu.phongnt.healthdroid.data;
 
 import android.database.Cursor;
 import android.os.AsyncTask;
