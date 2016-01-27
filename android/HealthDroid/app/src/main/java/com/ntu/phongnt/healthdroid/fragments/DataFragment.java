@@ -28,7 +28,7 @@ public class DataFragment extends ListFragment {
         SimpleCursorAdapter adapter =
                 new SimpleCursorAdapter(
                         getActivity(),
-                        R.layout.row,
+                        R.layout.data_row,
                         current,
                         new String[]{
                                 DataContract.DataEntry.COLUMN_NAME_VALUE,
