@@ -41,7 +41,7 @@ public class UserHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String TABLE = UserContract.UserEntry.TABLE_NAME;
         String EMAIL = UserContract.UserEntry.COLUMN_NAME_EMAIL;
-        //TODO: Hard coded again, fix later
+        //TODO: Hard coded again, fix later. Currently, this entry will get flushed anyway
         cv.put(UserContract.UserEntry.COLUMN_NAME_EMAIL, "otacon.ptnk@gmail.com");
         cv.put(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, UserContract.UserEntry.UNSUBSCRIBED);
         db.insert(TABLE, EMAIL, cv);

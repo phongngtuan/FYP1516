@@ -44,7 +44,6 @@ import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
-import com.ntu.phongnt.healthdroid.services.data.DataFetchingService;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangeListener;
@@ -126,7 +125,8 @@ public class MainActivity extends SignInActivity implements
         BroadcastReceiver subscriptionStatusBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Toast.makeText(context, "Subscription Status Changed", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "receive broadcast: Subscription status changed");
+                notifySubscriptionChange();
             }
         };
         IntentFilter subscriptionStatusChangedFilter =
@@ -384,7 +384,6 @@ public class MainActivity extends SignInActivity implements
     public void notifySubscriptionChange() {
         for (SubscriptionChangeListener listener : subscriptionChangeListeners)
             listener.subscriptionChanged();
-        DataFetchingService.startFetchingData(this);
     }
 
     private class LoadProfileImageTask extends AsyncTask<String, Void, Bitmap> {

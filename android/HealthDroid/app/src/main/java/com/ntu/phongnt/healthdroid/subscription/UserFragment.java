@@ -129,8 +129,8 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
 
     @Override
     public void subscriptionChanged() {
-//        new ListUserTask().execute();
-//        new GetSubscriptionsTask().execute();
+        Log.d(TAG, "Handling subscription changed");
+        new LoadCursorUserDbTask().execute();
     }
 
     private void handleSubscribe(String user) {
@@ -239,6 +239,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
     }
 
     private class LoadCursorUserDbTask extends BaseUserDbTask<Void> {
+
         @Override
         protected Cursor doInBackground(Void... params) {
             return (doQuery());
@@ -246,6 +247,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
 
         @Override
         protected void onPostExecute(Cursor cursor) {
+            listUser.clear();
             if (cursor.moveToFirst()) {
                 do {
                     String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
