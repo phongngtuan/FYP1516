@@ -122,16 +122,35 @@ public class MainActivity extends SignInActivity implements
         IntentFilter tokenIntentFilter = new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE);
         broadcastManager.registerReceiver(tokenBroadcastReceiver, tokenIntentFilter);
 
+        //Subscription status receiver
+        BroadcastReceiver subscriptionStatusBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(context, "Subscription Status Changed", Toast.LENGTH_SHORT).show();
+            }
+        };
+        IntentFilter subscriptionStatusChangedFilter =
+                new IntentFilter(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED);
+        broadcastManager.registerReceiver(
+                subscriptionStatusBroadcastReceiver, subscriptionStatusChangedFilter);
+
         BroadcastReceiver pendingRequestBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 SharedPreferences dataPreferences =
                         getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
                 Set<String> subscribedUsers =
-                        dataPreferences.getStringSet(GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY, new TreeSet<String>());
+                        dataPreferences.getStringSet(
+                                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
+                                new TreeSet<String>()
+                        );
                 String targetUser = intent.getStringExtra(MyGcmListenerService.TARGET_USER);
                 subscribedUsers.add(targetUser);
-                dataPreferences.edit().putStringSet(GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY, subscribedUsers).apply();
+                dataPreferences.edit()
+                        .putStringSet(
+                                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
+                                subscribedUsers)
+                        .apply();
 
                 Log.d(TAG, "Received broadcast: pending request accepted");
                 Toast.makeText(context, targetUser + " accepted following request", Toast.LENGTH_SHORT).show();

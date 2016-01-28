@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
@@ -14,6 +15,7 @@ import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.db.user.UserHelper;
+import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
 import com.ntu.phongnt.healthdroid.subscription.UserFragment;
@@ -166,7 +168,7 @@ public class SubscriptionService extends IntentService {
         }
     }
 
-    private static class SendSubscriptionTask extends AsyncTask<String, Void, SubscriptionRecord> {
+    private class SendSubscriptionTask extends AsyncTask<String, Void, SubscriptionRecord> {
         @Override
         protected SubscriptionRecord doInBackground(String... params) {
             Subscription subscriptionService = SubscriptionFactory.getInstance();
@@ -178,6 +180,27 @@ public class SubscriptionService extends IntentService {
                 e.printStackTrace();
             }
             return subscriptionRecord;
+        }
+
+        @Override
+        protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
+            super.onPostExecute(subscriptionRecord);
+            if (subscriptionRecord != null) {
+                SQLiteDatabase writableDatabase = db.getWritableDatabase();
+                ContentValues cv = new ContentValues();
+                cv.put(
+                        UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                        UserContract.UserEntry.PENDING);
+                writableDatabase.update(
+                        UserContract.UserEntry.TABLE_NAME,
+                        cv,
+                        UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                        new String[]{subscriptionRecord.getTarget().getEmail()}
+                );
+                LocalBroadcastManager localBroadcastManager =
+                        LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
+                localBroadcastManager.sendBroadcast(new Intent(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED));
+            }
         }
     }
 
