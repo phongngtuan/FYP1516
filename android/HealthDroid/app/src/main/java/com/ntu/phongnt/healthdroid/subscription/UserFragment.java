@@ -17,20 +17,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
-import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
-import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -102,15 +97,12 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
                 switch (user.subscriptionState) {
                     case UserContract.UserEntry.UNSUBSCRIBED:
                         handleSubscribe(user.getEmail());
-                        Toast.makeText(getActivity(), user.getEmail() + " subscribed", Toast.LENGTH_SHORT).show();
                         break;
                     case UserContract.UserEntry.PENDING:
                         handleUnsubscribe(user.getEmail());
-                        Toast.makeText(getActivity(), user.getEmail() + " cancelled", Toast.LENGTH_SHORT).show();
                         break;
                     case UserContract.UserEntry.SUBSCRIBED:
                         handleUnsubscribe(user.getEmail());
-                        Toast.makeText(getActivity(), user.getEmail() + " unsubscribed", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -130,7 +122,6 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             recyclerView.setAdapter(viewAdapter);
 
             new LoadCursorUserDbTask().execute();
-            new SubscriptionService.ListUserTask().execute();
         }
 
         return view;
@@ -143,11 +134,11 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
     }
 
     private void handleSubscribe(String user) {
-        new SendSubscriptionTask().execute(user);
+        SubscriptionService.startAddSubscribedUser(getActivity(), user);
     }
 
     private void handleUnsubscribe(String user) {
-        new CancelSubscriptionTask().execute(user);
+        SubscriptionService.startRemoveSubscribedUser(getActivity(), user);
     }
 
     private void notifyChange() {
@@ -159,55 +150,6 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         void onItemClick(UserWrapper user);
 
         void onSubscribeClick(UserWrapper user);
-    }
-
-    private class CancelSubscriptionTask extends AsyncTask<String, Void, Void> {
-        @Override
-        protected Void doInBackground(String... params) {
-            Subscription subscriptionService = SubscriptionFactory.getInstance();
-            String targetUser = params[0];
-            MainActivity mainActivity = (MainActivity) getActivity();
-            String user = mainActivity.getCredential().getSelectedAccountName();
-            try {
-                subscriptionService.unsubscribe(user).setTarget(targetUser).execute();
-                notifyUnsubscribed(targetUser);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            notifyChange();
-        }
-    }
-
-    private class SendSubscriptionTask extends AsyncTask<String, Void, SubscriptionRecord> {
-        @Override
-        protected SubscriptionRecord doInBackground(String... params) {
-            Subscription subscriptionService = SubscriptionFactory.getInstance();
-            SubscriptionRecord subscriptionRecord = null;
-            String targetUser = params[0];
-            try {
-                subscriptionRecord = subscriptionService.subscribe(targetUser).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return subscriptionRecord;
-        }
-
-        @Override
-        protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
-            super.onPostExecute(subscriptionRecord);
-            if (subscriptionRecord != null) {
-                notifySubscriptionSent(subscriptionRecord.getTarget().getEmail());
-                notifyChange();
-            } else {
-                //TODO: handle failture
-            }
-        }
     }
 
     private void notifySubscriptionSent(String email) {

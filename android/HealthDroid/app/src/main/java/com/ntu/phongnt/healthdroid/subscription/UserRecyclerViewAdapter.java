@@ -33,10 +33,10 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
     @Override
     public void onBindViewHolder(final UserViewHolder holder, int position) {
-        holder.healthDroidUser = healthDroidUsers.get(position);
+        holder.userWrapper = healthDroidUsers.get(position);
         holder.idView.setText(healthDroidUsers.get(position).getEmail());
 
-        switch (holder.healthDroidUser.subscriptionState) {
+        switch (holder.userWrapper.subscriptionState) {
             case UserContract.UserEntry.UNSUBSCRIBED:
                 holder.subscribeButton.setText(R.string.subscribe_label);
                 break;
@@ -48,12 +48,12 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
                 break;
         }
 
-//        listener for interaction on whole view
+        //listener for interaction on whole view
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != itemClickListener) {
-                    itemClickListener.onItemClick(holder.healthDroidUser);
+                    itemClickListener.onItemClick(holder.userWrapper);
                 }
             }
         });
@@ -63,7 +63,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             @Override
             public void onClick(View v) {
                 if (null != itemClickListener) {
-                    itemClickListener.onSubscribeClick(holder.healthDroidUser);
+                    itemClickListener.onSubscribeClick(holder.userWrapper);
                 }
             }
         });
@@ -78,7 +78,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         public final View view;
         public final TextView idView;
         public final Button subscribeButton;
-        public UserFragment.UserWrapper healthDroidUser;
+        public UserFragment.UserWrapper userWrapper;
 
         public UserViewHolder(View view) {
             super(view);

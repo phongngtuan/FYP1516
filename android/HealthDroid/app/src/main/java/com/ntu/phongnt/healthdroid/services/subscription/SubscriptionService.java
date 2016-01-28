@@ -101,14 +101,14 @@ public class SubscriptionService extends IntentService {
     }
 
     private void addSubscribedUser(String user) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        new SendSubscriptionTask().execute(user);
     }
 
     private void removeSubscribedUser(String user) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public static class ListUserTask extends AsyncTask<Void, Void, Void> {
+    private static class ListUserTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             User userService = UserFactory.getInstance();
@@ -164,5 +164,41 @@ public class SubscriptionService extends IntentService {
             }
             return null;
         }
+    }
+
+    private static class SendSubscriptionTask extends AsyncTask<String, Void, SubscriptionRecord> {
+        @Override
+        protected SubscriptionRecord doInBackground(String... params) {
+            Subscription subscriptionService = SubscriptionFactory.getInstance();
+            SubscriptionRecord subscriptionRecord = null;
+            String targetUser = params[0];
+            try {
+                subscriptionRecord = subscriptionService.subscribe(targetUser).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return subscriptionRecord;
+        }
+    }
+
+    private static class CancelSubscriptionTask extends AsyncTask<String, Void, Void> {
+        private String user;
+
+        public CancelSubscriptionTask(String user) {
+            this.user = user;
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            Subscription subscriptionService = SubscriptionFactory.getInstance();
+            String targetUser = params[0];
+            try {
+                subscriptionService.unsubscribe(user).setTarget(targetUser).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
     }
 }
