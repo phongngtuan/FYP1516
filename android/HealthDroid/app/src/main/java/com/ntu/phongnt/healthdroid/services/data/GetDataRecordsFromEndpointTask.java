@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
@@ -49,7 +50,8 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         try {
             for (String user : subscribedUsers) {
                 Log.d(TAG, "Getting data for email: " + user);
-                List<DataRecord> dataRecordList = dataService.get().setUserId(user).execute().getItems();
+                DateTime after = DateTime.parseRfc3339(DateHelper.toRfc3339(localLastUpdatedDate));
+                List<DataRecord> dataRecordList = dataService.get().setUserId(user).setAfter(after).execute().getItems();
                 Log.d(TAG, "Found " + dataRecordList.size());
                 SQLiteOpenHelper db = DataHelper.getInstance(context);
 
@@ -72,18 +74,14 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         int count = 0;
         for (DataRecord d : dataRecords) {
             Date dateFromData = DateHelper.getDate(d.getDate().toStringRfc3339());
-            if (dateFromData.after(after)) {
-                count++;
-                if (dateFromData.after(latestDateFromData))
-                    latestDateFromData = dateFromData;
-                ContentValues values = new ContentValues();
-                values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getValue());
-                values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getDate().toStringRfc3339());
-                values.put(DataContract.DataEntry.COLUMN_NAME_USER, d.getUser().getEmail());
-                sqLiteDatabase.insert(DataContract.DataEntry.TABLE_NAME,
-                        DataContract.DataEntry.COLUMN_NAME_DATE,
-                        values);
-            }
+            count++;
+            ContentValues values = new ContentValues();
+            values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getValue());
+            values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getDate().toStringRfc3339());
+            values.put(DataContract.DataEntry.COLUMN_NAME_USER, d.getUser().getEmail());
+            sqLiteDatabase.insert(DataContract.DataEntry.TABLE_NAME,
+                    DataContract.DataEntry.COLUMN_NAME_DATE,
+                    values);
         }
         Log.d(TAG, "latest date from data: " + latestDateFromData);
         Log.d(TAG, "Updated count: " + count);
@@ -101,7 +99,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         SharedPreferences dataPreferences =
                 context.getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = dataPreferences.edit();
-        editor.putString(DataHelper.LAST_UPDATED, DateHelper.toString(latestDateFromData));
+        editor.putString(DataHelper.LAST_UPDATED, DateHelper.toRfc3339(latestDateFromData));
         editor.apply();
     }
 }

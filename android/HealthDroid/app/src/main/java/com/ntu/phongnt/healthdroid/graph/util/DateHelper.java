@@ -11,25 +11,25 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateHelper {
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat(DataHelper.RFC3339_TEMPLATE, Locale.getDefault());
+    private static SimpleDateFormat formatRfc3339 = new SimpleDateFormat(DataHelper.RFC3339_TEMPLATE, Locale.getDefault());
 
     public static Date getDate(String date) {
         try {
-            return dateFormat.parse(date);
+            return formatRfc3339.parse(date);
         } catch (ParseException e) {
             Log.d("DataHelper", "Cannot parse string: " + date);
         }
         return null;
     }
 
-    public static String toString(Date date) {
-        return dateFormat.format(date);
+    public static String toRfc3339(Date date) {
+        return formatRfc3339.format(date);
     }
 
     public static int getProperty(String date, int property) {
         Calendar calendar = Calendar.getInstance();
         try {
-            calendar.setTime(dateFormat.parse(date));
+            calendar.setTime(formatRfc3339.parse(date));
             return calendar.get(property);
         } catch (ParseException e) {
             Log.d("DataHelper", "Cannot parse string: " + date);
