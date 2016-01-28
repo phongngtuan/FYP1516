@@ -46,6 +46,7 @@ import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
 import com.ntu.phongnt.healthdroid.services.data.DataFetchingService;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
+import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangeListener;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangePublisher;
 import com.ntu.phongnt.healthdroid.subscription.UserFragment;
@@ -196,6 +197,10 @@ public class MainActivity extends SignInActivity implements
         }
         //Register this email to endpoint
         new RegisterUserToEndpoint().execute();
+        //TODO: refactor to appropriate place
+        //Load list user
+        SubscriptionService.startUpdateUserList(this);
+
     }
 
     @Override

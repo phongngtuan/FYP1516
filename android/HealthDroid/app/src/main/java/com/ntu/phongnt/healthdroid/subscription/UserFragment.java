@@ -28,6 +28,7 @@ import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
+import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -129,6 +130,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             recyclerView.setAdapter(viewAdapter);
 
             new LoadCursorUserDbTask().execute();
+            new SubscriptionService.ListUserTask().execute();
         }
 
         return view;
@@ -136,7 +138,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
 
     @Override
     public void subscriptionChanged() {
-//        new ListUserTask().execute((GoogleAccountCredential) null);
+//        new ListUserTask().execute();
 //        new GetSubscriptionsTask().execute();
     }
 
@@ -199,8 +201,12 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         @Override
         protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
             super.onPostExecute(subscriptionRecord);
-            notifySubscriptionSent(subscriptionRecord.getTarget().getEmail());
-            notifyChange();
+            if (subscriptionRecord != null) {
+                notifySubscriptionSent(subscriptionRecord.getTarget().getEmail());
+                notifyChange();
+            } else {
+                //TODO: handle failture
+            }
         }
     }
 
@@ -220,6 +226,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
                 Log.d(TAG, "Getting data for email: " + email);
                 SQLiteOpenHelper db = DataHelper.getInstance(getActivity());
                 SQLiteDatabase writableDatabase = db.getWritableDatabase();
+
                 writableDatabase.delete(DataContract.DataEntry.TABLE_NAME,
                         DataContract.DataEntry.COLUMN_NAME_USER + "=?",
                         new String[]{email});
@@ -357,32 +364,4 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         }
     }
 
-//    private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<UserWrapper>> {
-//        @Override
-//        protected List<UserWrapper> doInBackground(GoogleAccountCredential... params) {
-//            User userService = UserFactory.getInstance();
-//            try {
-//                List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
-//                Log.d(TAG, "Received " + healthDroidUsers.size() + " users");
-//                List<UserWrapper> wrapperList = new ArrayList<>();
-//                for (HealthDroidUser email : healthDroidUsers) {
-//                    wrapperList.add(new UserWrapper(email));
-//                }
-//                return wrapperList;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<UserWrapper> resultedHealthDroidUsers) {
-//            super.onPostExecute(resultedHealthDroidUsers);
-//            if (resultedHealthDroidUsers != null) {
-//                listUser.clear();
-//                listUser.addAll(resultedHealthDroidUsers);
-//            }
-//            notifyChange();
-//        }
-//    }
 }
