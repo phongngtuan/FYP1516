@@ -35,7 +35,6 @@ import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
-import com.ntu.phongnt.healthdroid.gcm.MyGcmListenerService;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.graph.GraphTabsFragment;
@@ -44,7 +43,6 @@ import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
-import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangeListener;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangePublisher;
@@ -54,8 +52,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class MainActivity extends SignInActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -134,33 +130,6 @@ public class MainActivity extends SignInActivity implements
                 new IntentFilter(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED);
         broadcastManager.registerReceiver(
                 subscriptionStatusBroadcastReceiver, subscriptionStatusChangedFilter);
-
-        BroadcastReceiver pendingRequestBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                SharedPreferences dataPreferences =
-                        getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-                Set<String> subscribedUsers =
-                        dataPreferences.getStringSet(
-                                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
-                                new TreeSet<String>()
-                        );
-                String targetUser = intent.getStringExtra(MyGcmListenerService.TARGET_USER);
-                subscribedUsers.add(targetUser);
-                dataPreferences.edit()
-                        .putStringSet(
-                                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
-                                subscribedUsers)
-                        .apply();
-
-                Log.d(TAG, "Received broadcast: pending request accepted");
-                Toast.makeText(context, targetUser + " accepted following request", Toast.LENGTH_SHORT).show();
-
-                notifySubscriptionChange();
-            }
-        };
-        IntentFilter pendingRequestFilter = new IntentFilter(QuickstartPreferences.REQUEST_ACCEPTED);
-        broadcastManager.registerReceiver(pendingRequestBroadcastReceiver, pendingRequestFilter);
 
         settings = getSharedPreferences(SHARED_PREFERENCE_NAME, 0);
         credential = GoogleAccountCredential.usingAudience(

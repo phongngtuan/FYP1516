@@ -134,11 +134,11 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
     }
 
     private void handleSubscribe(String user) {
-        SubscriptionService.startAddSubscribedUser(getActivity(), user);
+        SubscriptionService.startSubscribeUser(getActivity(), user);
     }
 
     private void handleUnsubscribe(String user) {
-        SubscriptionService.startRemoveSubscribedUser(getActivity(), user);
+        SubscriptionService.startUnsubscribeUser(getActivity(), user);
     }
 
     private void notifyChange() {

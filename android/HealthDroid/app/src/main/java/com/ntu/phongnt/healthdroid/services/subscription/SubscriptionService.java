@@ -31,12 +31,12 @@ public class SubscriptionService extends IntentService {
     // IntentService can perform
     private static final String ACTION_UPDATE_USER_LIST =
             "com.ntu.phongnt.healthdroid.services.subscription.action.update_user_list";
-    private static final String ACTION_UPDATE_SUBSCRIBED_USER =
-            "com.ntu.phongnt.healthdroid.services.subscription.action.update_subscribed_user";
-    private static final String ACTION_ADD_SUBSCRIBED_USER =
+    private static final String ACTION_SUBSCRIBE_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.action.add_subscribed_user";
-    private static final String ACTION_REMOVE_SUBSCRIBED_USER =
+    private static final String ACTION_UNSUBSCRIBED_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.action.remove_subscribed_user";
+    private static final String ACTION_CONFIRM_SUBSCRIBED =
+            "com.ntu.phongnt.healthdroid.services.subscription.action.action_confirm_subscribed";
 
     private static final String EXTRA_PARAM_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.param.email";
@@ -51,22 +51,23 @@ public class SubscriptionService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startUpdateSubscribedUser(Context context) {
+    public static void startSubscribeUser(Context context, String user) {
         Intent intent = new Intent(context, SubscriptionService.class);
-        intent.setAction(ACTION_ADD_SUBSCRIBED_USER);
-        context.startService(intent);
-    }
-
-    public static void startAddSubscribedUser(Context context, String user) {
-        Intent intent = new Intent(context, SubscriptionService.class);
-        intent.setAction(ACTION_ADD_SUBSCRIBED_USER);
+        intent.setAction(ACTION_SUBSCRIBE_USER);
         intent.putExtra(EXTRA_PARAM_USER, user);
         context.startService(intent);
     }
 
-    public static void startRemoveSubscribedUser(Context context, String user) {
+    public static void startUnsubscribeUser(Context context, String user) {
         Intent intent = new Intent(context, SubscriptionService.class);
-        intent.setAction(ACTION_REMOVE_SUBSCRIBED_USER);
+        intent.setAction(ACTION_UNSUBSCRIBED_USER);
+        intent.putExtra(EXTRA_PARAM_USER, user);
+        context.startService(intent);
+    }
+
+    public static void startConfirmSubscribed(Context context, String user) {
+        Intent intent = new Intent(context, SubscriptionService.class);
+        intent.setAction(ACTION_CONFIRM_SUBSCRIBED);
         intent.putExtra(EXTRA_PARAM_USER, user);
         context.startService(intent);
     }
@@ -84,14 +85,15 @@ public class SubscriptionService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_UPDATE_USER_LIST.equals(action)) {
                 updateUserList();
-            } else if (ACTION_UPDATE_SUBSCRIBED_USER.equals(action)) {
-                updateSubscribedUser();
-            } else if (ACTION_ADD_SUBSCRIBED_USER.equals(action)) {
+            } else if (ACTION_SUBSCRIBE_USER.equals(action)) {
                 final String user = intent.getStringExtra(EXTRA_PARAM_USER);
-                addSubscribedUser(user);
-            } else if (ACTION_REMOVE_SUBSCRIBED_USER.equals(action)) {
+                subscribedUser(user);
+            } else if (ACTION_UNSUBSCRIBED_USER.equals(action)) {
                 final String user = intent.getStringExtra(EXTRA_PARAM_USER);
-                removeSubscribedUser(user);
+                unsubscribeUser(user);
+            } else if (ACTION_CONFIRM_SUBSCRIBED.equals(action)) {
+                final String user = intent.getStringExtra(EXTRA_PARAM_USER);
+                confirmSubscribed(user);
             }
         }
     }
@@ -100,20 +102,21 @@ public class SubscriptionService extends IntentService {
         new ListUserTask().execute();
     }
 
-    private void updateSubscribedUser() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    private void addSubscribedUser(String user) {
+    private void subscribedUser(String user) {
         new SendSubscriptionTask().execute(user);
     }
 
-    private void removeSubscribedUser(String targetUser) {
+    private void unsubscribeUser(String targetUser) {
         SharedPreferences settings = getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME, 0);
         String thisUser = settings.getString(MainActivity.PREF_ACCOUNT_NAME, "");
         if (!thisUser.isEmpty()) {
             new CancelSubscriptionTask(thisUser).execute(targetUser);
         }
+    }
+
+    private void confirmSubscribed(String user) {
+        markSubscribed(user);
+        broadcastSubscriptionStatusChanged();
     }
 
     private void broadcastSubscriptionStatusChanged() {
@@ -198,23 +201,14 @@ public class SubscriptionService extends IntentService {
         protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
             super.onPostExecute(subscriptionRecord);
             if (subscriptionRecord != null) {
-                SQLiteDatabase writableDatabase = db.getWritableDatabase();
-                ContentValues cv = new ContentValues();
-                cv.put(
-                        UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
-                        UserContract.UserEntry.PENDING);
-                writableDatabase.update(
-                        UserContract.UserEntry.TABLE_NAME,
-                        cv,
-                        UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
-                        new String[]{subscriptionRecord.getTarget().getEmail()}
-                );
+                markPending(subscriptionRecord.getTarget().getEmail());
             }
             broadcastSubscriptionStatusChanged();
         }
     }
 
     private class CancelSubscriptionTask extends AsyncTask<String, Void, SubscriptionRecord> {
+
         private String user;
 
         public CancelSubscriptionTask(String user) {
@@ -241,19 +235,36 @@ public class SubscriptionService extends IntentService {
         protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
             super.onPostExecute(subscriptionRecord);
             if (subscriptionRecord != null) {
-                SQLiteDatabase writableDatabase = db.getWritableDatabase();
-                ContentValues cv = new ContentValues();
-                cv.put(
-                        UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
-                        UserContract.UserEntry.UNSUBSCRIBED);
-                writableDatabase.update(
-                        UserContract.UserEntry.TABLE_NAME,
-                        cv,
-                        UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
-                        new String[]{subscriptionRecord.getTarget().getEmail()}
-                );
+                markUnsubscribed(subscriptionRecord.getTarget().getEmail());
                 broadcastSubscriptionStatusChanged();
             }
         }
     }
+
+    private void changeSubscriptionStatus(String user, int status) {
+        SQLiteDatabase writableDatabase = db.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(
+                UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                status);
+        writableDatabase.update(
+                UserContract.UserEntry.TABLE_NAME,
+                cv,
+                UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                new String[]{user}
+        );
+    }
+
+    private void markPending(String user) {
+        changeSubscriptionStatus(user, UserContract.UserEntry.PENDING);
+    }
+
+    private void markSubscribed(String user) {
+        changeSubscriptionStatus(user, UserContract.UserEntry.SUBSCRIBED);
+    }
+
+    private void markUnsubscribed(String user) {
+        changeSubscriptionStatus(user, UserContract.UserEntry.UNSUBSCRIBED);
+    }
+
 }
