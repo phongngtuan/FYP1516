@@ -63,6 +63,7 @@ public class MainActivity extends SignInActivity implements
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
+    public static final String SHARED_PREFERENCE_NAME = "HealthDroid";
 
     private HomeFragment homeFragment = null;
     private DataFragment dataFragment = null;
@@ -161,7 +162,7 @@ public class MainActivity extends SignInActivity implements
         IntentFilter pendingRequestFilter = new IntentFilter(QuickstartPreferences.REQUEST_ACCEPTED);
         broadcastManager.registerReceiver(pendingRequestBroadcastReceiver, pendingRequestFilter);
 
-        settings = getSharedPreferences("HealthDroid", 0);
+        settings = getSharedPreferences(SHARED_PREFERENCE_NAME, 0);
         credential = GoogleAccountCredential.usingAudience(
                 this,
                 "server:client_id:" + BuildConfig.WEB_CLIENT_ID);

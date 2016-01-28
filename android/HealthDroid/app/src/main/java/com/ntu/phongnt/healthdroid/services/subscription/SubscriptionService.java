@@ -4,11 +4,13 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
@@ -106,8 +108,18 @@ public class SubscriptionService extends IntentService {
         new SendSubscriptionTask().execute(user);
     }
 
-    private void removeSubscribedUser(String user) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void removeSubscribedUser(String targetUser) {
+        SharedPreferences settings = getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME, 0);
+        String thisUser = settings.getString(MainActivity.PREF_ACCOUNT_NAME, "");
+        if (!thisUser.isEmpty()) {
+            new CancelSubscriptionTask(thisUser).execute(targetUser);
+        }
+    }
+
+    private void broadcastSubscriptionStatusChanged() {
+        LocalBroadcastManager localBroadcastManager =
+                LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
+        localBroadcastManager.sendBroadcast(new Intent(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED));
     }
 
     private static class ListUserTask extends AsyncTask<Void, Void, Void> {
@@ -197,14 +209,12 @@ public class SubscriptionService extends IntentService {
                         UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
                         new String[]{subscriptionRecord.getTarget().getEmail()}
                 );
-                LocalBroadcastManager localBroadcastManager =
-                        LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
-                localBroadcastManager.sendBroadcast(new Intent(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED));
             }
+            broadcastSubscriptionStatusChanged();
         }
     }
 
-    private static class CancelSubscriptionTask extends AsyncTask<String, Void, Void> {
+    private class CancelSubscriptionTask extends AsyncTask<String, Void, SubscriptionRecord> {
         private String user;
 
         public CancelSubscriptionTask(String user) {
@@ -212,16 +222,38 @@ public class SubscriptionService extends IntentService {
         }
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected SubscriptionRecord doInBackground(String... params) {
             Subscription subscriptionService = SubscriptionFactory.getInstance();
             String targetUser = params[0];
             try {
-                subscriptionService.unsubscribe(user).setTarget(targetUser).execute();
+                List<SubscriptionRecord> results = subscriptionService.unsubscribe(user).setTarget(targetUser).execute().getItems();
+                if (!results.isEmpty())
+                    return results.get(0);
+                else
+                    return null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
+        @Override
+        protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
+            super.onPostExecute(subscriptionRecord);
+            if (subscriptionRecord != null) {
+                SQLiteDatabase writableDatabase = db.getWritableDatabase();
+                ContentValues cv = new ContentValues();
+                cv.put(
+                        UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                        UserContract.UserEntry.UNSUBSCRIBED);
+                writableDatabase.update(
+                        UserContract.UserEntry.TABLE_NAME,
+                        cv,
+                        UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                        new String[]{subscriptionRecord.getTarget().getEmail()}
+                );
+                broadcastSubscriptionStatusChanged();
+            }
+        }
     }
 }
