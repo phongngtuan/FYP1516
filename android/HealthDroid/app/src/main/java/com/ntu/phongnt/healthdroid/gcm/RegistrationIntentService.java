@@ -85,7 +85,7 @@ public class RegistrationIntentService extends IntentService {
     /**
      * Persist registration to third-party servers.
      * <p/>
-     * Modify this method to associate the user's GCM registration token with any server-side account
+     * Modify this method to associate the email's GCM registration token with any server-side account
      * maintained by your application.
      *
      * @param token The new token.

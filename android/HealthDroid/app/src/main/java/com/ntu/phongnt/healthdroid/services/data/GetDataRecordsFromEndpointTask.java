@@ -45,10 +45,10 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         Date localLastUpdatedDate = getLocalLastUpdatedDate();
         Data dataService = DataFactory.getInstance();
 
-        Log.d(TAG, "Subscribed user set size: " + subscribedUsers.size());
+        Log.d(TAG, "Subscribed email set size: " + subscribedUsers.size());
         try {
             for (String user : subscribedUsers) {
-                Log.d(TAG, "Getting data for user: " + user);
+                Log.d(TAG, "Getting data for email: " + user);
                 List<DataRecord> dataRecordList = dataService.get().setUserId(user).execute().getItems();
                 Log.d(TAG, "Found " + dataRecordList.size());
                 SQLiteOpenHelper db = DataHelper.getInstance(context);

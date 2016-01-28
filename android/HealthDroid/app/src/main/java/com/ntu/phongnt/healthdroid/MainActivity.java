@@ -194,7 +194,7 @@ public class MainActivity extends SignInActivity implements
             startService(intent);
             Log.i(TAG, "Here");
         }
-        //Register this user to endpoint
+        //Register this email to endpoint
         new RegisterUserToEndpoint().execute();
     }
 
@@ -399,10 +399,10 @@ public class MainActivity extends SignInActivity implements
                         .execute().getItems();
                 if (users.isEmpty() || users.get(0).isEmpty()) {
                     healthDroidUser = userService.add().execute();
-                    Log.d(TAG, "Registered user");
+                    Log.d(TAG, "Registered email");
                 } else {
                     healthDroidUser = users.get(0);
-                    Log.d(TAG, "Found registered user " + users.get(0));
+                    Log.d(TAG, "Found registered email " + users.get(0));
                 }
             } catch (IOException e) {
                 e.printStackTrace();

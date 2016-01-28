@@ -10,14 +10,16 @@ import com.ntu.phongnt.healthdroid.db.Constants;
 
 public class UserHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
+    private static final String INTEGER_TYPE = " INTEGER";
     private static final String COMMA_SEP = ",";
     private static final String SQL_CREATE_USERS =
-            "CREATE TABLE " + UserContract.User.TABLE_NAME + " (" +
-                    UserContract.User._ID + " INTEGER PRIMARY KEY, " +
-                    UserContract.User.COLUMN_NAME_EMAIL + TEXT_TYPE +
+            "CREATE TABLE " + UserContract.UserEntry.TABLE_NAME + " (" +
+                    UserContract.UserEntry._ID + " INTEGER PRIMARY KEY, " +
+                    UserContract.UserEntry.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
+                    UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + INTEGER_TYPE +
                     " )";
     private static final String SQL_DELETE_USERS =
-            "DROP TABLE IF EXISTS " + UserContract.User.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + UserContract.UserEntry.TABLE_NAME;
 
     private static UserHelper userHelper = null;
 
@@ -33,12 +35,17 @@ public class UserHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("DBHelper", "Creating User table");
+        Log.d("DBHelper", "Creating UserEntry table");
         db.execSQL(SQL_CREATE_USERS);
 
         ContentValues cv = new ContentValues();
+        String TABLE = UserContract.UserEntry.TABLE_NAME;
+        String EMAIL = UserContract.UserEntry.COLUMN_NAME_EMAIL;
         //TODO: Hard coded again, fix later
-        cv.put(UserContract.User.COLUMN_NAME_EMAIL, "phongnt.ptnk@gmail.com");
+        cv.put(UserContract.UserEntry.COLUMN_NAME_EMAIL, "otacon.ptnk@gmail.com");
+        cv.put(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, UserContract.UserEntry.UNSUBSCRIBED);
+        db.insert(TABLE, EMAIL, cv);
+
     }
 
     @Override

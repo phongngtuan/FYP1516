@@ -2,6 +2,7 @@ package com.ntu.phongnt.healthdroid.subscription;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
@@ -16,18 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
-import com.ntu.phongnt.healthdroid.data.user.User;
-import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.db.user.UserContract;
+import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
-import com.ntu.phongnt.healthdroid.services.UserFactory;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 
 import java.io.IOException;
@@ -37,6 +36,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class UserFragment extends Fragment implements SubscriptionChangeListener {
+    private static UserHelper db = null;
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -47,7 +47,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
     private int mColumnCount = 1;
 
     private SubscriptionChangePublisher subscriptionChangePublisher = null;
-    private List<HealthDroidUserWrapper> listUser = new ArrayList<>();
+    private List<UserWrapper> listUser = new ArrayList<>();
 
     public UserFragment() {
     }
@@ -62,11 +62,12 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        new ListUserTask().execute((GoogleAccountCredential) null);
-        new GetSubscriptionsTask().execute();
-
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+        }
+
+        if (db == null) {
+            db = UserHelper.getInstance(getActivity());
         }
     }
 
@@ -90,25 +91,25 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
         HealthDroidUserViewInteractionListener listener = new HealthDroidUserViewInteractionListener() {
             @Override
-            public void onItemClick(HealthDroidUserWrapper user) {
+            public void onItemClick(UserWrapper user) {
                 //TODO: implement
-                Toast.makeText(getActivity(), user.healthDroidUser.getEmail(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), user.getEmail(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onSubscribeClick(HealthDroidUserWrapper user) {
+            public void onSubscribeClick(UserWrapper user) {
                 switch (user.subscriptionState) {
-                    case HealthDroidUserWrapper.UNSUBSCRIBED:
-                        subscribe(user.healthDroidUser);
-                        Toast.makeText(getActivity(), user.healthDroidUser.getEmail() + " subscribed", Toast.LENGTH_SHORT).show();
+                    case UserContract.UserEntry.UNSUBSCRIBED:
+                        handleSubscribe(user.getEmail());
+                        Toast.makeText(getActivity(), user.getEmail() + " subscribed", Toast.LENGTH_SHORT).show();
                         break;
-                    case HealthDroidUserWrapper.PENDING:
-                        unsubscribe(user.healthDroidUser);
-                        Toast.makeText(getActivity(), user.healthDroidUser.getEmail() + " cancelled", Toast.LENGTH_SHORT).show();
+                    case UserContract.UserEntry.PENDING:
+                        handleUnsubscribe(user.getEmail());
+                        Toast.makeText(getActivity(), user.getEmail() + " cancelled", Toast.LENGTH_SHORT).show();
                         break;
-                    case HealthDroidUserWrapper.SUBSCRIBED:
-                        unsubscribe(user.healthDroidUser);
-                        Toast.makeText(getActivity(), user.healthDroidUser.getEmail() + " unsubscribed", Toast.LENGTH_SHORT).show();
+                    case UserContract.UserEntry.SUBSCRIBED:
+                        handleUnsubscribe(user.getEmail());
+                        Toast.makeText(getActivity(), user.getEmail() + " unsubscribed", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -124,23 +125,26 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            MyUserRecyclerViewAdapter viewAdapter = new MyUserRecyclerViewAdapter(listUser, listener);
+            UserRecyclerViewAdapter viewAdapter = new UserRecyclerViewAdapter(listUser, listener);
             recyclerView.setAdapter(viewAdapter);
+
+            new LoadCursorUserDbTask().execute();
         }
+
         return view;
     }
 
     @Override
     public void subscriptionChanged() {
-        new ListUserTask().execute((GoogleAccountCredential) null);
-        new GetSubscriptionsTask().execute();
+//        new ListUserTask().execute((GoogleAccountCredential) null);
+//        new GetSubscriptionsTask().execute();
     }
 
-    private void subscribe(HealthDroidUser user) {
+    private void handleSubscribe(String user) {
         new SendSubscriptionTask().execute(user);
     }
 
-    private void unsubscribe(HealthDroidUser user) {
+    private void handleUnsubscribe(String user) {
         new CancelSubscriptionTask().execute(user);
     }
 
@@ -150,21 +154,21 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
 
     public interface HealthDroidUserViewInteractionListener {
 
-        void onItemClick(HealthDroidUserWrapper user);
+        void onItemClick(UserWrapper user);
 
-        void onSubscribeClick(HealthDroidUserWrapper user);
+        void onSubscribeClick(UserWrapper user);
     }
 
-    private class CancelSubscriptionTask extends AsyncTask<HealthDroidUser, Void, Void> {
+    private class CancelSubscriptionTask extends AsyncTask<String, Void, Void> {
         @Override
-        protected Void doInBackground(HealthDroidUser... params) {
+        protected Void doInBackground(String... params) {
             Subscription subscriptionService = SubscriptionFactory.getInstance();
-            HealthDroidUser targetUser = params[0];
+            String targetUser = params[0];
             MainActivity mainActivity = (MainActivity) getActivity();
             String user = mainActivity.getCredential().getSelectedAccountName();
             try {
-                subscriptionService.unsubscribe(user).setTarget(targetUser.getEmail()).execute();
-                notifyUnsubscribed(targetUser.getEmail());
+                subscriptionService.unsubscribe(user).setTarget(targetUser).execute();
+                notifyUnsubscribed(targetUser);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -178,14 +182,14 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         }
     }
 
-    private class SendSubscriptionTask extends AsyncTask<HealthDroidUser, Void, SubscriptionRecord> {
+    private class SendSubscriptionTask extends AsyncTask<String, Void, SubscriptionRecord> {
         @Override
-        protected SubscriptionRecord doInBackground(HealthDroidUser... params) {
+        protected SubscriptionRecord doInBackground(String... params) {
             Subscription subscriptionService = SubscriptionFactory.getInstance();
             SubscriptionRecord subscriptionRecord = null;
-            HealthDroidUser targetUser = params[0];
+            String targetUser = params[0];
             try {
-                subscriptionRecord = subscriptionService.subscribe(targetUser.getEmail()).execute();
+                subscriptionRecord = subscriptionService.subscribe(targetUser).execute();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -195,36 +199,32 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         @Override
         protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
             super.onPostExecute(subscriptionRecord);
-            notifySubscriptionSent(subscriptionRecord.getTarget());
+            notifySubscriptionSent(subscriptionRecord.getTarget().getEmail());
             notifyChange();
         }
     }
 
     private void notifySubscriptionSent(String email) {
-        for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
-            if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
-                healthDroidUserWrapper.onSubscriptionSent();
+        for (UserWrapper userWrapper : listUser) {
+            if (userWrapper.getEmail().equalsIgnoreCase(email)) {
+                userWrapper.onSubscriptionSent();
             }
         }
     }
 
-    private void notifySubscriptionSent(com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user) {
-        notifySubscriptionSent(user.getEmail());
-    }
-
     private void notifyUnsubscribed(String email) {
         //TODO: refactor the flow to do broadcast intent
-        for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
-            if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
+        for (UserWrapper userWrapper : listUser) {
+            if (userWrapper.getEmail().equalsIgnoreCase(email)) {
                 //Delete from database
-                Log.d(TAG, "Getting data for user: " + email);
+                Log.d(TAG, "Getting data for email: " + email);
                 SQLiteOpenHelper db = DataHelper.getInstance(getActivity());
                 SQLiteDatabase writableDatabase = db.getWritableDatabase();
                 writableDatabase.delete(DataContract.DataEntry.TABLE_NAME,
                         DataContract.DataEntry.COLUMN_NAME_USER + "=?",
                         new String[]{email});
 
-                healthDroidUserWrapper.onSubscriptionCancelled();
+                userWrapper.onSubscriptionCancelled();
             }
         }
 
@@ -245,18 +245,14 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
     }
 
-    private void notifyUnsubscribed(com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user) {
-        notifyUnsubscribed(user.getEmail());
-    }
-
     private void notifySubscriptionConfirmed(String email) {
-        Log.d(TAG, "Notifying subscription confirm for user " + email);
+        Log.d(TAG, "Notifying subscription confirm for email " + email);
         Set<String> subscribedUsers = new TreeSet<>();
-        for (HealthDroidUserWrapper healthDroidUserWrapper : listUser) {
-            if (healthDroidUserWrapper.healthDroidUser.getEmail().equalsIgnoreCase(email)) {
-                Log.d(TAG, "Notifying subscribed user: " + healthDroidUserWrapper.healthDroidUser.getEmail());
-                healthDroidUserWrapper.onSubscriptionConfirmed();
-                subscribedUsers.add(healthDroidUserWrapper.healthDroidUser.getEmail());
+        for (UserWrapper userWrapper : listUser) {
+            if (userWrapper.getEmail().equalsIgnoreCase(email)) {
+                Log.d(TAG, "Notifying subscribed email: " + userWrapper.getEmail());
+                userWrapper.onSubscriptionConfirmed();
+                subscribedUsers.add(userWrapper.getEmail());
             }
         }
         //TODO: there is duplicated code, consider refactor
@@ -271,97 +267,122 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
     }
 
-    private void notifySubscriptionConfirmed(com.ntu.phongnt.healthdroid.data.subscription.model.HealthDroidUser user) {
-        notifySubscriptionConfirmed(user.getEmail());
-    }
+    abstract private class BaseUserDbTask<T> extends AsyncTask<T, Void, Cursor> {
+        protected Cursor doQuery() {
+            Cursor result =
+                    db
+                            .getReadableDatabase()
+                            .query(UserContract.UserEntry.TABLE_NAME,
+                                    new String[]{
+                                            UserContract.UserEntry._ID,
+                                            UserContract.UserEntry.COLUMN_NAME_EMAIL,
+                                            UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS
+                                    },
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    UserContract.UserEntry.COLUMN_NAME_EMAIL);
 
-    private class GetSubscriptionsTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
-        @Override
-        protected List<SubscriptionRecord> doInBackground(Void... params) {
-            Subscription subscriptionService = SubscriptionFactory.getInstance();
-            List<SubscriptionRecord> subscriptionRecords = null;
-            try {
-                subscriptionRecords = subscriptionService.subscribed().execute().getItems();
-                Log.d(TAG, "Get subscription records count: " + subscriptionRecords.size());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return subscriptionRecords;
-        }
-
-        @Override
-        protected void onPostExecute(List<SubscriptionRecord> subscriptionRecords) {
-            super.onPostExecute(subscriptionRecords);
-            for (SubscriptionRecord record : subscriptionRecords) {
-                if (record.getIsAccepted())
-                    notifySubscriptionConfirmed(record.getTarget());
-                else
-                    notifySubscriptionSent(record.getTarget());
-            }
-            notifyChange();
-
+            Log.i(TAG, String.valueOf(result.getCount()));
+            return (result);
         }
     }
 
-    public static class HealthDroidUserWrapper {
-        public static final int UNSUBSCRIBED = 0;
-        public static final int PENDING = 1;
-        public static final int SUBSCRIBED = 2;
+    private class LoadCursorUserDbTask extends BaseUserDbTask<Void> {
+        @Override
+        protected Cursor doInBackground(Void... params) {
+            return (doQuery());
+        }
 
-        public HealthDroidUser healthDroidUser = null;
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
+                    int subscription = cursor.getInt(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS));
+                    UserWrapper userWrapper = new UserWrapper(email, subscription);
+                    listUser.add(userWrapper);
+                }
+                while (cursor.moveToNext());
+            }
+            cursor.close();
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    public static class UserWrapper {
+
+        public String email = null;
         public int subscriptionState = 0;
 
-        public HealthDroidUserWrapper(HealthDroidUser healthDroidUser, int subscriptionState) {
-            this.healthDroidUser = healthDroidUser;
+        public UserWrapper(String user, int subscriptionState) {
+            this.email = user;
             this.subscriptionState = subscriptionState;
         }
 
-        public HealthDroidUserWrapper(HealthDroidUser healthDroidUser) {
-            this.healthDroidUser = healthDroidUser;
+        public UserWrapper(String email) {
+            this.email = email;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public int getSubscriptionState() {
+            return subscriptionState;
+        }
+
+        public void setSubscriptionState(int subscriptionState) {
+            this.subscriptionState = subscriptionState;
         }
 
         public int onSubscriptionSent() {
-            subscriptionState = PENDING;
+            subscriptionState = UserContract.UserEntry.PENDING;
             return subscriptionState;
         }
 
         public int onSubscriptionConfirmed() {
-            subscriptionState = SUBSCRIBED;
+            subscriptionState = UserContract.UserEntry.SUBSCRIBED;
             return subscriptionState;
         }
 
         public int onSubscriptionCancelled() {
-            subscriptionState = UNSUBSCRIBED;
+            subscriptionState = UserContract.UserEntry.UNSUBSCRIBED;
             return subscriptionState;
         }
     }
 
-    private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<HealthDroidUserWrapper>> {
-        @Override
-        protected List<HealthDroidUserWrapper> doInBackground(GoogleAccountCredential... params) {
-            User userService = UserFactory.getInstance();
-            try {
-                List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
-                Log.d(TAG, "Received " + healthDroidUsers.size() + " users");
-                List<HealthDroidUserWrapper> wrapperList = new ArrayList<>();
-                for (HealthDroidUser user : healthDroidUsers) {
-                    wrapperList.add(new HealthDroidUserWrapper(user));
-                }
-                return wrapperList;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<HealthDroidUserWrapper> resultedHealthDroidUsers) {
-            super.onPostExecute(resultedHealthDroidUsers);
-            if (resultedHealthDroidUsers != null) {
-                listUser.clear();
-                listUser.addAll(resultedHealthDroidUsers);
-            }
-            notifyChange();
-        }
-    }
+//    private class ListUserTask extends AsyncTask<GoogleAccountCredential, Void, List<UserWrapper>> {
+//        @Override
+//        protected List<UserWrapper> doInBackground(GoogleAccountCredential... params) {
+//            User userService = UserFactory.getInstance();
+//            try {
+//                List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
+//                Log.d(TAG, "Received " + healthDroidUsers.size() + " users");
+//                List<UserWrapper> wrapperList = new ArrayList<>();
+//                for (HealthDroidUser email : healthDroidUsers) {
+//                    wrapperList.add(new UserWrapper(email));
+//                }
+//                return wrapperList;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<UserWrapper> resultedHealthDroidUsers) {
+//            super.onPostExecute(resultedHealthDroidUsers);
+//            if (resultedHealthDroidUsers != null) {
+//                listUser.clear();
+//                listUser.addAll(resultedHealthDroidUsers);
+//            }
+//            notifyChange();
+//        }
+//    }
 }

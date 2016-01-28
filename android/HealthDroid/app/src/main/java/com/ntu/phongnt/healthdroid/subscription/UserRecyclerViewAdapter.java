@@ -8,19 +8,21 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.db.user.UserContract;
 
 import java.util.List;
 
-public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecyclerViewAdapter.UserViewHolder> {
+public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.UserViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private final List<UserFragment.HealthDroidUserWrapper> healthDroidUsers;
+    private final List<UserFragment.UserWrapper> healthDroidUsers;
     private final UserFragment.HealthDroidUserViewInteractionListener itemClickListener;
 
-    public MyUserRecyclerViewAdapter(List<UserFragment.HealthDroidUserWrapper> items, UserFragment.HealthDroidUserViewInteractionListener listener) {
+    public UserRecyclerViewAdapter(List<UserFragment.UserWrapper> items, UserFragment.HealthDroidUserViewInteractionListener listener) {
         healthDroidUsers = items;
         itemClickListener = listener;
     }
+
 
     @Override
     public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -32,16 +34,16 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
     @Override
     public void onBindViewHolder(final UserViewHolder holder, int position) {
         holder.healthDroidUser = healthDroidUsers.get(position);
-        holder.idView.setText(healthDroidUsers.get(position).healthDroidUser.getId());
+        holder.idView.setText(healthDroidUsers.get(position).getEmail());
 
         switch (holder.healthDroidUser.subscriptionState) {
-            case UserFragment.HealthDroidUserWrapper.UNSUBSCRIBED:
+            case UserContract.UserEntry.UNSUBSCRIBED:
                 holder.subscribeButton.setText(R.string.subscribe_label);
                 break;
-            case UserFragment.HealthDroidUserWrapper.PENDING:
+            case UserContract.UserEntry.PENDING:
                 holder.subscribeButton.setText(R.string.pending_label);
                 break;
-            case UserFragment.HealthDroidUserWrapper.SUBSCRIBED:
+            case UserContract.UserEntry.SUBSCRIBED:
                 holder.subscribeButton.setText(R.string.unsubscribe_label);
                 break;
         }
@@ -76,7 +78,7 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
         public final View view;
         public final TextView idView;
         public final Button subscribeButton;
-        public UserFragment.HealthDroidUserWrapper healthDroidUser;
+        public UserFragment.UserWrapper healthDroidUser;
 
         public UserViewHolder(View view) {
             super(view);
