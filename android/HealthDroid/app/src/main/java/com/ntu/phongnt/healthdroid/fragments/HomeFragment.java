@@ -26,6 +26,7 @@ import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
+import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
 import java.io.IOException;
 import java.util.Date;
@@ -84,6 +85,14 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
                 NotificationManager notificationManager =
                         (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.notify(1, notification);
+            }
+        });
+
+        Button btn4 = (Button) view.findViewById(R.id.button4);
+        btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SubscriptionService.startUpdateUserList(getActivity());
             }
         });
 
