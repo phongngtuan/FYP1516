@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
@@ -18,11 +19,13 @@ import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
+import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
 import com.ntu.phongnt.healthdroid.subscription.UserFragment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SubscriptionService extends IntentService {
@@ -125,7 +128,7 @@ public class SubscriptionService extends IntentService {
         localBroadcastManager.sendBroadcast(new Intent(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED));
     }
 
-    private static class ListUserTask extends AsyncTask<Void, Void, Void> {
+    private class ListUserTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             User userService = UserFactory.getInstance();
@@ -134,24 +137,66 @@ public class SubscriptionService extends IntentService {
                 List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
                 Log.d(UserFragment.TAG, "Received " + healthDroidUsers.size() + " users");
                 SQLiteDatabase writableDatabase = db.getWritableDatabase();
-                writableDatabase.delete(
+
+                List<String> userEmails = new ArrayList<>();
+                for (HealthDroidUser user : healthDroidUsers) {
+                    userEmails.add(user.getEmail());
+                }
+                Cursor cursor = writableDatabase.query(
                         UserContract.UserEntry.TABLE_NAME,
+                        new String[]{UserContract.UserEntry.COLUMN_NAME_EMAIL},
+                        null,
+                        null,
+                        null,
                         null,
                         null
                 );
 
+                List<String> obsoleteUsers = new ArrayList<>();
+                if (cursor.moveToFirst()) {
+                    do {
+                        String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
+                        if (!userEmails.contains(email))
+                            obsoleteUsers.add(email);
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+
+                //Clear obsolete user
+                writableDatabase.delete(
+                        UserContract.UserEntry.TABLE_NAME,
+                        UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                        obsoleteUsers.toArray(new String[obsoleteUsers.size()])
+                );
+
                 for (HealthDroidUser healthDroidUser : healthDroidUsers) {
                     ContentValues cv = new ContentValues();
+                    //Try to update existing user row
                     cv.put(
                             UserContract.UserEntry.COLUMN_NAME_EMAIL,
                             healthDroidUser.getEmail());
                     cv.put(
                             UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
                             UserContract.UserEntry.UNSUBSCRIBED);
-                    writableDatabase.insert(
+                    int affectedRowCount = writableDatabase.update(
                             UserContract.UserEntry.TABLE_NAME,
-                            UserContract.UserEntry.COLUMN_NAME_EMAIL,
-                            cv);
+                            cv,
+                            UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                            new String[]{healthDroidUser.getEmail()}
+                    );
+
+                    //Insert new one if not exist
+                    if (affectedRowCount <= 0) {
+                        cv.put(
+                                UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
+                                DateHelper.ZERO_DATE
+                        );
+                        writableDatabase.insert(
+                                UserContract.UserEntry.TABLE_NAME,
+                                UserContract.UserEntry.COLUMN_NAME_EMAIL,
+                                cv
+                        );
+                    }
                 }
 
                 List<SubscriptionRecord> subscriptionRecords =

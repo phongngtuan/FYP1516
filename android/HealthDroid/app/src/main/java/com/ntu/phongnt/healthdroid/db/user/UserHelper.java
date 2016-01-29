@@ -7,16 +7,19 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.db.Constants;
+import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
 public class UserHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
+    private static final String DATE_TYPE = " DATE";
     private static final String COMMA_SEP = ",";
     private static final String SQL_CREATE_USERS =
             "CREATE TABLE " + UserContract.UserEntry.TABLE_NAME + " (" +
                     UserContract.UserEntry._ID + " INTEGER PRIMARY KEY, " +
                     UserContract.UserEntry.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + INTEGER_TYPE +
+                    UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + INTEGER_TYPE + COMMA_SEP +
+                    UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED + DATE_TYPE +
                     " )";
     private static final String SQL_DELETE_USERS =
             "DROP TABLE IF EXISTS " + UserContract.UserEntry.TABLE_NAME;
@@ -44,6 +47,7 @@ public class UserHelper extends SQLiteOpenHelper {
         //TODO: Hard coded again, fix later. Currently, this entry will get flushed anyway
         cv.put(UserContract.UserEntry.COLUMN_NAME_EMAIL, "otacon.ptnk@gmail.com");
         cv.put(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, UserContract.UserEntry.UNSUBSCRIBED);
+        cv.put(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED, DateHelper.ZERO_DATE);
         db.insert(TABLE, EMAIL, cv);
 
     }

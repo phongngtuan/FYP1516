@@ -3,6 +3,7 @@ package com.ntu.phongnt.healthdroid.services.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
@@ -14,6 +15,8 @@ import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.db.user.UserContract;
+import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 
@@ -34,19 +37,42 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
 
     @Override
     protected Void doInBackground(Void... params) {
-        SharedPreferences dataPreferences =
-                context.getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-        Set<String> subscribedUsers = dataPreferences.getStringSet(SUBSCRIBED_USERS_KEY, new TreeSet<String>());
+        Set<String> subscribedUsers = new TreeSet<>();
+        UserHelper userHelper = UserHelper.getInstance(context);
+        SQLiteDatabase readableDatabase = userHelper.getReadableDatabase();
+        Cursor cursor = readableDatabase.query(
+                true,
+                UserContract.UserEntry.TABLE_NAME,
+                new String[]{
+                        UserContract.UserEntry._ID,
+                        UserContract.UserEntry.COLUMN_NAME_EMAIL},
+                UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + "=?",
+                new String[]{String.valueOf(UserContract.UserEntry.SUBSCRIBED)},
+                null,
+                null,
+                null,
+                null
+        );
 
-        SharedPreferences settings = context.getSharedPreferences("HealthDroid", 0);
-        String accountName = settings.getString(MainActivity.PREF_ACCOUNT_NAME, null);
-
-        subscribedUsers.add(accountName);
-
-        Date localLastUpdatedDate = getLocalLastUpdatedDate();
-        Data dataService = DataFactory.getInstance();
+        if (cursor.moveToFirst()) {
+            do {
+                String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
+                subscribedUsers.add(email);
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
 
         Log.d(TAG, "Subscribed email set size: " + subscribedUsers.size());
+
+        //Add the current user
+        SharedPreferences settings = context.getSharedPreferences("HealthDroid", 0);
+        String accountName = settings.getString(MainActivity.PREF_ACCOUNT_NAME, null);
+        subscribedUsers.add(accountName);
+
+        //Get the new data only
+        Date localLastUpdatedDate = getLocalLastUpdatedDate();
+        Data dataService = DataFactory.getInstance();
         try {
             for (String user : subscribedUsers) {
                 Log.d(TAG, "Getting data for email: " + user);
@@ -55,7 +81,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
                 Log.d(TAG, "Found " + dataRecordList.size());
                 SQLiteOpenHelper db = DataHelper.getInstance(context);
 
-                Date latestDateFromData = addDataToDatabase(db, dataRecordList, localLastUpdatedDate);
+                Date latestDateFromData = addDataToDatabase(db, dataRecordList);
                 setLocalLastUpdatedDate(latestDateFromData);
             }
         } catch (IOException e) {
@@ -64,17 +90,20 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         return null;
     }
 
-    Date addDataToDatabase(SQLiteOpenHelper db, List<DataRecord> dataRecords, Date after) {
-        Date latestDateFromData = new Date();
-        latestDateFromData.setTime(after.getTime());
+    Date addDataToDatabase(SQLiteOpenHelper db, List<DataRecord> dataRecords) {
+        Date latestDateFromData = null;
 
         Log.i(TAG, "processing dataRecords size = " + dataRecords.size());
-        Log.i(TAG, "local latest date: " + after);
         SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
         int count = 0;
         for (DataRecord d : dataRecords) {
-            Date dateFromData = DateHelper.getDate(d.getDate().toStringRfc3339());
             count++;
+            Date createDate = DateHelper.getDate(d.getCreatedAt().toStringRfc3339());
+            if (latestDateFromData == null)
+                latestDateFromData = createDate;
+            else if (createDate.after(latestDateFromData))
+                latestDateFromData = createDate;
+
             ContentValues values = new ContentValues();
             values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getValue());
             values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getDate().toStringRfc3339());
@@ -83,6 +112,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
                     DataContract.DataEntry.COLUMN_NAME_DATE,
                     values);
         }
+
         Log.d(TAG, "latest date from data: " + latestDateFromData);
         Log.d(TAG, "Updated count: " + count);
         return latestDateFromData;
