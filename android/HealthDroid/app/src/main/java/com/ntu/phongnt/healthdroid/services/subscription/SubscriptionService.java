@@ -129,6 +129,8 @@ public class SubscriptionService extends IntentService {
     }
 
     private class ListUserTask extends AsyncTask<Void, Void, Void> {
+        private static final String TAG = "ListUserTask";
+
         @Override
         protected Void doInBackground(Void... params) {
             User userService = UserFactory.getInstance();
@@ -187,6 +189,7 @@ public class SubscriptionService extends IntentService {
 
                     //Insert new one if not exist
                     if (affectedRowCount <= 0) {
+                        Log.d(TAG, "Inserting new row: " + healthDroidUser.getEmail());
                         cv.put(
                                 UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
                                 DateHelper.ZERO_DATE
@@ -196,7 +199,8 @@ public class SubscriptionService extends IntentService {
                                 UserContract.UserEntry.COLUMN_NAME_EMAIL,
                                 cv
                         );
-                    }
+                    } else
+                        Log.d(TAG, "Updating existing row: " + healthDroidUser.getEmail());
                 }
 
                 List<SubscriptionRecord> subscriptionRecords =

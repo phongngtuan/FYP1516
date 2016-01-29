@@ -225,7 +225,8 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
                                     new String[]{
                                             UserContract.UserEntry._ID,
                                             UserContract.UserEntry.COLUMN_NAME_EMAIL,
-                                            UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS
+                                            UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                                            UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED
                                     },
                                     null,
                                     null,
@@ -252,7 +253,8 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
                 do {
                     String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
                     int subscription = cursor.getInt(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS));
-                    UserWrapper userWrapper = new UserWrapper(email, subscription);
+                    String lastUpdated = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED));
+                    UserWrapper userWrapper = new UserWrapper(email, subscription, lastUpdated);
                     listUser.add(userWrapper);
                 }
                 while (cursor.moveToNext());
@@ -266,14 +268,12 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
 
         public String email = null;
         public int subscriptionState = 0;
+        public String lastUpdated = null;
 
-        public UserWrapper(String user, int subscriptionState) {
+        public UserWrapper(String user, int subscriptionState, String lastUpdated) {
             this.email = user;
             this.subscriptionState = subscriptionState;
-        }
-
-        public UserWrapper(String email) {
-            this.email = email;
+            this.lastUpdated = lastUpdated;
         }
 
         public String getEmail() {
@@ -292,6 +292,15 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             this.subscriptionState = subscriptionState;
         }
 
+        public String getLastUpdated() {
+            return lastUpdated;
+        }
+
+        public void setLastUpdated(String lastUpdated) {
+            this.lastUpdated = lastUpdated;
+        }
+
+        //Callback methods
         public int onSubscriptionSent() {
             subscriptionState = UserContract.UserEntry.PENDING;
             return subscriptionState;
