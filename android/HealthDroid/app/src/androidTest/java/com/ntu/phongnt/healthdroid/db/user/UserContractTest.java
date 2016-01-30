@@ -42,13 +42,13 @@ public class UserContractTest {
 
     @Test
     public void testInsertUser() throws Exception {
-        userContract.insertUser(email, String.valueOf(subscriptionStatus), lastUpdated);
-        checkMatchedRow(email, subscriptionStatus, lastUpdated);
+        userContract.insertUser(email);
+        checkMatchedRow(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE);
     }
 
     @Test
     public void testUpdateExistingUser() throws Exception {
-        userContract.insertUser(email, String.valueOf(subscriptionStatus), lastUpdated);
+        userContract.insertUser(email);
         userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
         checkMatchedRow(email, subscriptionStatus, latestDateFromData);
 

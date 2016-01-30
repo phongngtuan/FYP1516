@@ -2,29 +2,19 @@ package com.ntu.phongnt.healthdroid.services.data;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.api.client.util.DateTime;
-import com.ntu.phongnt.healthdroid.MainActivity;
-import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
-import com.ntu.phongnt.healthdroid.services.DataFactory;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> {
     public static final String TAG = "Getting data";
@@ -37,6 +27,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
 
     @Override
     protected Void doInBackground(Void... params) {
+        /*
         Set<String> subscribedUsers = new TreeSet<>();
         UserHelper userHelper = UserHelper.getInstance(context);
         SQLiteDatabase readableDatabase = userHelper.getReadableDatabase();
@@ -76,18 +67,39 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         try {
             for (String user : subscribedUsers) {
                 Log.d(TAG, "Getting data for email: " + user);
-                DateTime after = DateTime.parseRfc3339(DateHelper.toRfc3339(localLastUpdatedDate));
+                DateTime after = DateTime.parseRfc3339(DateHelper.formatAsRfc3992(localLastUpdatedDate));
+                //Get the data records for this user, after last updated time
                 List<DataRecord> dataRecordList = dataService.get().setUserId(user).setAfter(after).execute().getItems();
                 Log.d(TAG, "Found " + dataRecordList.size());
                 SQLiteOpenHelper db = DataHelper.getInstance(context);
 
                 Date latestDateFromData = addDataToDatabase(db, dataRecordList);
-                setLocalLastUpdatedDate(latestDateFromData);
+                setUserLastUpdatedTime(user, latestDateFromData);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
         return null;
+    }
+
+    private void setUserLastUpdatedTime(String user, Date latestDateFromData) {
+        if (latestDateFromData != null) {
+            Log.d(TAG, "Updating lastUpdated for user: " + user + " - " + latestDateFromData);
+            SQLiteDatabase writableDatabase = UserHelper.getInstance(context).getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(
+                    UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
+                    DateHelper.formatAsRfc3992(latestDateFromData)
+            );
+            writableDatabase.update(
+                    UserContract.UserEntry.TABLE_NAME,
+                    cv,
+                    UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                    new String[]{user}
+            );
+        } else
+            Log.d(TAG, "No data. Latest date not changed");
     }
 
     Date addDataToDatabase(SQLiteOpenHelper db, List<DataRecord> dataRecords) {
@@ -97,20 +109,21 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
         int count = 0;
         for (DataRecord d : dataRecords) {
-            count++;
             Date createDate = DateHelper.getDate(d.getCreatedAt().toStringRfc3339());
-            if (latestDateFromData == null)
-                latestDateFromData = createDate;
-            else if (createDate.after(latestDateFromData))
-                latestDateFromData = createDate;
+            if (createDate != null) {
+                if (latestDateFromData == null || latestDateFromData.before(createDate))
+                    latestDateFromData = createDate;
 
-            ContentValues values = new ContentValues();
-            values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getValue());
-            values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getDate().toStringRfc3339());
-            values.put(DataContract.DataEntry.COLUMN_NAME_USER, d.getUser().getEmail());
-            sqLiteDatabase.insert(DataContract.DataEntry.TABLE_NAME,
-                    DataContract.DataEntry.COLUMN_NAME_DATE,
-                    values);
+                ContentValues values = new ContentValues();
+                values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getValue());
+                values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getDate().toStringRfc3339());
+                values.put(DataContract.DataEntry.COLUMN_NAME_USER, d.getUser().getEmail());
+                sqLiteDatabase.insert(
+                        DataContract.DataEntry.TABLE_NAME,
+                        DataContract.DataEntry.COLUMN_NAME_DATE,
+                        values);
+                count++;
+            }
         }
 
         Log.d(TAG, "latest date from data: " + latestDateFromData);
@@ -118,18 +131,4 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         return latestDateFromData;
     }
 
-    Date getLocalLastUpdatedDate() {
-        SharedPreferences dataPreferences =
-                context.getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-        String lastUpdatedPreference = dataPreferences.getString(DataHelper.LAST_UPDATED, DataHelper.ZERO_TIME);
-        return DateHelper.getDate(lastUpdatedPreference);
-    }
-
-    void setLocalLastUpdatedDate(Date latestDateFromData) {
-        SharedPreferences dataPreferences =
-                context.getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = dataPreferences.edit();
-        editor.putString(DataHelper.LAST_UPDATED, DateHelper.toRfc3339(latestDateFromData));
-        editor.apply();
-    }
 }

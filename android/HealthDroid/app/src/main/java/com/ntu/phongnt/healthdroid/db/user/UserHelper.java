@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.db.Constants;
-import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
 public class UserHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
@@ -51,7 +50,7 @@ public class UserHelper extends SQLiteOpenHelper {
         //TODO: Hard coded again, fix later. Currently, this entry will get flushed anyway
         cv.put(UserContract.UserEntry.COLUMN_NAME_EMAIL, "otacon.ptnk@gmail.com");
         cv.put(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, UserContract.UserEntry.UNSUBSCRIBED);
-        cv.put(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED, DateHelper.ZERO_DATE);
+        cv.put(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED, UserContract.UserEntry.ZERO_DATE);
         db.insert(TABLE, EMAIL, cv);
 
     }

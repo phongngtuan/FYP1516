@@ -19,7 +19,6 @@ import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
-import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
 import com.ntu.phongnt.healthdroid.subscription.UserFragment;
@@ -192,7 +191,7 @@ public class SubscriptionService extends IntentService {
                         Log.d(TAG, "Inserting new row: " + healthDroidUser.getEmail());
                         cv.put(
                                 UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
-                                DateHelper.ZERO_DATE
+                                UserContract.UserEntry.ZERO_DATE
                         );
                         writableDatabase.insert(
                                 UserContract.UserEntry.TABLE_NAME,

@@ -37,8 +37,6 @@ public class DateHelper {
         return -1;
     }
 
-    public static String ZERO_DATE = "2000-01-01T00:00:00.000+07:00";
-
     public static int getWeek(String date) {
         return getProperty(date, Calendar.WEEK_OF_YEAR);
     }

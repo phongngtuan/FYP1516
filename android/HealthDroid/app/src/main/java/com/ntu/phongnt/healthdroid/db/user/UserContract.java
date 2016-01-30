@@ -18,7 +18,7 @@ public final class UserContract {
         this.db = db;
     }
 
-    public long insertUser(String email, String subscriptionStatus, String lastUpdated) {
+    private long insertUser(String email, Integer subscriptionStatus, String lastUpdated) {
         ContentValues cv = new ContentValues();
         cv.put(UserEntry.COLUMN_NAME_EMAIL, email);
         cv.put(UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, subscriptionStatus);
@@ -29,6 +29,10 @@ public final class UserContract {
                         UserEntry.COLUMN_NAME_EMAIL,
                         cv
                 );
+    }
+
+    public long insertUser(String email) {
+        return insertUser(email, UserEntry.UNSUBSCRIBED, UserEntry.ZERO_DATE);
     }
 
     public long updateOrNewUser(String email, Integer subscriptionStatus, Date date) {
@@ -75,6 +79,7 @@ public final class UserContract {
         public static final int UNSUBSCRIBED = 0;
         public static final int PENDING = 1;
         public static final int SUBSCRIBED = 2;
+        public static final String ZERO_DATE = "2000-01-01T00:00:00.000+07:00";
 
         public String email;
         public String subscriptionStatus;

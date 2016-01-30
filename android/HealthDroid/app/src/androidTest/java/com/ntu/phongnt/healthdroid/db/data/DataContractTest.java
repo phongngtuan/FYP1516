@@ -1,12 +1,9 @@
-package com.ntu.phongnt.healthdroid;
+package com.ntu.phongnt.healthdroid.db.data;
 
 import android.database.Cursor;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.RenamingDelegatingContext;
-
-import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class DataHelperUnitTest {
+public class DataContractTest {
     private String value = "123";
     private String date = "2016-01-10T02:08:50.889+07:00";
     private String user = "test@user.com";
