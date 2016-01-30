@@ -65,6 +65,7 @@ public class DataContractTest {
                 null
         );
         Assert.assertEquals(cursor.getCount(), countBefore + 1);
+        cursor.close();
     }
 
     @Test
