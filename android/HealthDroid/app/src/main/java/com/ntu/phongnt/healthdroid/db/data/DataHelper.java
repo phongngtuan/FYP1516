@@ -29,8 +29,12 @@ public class DataHelper extends SQLiteOpenHelper {
 
     private static DataHelper dataHelper;
 
-    private DataHelper(Context context) {
+    public DataHelper(Context context) {
         super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
+    }
+
+    public DataHelper(Context context, String databaseName) {
+        super(context, databaseName, null, Constants.DATABASE_VERSION);
     }
 
     public static synchronized DataHelper getInstance(Context context) {

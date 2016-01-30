@@ -22,7 +22,7 @@ public class DateHelper {
         return null;
     }
 
-    public static String toRfc3339(Date date) {
+    public static String formatAsRfc3992(Date date) {
         return formatRfc3339.format(date);
     }
 
