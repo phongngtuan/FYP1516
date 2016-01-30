@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 @RunWith(AndroidJUnit4.class)
 public class GetDataRecordsFromEndpointTaskTest extends AndroidTestCase {
 
@@ -34,7 +32,7 @@ public class GetDataRecordsFromEndpointTaskTest extends AndroidTestCase {
 
         DataHelper dataHelper = new DataHelper(renamingDelegatingContext, null);
         DataContract dataContract = new DataContract(dataHelper);
-        task = new GetDataRecordsFromEndpointTask(dataContract);
+        task = new GetDataRecordsFromEndpointTask(dataContract, null);
     }
 
     @Test
