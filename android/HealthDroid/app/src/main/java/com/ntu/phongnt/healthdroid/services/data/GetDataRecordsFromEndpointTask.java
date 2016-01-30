@@ -35,28 +35,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         Set<String> subscribedUsers = new TreeSet<>();
         UserHelper userHelper = UserHelper.getInstance(context);
         SQLiteDatabase readableDatabase = userHelper.getReadableDatabase();
-        Cursor cursor = readableDatabase.query(
-                true,
-                UserContract.UserEntry.TABLE_NAME,
-                new String[]{
-                        UserContract.UserEntry._ID,
-                        UserContract.UserEntry.COLUMN_NAME_EMAIL},
-                UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + "=?",
-                new String[]{String.valueOf(UserContract.UserEntry.SUBSCRIBED)},
-                null,
-                null,
-                null,
-                null
-        );
 
-        if (cursor.moveToFirst()) {
-            do {
-                String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
-                subscribedUsers.add(email);
-            }
-            while (cursor.moveToNext());
-        }
-        cursor.close();
 
         Log.d(TAG, "Subscribed email set size: " + subscribedUsers.size());
 

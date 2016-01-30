@@ -1,6 +1,5 @@
 package com.ntu.phongnt.healthdroid.db.user;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -44,14 +43,14 @@ public class UserHelper extends SQLiteOpenHelper {
         Log.d("DBHelper", "Creating UserEntry table");
         db.execSQL(SQL_CREATE_USERS);
 
-        ContentValues cv = new ContentValues();
-        String TABLE = UserContract.UserEntry.TABLE_NAME;
-        String EMAIL = UserContract.UserEntry.COLUMN_NAME_EMAIL;
-        //TODO: Hard coded again, fix later. Currently, this entry will get flushed anyway
-        cv.put(UserContract.UserEntry.COLUMN_NAME_EMAIL, "otacon.ptnk@gmail.com");
-        cv.put(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, UserContract.UserEntry.UNSUBSCRIBED);
-        cv.put(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED, UserContract.UserEntry.ZERO_DATE);
-        db.insert(TABLE, EMAIL, cv);
+//        ContentValues cv = new ContentValues();
+//        String TABLE = UserContract.UserEntry.TABLE_NAME;
+//        String EMAIL = UserContract.UserEntry.COLUMN_NAME_EMAIL;
+//        //TODO: Hard coded again, fix later. Currently, this entry will get flushed anyway
+//        cv.put(UserContract.UserEntry.COLUMN_NAME_EMAIL, "otacon.ptnk@gmail.com");
+//        cv.put(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, UserContract.UserEntry.UNSUBSCRIBED);
+//        cv.put(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED, UserContract.UserEntry.ZERO_DATE);
+//        db.insert(TABLE, EMAIL, cv);
 
     }
 

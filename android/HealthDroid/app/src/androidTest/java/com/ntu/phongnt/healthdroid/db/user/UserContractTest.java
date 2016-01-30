@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
+import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class UserContractTest {
@@ -110,6 +111,15 @@ public class UserContractTest {
         Date lastUpdate = new Date();
         userContract.updateLastUpdated(email, lastUpdate);
         Assert.assertEquals(1, countUsers(email, subscriptionStatus, DateHelper.formatAsRfc3992(lastUpdate)));
+    }
+
+    @Test
+    public void testGetAllUsers() throws Exception {
+        userContract.insertUser(email);
+        String anotherEmail = "another@email.com";
+        userContract.insertUser(anotherEmail);
+        List<UserContract.UserEntry> allUsers = userContract.getAllUsers();
+        Assert.assertEquals(2, allUsers.size());
     }
 
     private int countUsersWithSelection(String selection) {

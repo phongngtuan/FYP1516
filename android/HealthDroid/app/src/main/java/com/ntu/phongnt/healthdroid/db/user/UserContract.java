@@ -1,13 +1,16 @@
 package com.ntu.phongnt.healthdroid.db.user;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public final class UserContract {
 
@@ -103,6 +106,37 @@ public final class UserContract {
                 new String[]{email});
     }
 
+    public List<UserEntry> getAllUsers() {
+        List<UserEntry> subscribedUsers = new ArrayList<>();
+        Cursor cursor = db.getReadableDatabase().query(
+                true,
+                UserEntry.TABLE_NAME,
+                new String[]{
+                        UserEntry._ID,
+                        UserEntry.COLUMN_NAME_EMAIL,
+                        UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                        UserEntry.COLUMN_NAME_LAST_UPDATED
+                },
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
+                Integer subscriptionStatus = cursor.getInt(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
+                String lastUpdated = cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_NAME_LAST_UPDATED));
+                subscribedUsers.add(new UserEntry(email, subscriptionStatus, lastUpdated));
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
+        return subscribedUsers;
+    }
+
     public class UserEntry implements BaseColumns {
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_NAME_EMAIL = "email";
@@ -114,10 +148,10 @@ public final class UserContract {
         public static final String ZERO_DATE = "2000-01-01T00:00:00.000+07:00";
 
         public String email;
-        public String subscriptionStatus;
+        public Integer subscriptionStatus;
         public String lastUpdated;
 
-        public UserEntry(String email, String subscriptionStatus, String lastUpdated) {
+        public UserEntry(String email, Integer subscriptionStatus, String lastUpdated) {
             this.email = email;
             this.subscriptionStatus = subscriptionStatus;
             this.lastUpdated = lastUpdated;
