@@ -43,21 +43,23 @@ public class UserContractTest {
     @Test
     public void testInsertUser() throws Exception {
         userContract.insertUser(email);
-        assertUser(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE);
+        Assert.assertEquals(1,
+                countUsers(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
     }
 
     @Test
     public void testUpdateExistingUser() throws Exception {
         userContract.insertUser(email);
         userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
-        assertUser(email, subscriptionStatus, latestDateFromData);
-
+        Assert.assertEquals(1,
+                countUsers(email, subscriptionStatus, latestDateFromData));
     }
 
     @Test
     public void testUpdateNewUser() throws Exception {
         userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
-        assertUser(email, subscriptionStatus, latestDateFromData);
+        Assert.assertEquals(1,
+                countUsers(email, subscriptionStatus, latestDateFromData));
     }
 
     private void checkDate(String date) {
@@ -81,7 +83,26 @@ public class UserContractTest {
         cursor.close();
     }
 
-    private void assertUser(String email, int subscriptionStatus, String lastUpdated) {
+    @Test
+    public void testUpdateSubscriptionStatus() throws Exception {
+        userContract.insertUser(email);
+        userContract.updateSubscriptionStatus(email, UserContract.UserEntry.PENDING);
+        Assert.assertTrue(countUsers(email, UserContract.UserEntry.PENDING, UserContract.UserEntry.ZERO_DATE) >= 1);
+        userContract.updateSubscriptionStatus(email, UserContract.UserEntry.SUBSCRIBED);
+        Assert.assertTrue(countUsers(email, UserContract.UserEntry.SUBSCRIBED, UserContract.UserEntry.ZERO_DATE) >= 1);
+    }
+
+    @Test
+    public void testDeleteUser() throws Exception {
+        userContract.insertUser(email);
+        String anotherEmail = "another@email.com";
+        userContract.insertUser(anotherEmail);
+        userContract.deleteUser(new String[]{email});
+        Assert.assertEquals(0, countUsers(email));
+        Assert.assertEquals(1, countUsers(anotherEmail));
+    }
+
+    private int countUsersWithSelection(String selection) {
         Cursor cursor = db.getReadableDatabase().query(
                 UserContract.UserEntry.TABLE_NAME,
                 new String[]{
@@ -89,25 +110,29 @@ public class UserContractTest {
                         UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
                         UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED
                 },
-                UserContract.UserEntry.COLUMN_NAME_EMAIL + " = '" + email + "' AND " +
-                        UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + " = " + subscriptionStatus + " AND " +
-                        UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED + " = '" + lastUpdated + "'"
-                ,
+                selection,
                 null,
                 null,
                 null,
                 null
         );
-        Assert.assertEquals(1, cursor.getCount());
+        int count = cursor.getCount();
         cursor.close();
+        return count;
     }
 
-    @Test
-    public void testUpdateSubscriptionStatus() throws Exception {
-        userContract.insertUser(email);
-        userContract.updateSubscriptionStatus(email, UserContract.UserEntry.PENDING);
-        assertUser(email, UserContract.UserEntry.PENDING, UserContract.UserEntry.ZERO_DATE);
-        userContract.updateSubscriptionStatus(email, UserContract.UserEntry.SUBSCRIBED);
-        assertUser(email, UserContract.UserEntry.SUBSCRIBED, UserContract.UserEntry.ZERO_DATE);
+    private int countUsers(String email) {
+        String selection =
+                UserContract.UserEntry.COLUMN_NAME_EMAIL + " = '" + email + "'";
+        return countUsersWithSelection(selection);
     }
+
+    private int countUsers(String email, int subscriptionStatus, String lastUpdated) {
+        String selection =
+                UserContract.UserEntry.COLUMN_NAME_EMAIL + " = '" + email + "' AND " +
+                        UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + " = " + subscriptionStatus + " AND " +
+                        UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED + " = '" + lastUpdated + "'";
+        return countUsersWithSelection(selection);
+    }
+
 }

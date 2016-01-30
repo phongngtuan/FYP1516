@@ -35,6 +35,14 @@ public final class UserContract {
         return insertUser(email, UserEntry.UNSUBSCRIBED, UserEntry.ZERO_DATE);
     }
 
+    public long deleteUser(String[] emails) {
+        return db.getWritableDatabase().delete(
+                UserContract.UserEntry.TABLE_NAME,
+                UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                emails
+        );
+    }
+
     public long updateOrNewUser(String email, Integer subscriptionStatus, Date date) {
         SQLiteDatabase writableDatabase = db.getWritableDatabase();
         ContentValues cv = new ContentValues();

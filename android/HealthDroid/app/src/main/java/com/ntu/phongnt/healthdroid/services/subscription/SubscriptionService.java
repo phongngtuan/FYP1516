@@ -1,12 +1,10 @@
 package com.ntu.phongnt.healthdroid.services.subscription;
 
 import android.app.IntentService;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -144,13 +142,12 @@ public class SubscriptionService extends IntentService {
             try {
                 List<HealthDroidUser> healthDroidUsers = userService.get().execute().getItems();
                 Log.d(UserFragment.TAG, "Received " + healthDroidUsers.size() + " users");
-                SQLiteDatabase writableDatabase = db.getWritableDatabase();
 
                 List<String> userEmails = new ArrayList<>();
                 for (HealthDroidUser user : healthDroidUsers) {
                     userEmails.add(user.getEmail());
                 }
-                Cursor cursor = writableDatabase.query(
+                Cursor cursor = db.getReadableDatabase().query(
                         UserContract.UserEntry.TABLE_NAME,
                         new String[]{UserContract.UserEntry.COLUMN_NAME_EMAIL},
                         null,
@@ -171,11 +168,7 @@ public class SubscriptionService extends IntentService {
                 cursor.close();
 
                 //Clear obsolete user
-                writableDatabase.delete(
-                        UserContract.UserEntry.TABLE_NAME,
-                        UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
-                        obsoleteUsers.toArray(new String[obsoleteUsers.size()])
-                );
+                userContract.deleteUser(obsoleteUsers.toArray(new String[obsoleteUsers.size()]));
 
                 for (HealthDroidUser healthDroidUser : healthDroidUsers) {
                     userContract.insertUser(healthDroidUser.getEmail());
@@ -257,17 +250,8 @@ public class SubscriptionService extends IntentService {
     }
 
     private void changeSubscriptionStatus(String user, int status) {
-        SQLiteDatabase writableDatabase = db.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(
-                UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
-                status);
-        writableDatabase.update(
-                UserContract.UserEntry.TABLE_NAME,
-                cv,
-                UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
-                new String[]{user}
-        );
+        UserContract userContract = new UserContract(db);
+        userContract.updateSubscriptionStatus(user, status);
     }
 
     private void markPending(String user) {
