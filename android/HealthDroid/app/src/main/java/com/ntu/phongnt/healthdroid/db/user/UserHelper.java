@@ -26,8 +26,12 @@ public class UserHelper extends SQLiteOpenHelper {
 
     private static UserHelper userHelper = null;
 
-    private UserHelper(Context context) {
+    protected UserHelper(Context context) {
         super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
+    }
+
+    protected UserHelper(Context context, String databaseName) {
+        super(context, databaseName, null, Constants.DATABASE_VERSION);
     }
 
     public static synchronized UserHelper getInstance(Context context) {
