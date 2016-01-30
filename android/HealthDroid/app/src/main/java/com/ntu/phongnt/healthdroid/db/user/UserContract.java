@@ -71,6 +71,17 @@ public final class UserContract {
         }
     }
 
+    public long updateSubscriptionStatus(String email, Integer subscriptionStatus) {
+        ContentValues cv = new ContentValues();
+        cv.put(UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, subscriptionStatus);
+        return db.getWritableDatabase().update(
+                UserContract.UserEntry.TABLE_NAME,
+                cv,
+                " email=?",
+                new String[]{email}
+        );
+    }
+
     public class UserEntry implements BaseColumns {
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_NAME_EMAIL = "email";

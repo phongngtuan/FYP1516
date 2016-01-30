@@ -129,6 +129,13 @@ public class SubscriptionService extends IntentService {
 
     private class ListUserTask extends AsyncTask<Void, Void, Void> {
         private static final String TAG = "ListUserTask";
+        private UserContract userContract = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            userContract = new UserContract(db);
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -171,58 +178,18 @@ public class SubscriptionService extends IntentService {
                 );
 
                 for (HealthDroidUser healthDroidUser : healthDroidUsers) {
-                    ContentValues cv = new ContentValues();
-                    //Try to update existing user row
-                    cv.put(
-                            UserContract.UserEntry.COLUMN_NAME_EMAIL,
-                            healthDroidUser.getEmail());
-                    cv.put(
-                            UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
-                            UserContract.UserEntry.UNSUBSCRIBED);
-                    int affectedRowCount = writableDatabase.update(
-                            UserContract.UserEntry.TABLE_NAME,
-                            cv,
-                            UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
-                            new String[]{healthDroidUser.getEmail()}
-                    );
-
-                    //Insert new one if not exist
-                    if (affectedRowCount <= 0) {
-                        Log.d(TAG, "Inserting new row: " + healthDroidUser.getEmail());
-                        cv.put(
-                                UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
-                                UserContract.UserEntry.ZERO_DATE
-                        );
-                        writableDatabase.insert(
-                                UserContract.UserEntry.TABLE_NAME,
-                                UserContract.UserEntry.COLUMN_NAME_EMAIL,
-                                cv
-                        );
-                    } else
-                        Log.d(TAG, "Updating existing row: " + healthDroidUser.getEmail());
+                    userContract.insertUser(healthDroidUser.getEmail());
                 }
 
                 List<SubscriptionRecord> subscriptionRecords =
                         subscriptionService.subscribed().execute().getItems();
                 for (SubscriptionRecord record : subscriptionRecords) {
-                    ContentValues cv = new ContentValues();
                     if (record.getIsAccepted())
-                        cv.put(
-                                UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
-                                UserContract.UserEntry.SUBSCRIBED
-                        );
+                        userContract.updateSubscriptionStatus(record.getTarget().getEmail(),
+                                UserContract.UserEntry.SUBSCRIBED);
                     else
-                        cv.put(
-                                UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
-                                UserContract.UserEntry.PENDING
-                        );
-
-                    writableDatabase.update(
-                            UserContract.UserEntry.TABLE_NAME,
-                            cv,
-                            " email=?",
-                            new String[]{record.getTarget().getEmail()}
-                    );
+                        userContract.updateSubscriptionStatus(record.getTarget().getEmail(),
+                                UserContract.UserEntry.PENDING);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

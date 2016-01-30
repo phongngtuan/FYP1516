@@ -43,21 +43,21 @@ public class UserContractTest {
     @Test
     public void testInsertUser() throws Exception {
         userContract.insertUser(email);
-        checkMatchedRow(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE);
+        assertUser(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE);
     }
 
     @Test
     public void testUpdateExistingUser() throws Exception {
         userContract.insertUser(email);
         userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
-        checkMatchedRow(email, subscriptionStatus, latestDateFromData);
+        assertUser(email, subscriptionStatus, latestDateFromData);
 
     }
 
     @Test
     public void testUpdateNewUser() throws Exception {
         userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
-        checkMatchedRow(email, subscriptionStatus, latestDateFromData);
+        assertUser(email, subscriptionStatus, latestDateFromData);
     }
 
     private void checkDate(String date) {
@@ -81,7 +81,7 @@ public class UserContractTest {
         cursor.close();
     }
 
-    private void checkMatchedRow(String email, int subscriptionStatus, String lastUpdated) {
+    private void assertUser(String email, int subscriptionStatus, String lastUpdated) {
         Cursor cursor = db.getReadableDatabase().query(
                 UserContract.UserEntry.TABLE_NAME,
                 new String[]{
@@ -100,5 +100,14 @@ public class UserContractTest {
         );
         Assert.assertEquals(1, cursor.getCount());
         cursor.close();
+    }
+
+    @Test
+    public void testUpdateSubscriptionStatus() throws Exception {
+        userContract.insertUser(email);
+        userContract.updateSubscriptionStatus(email, UserContract.UserEntry.PENDING);
+        assertUser(email, UserContract.UserEntry.PENDING, UserContract.UserEntry.ZERO_DATE);
+        userContract.updateSubscriptionStatus(email, UserContract.UserEntry.SUBSCRIBED);
+        assertUser(email, UserContract.UserEntry.SUBSCRIBED, UserContract.UserEntry.ZERO_DATE);
     }
 }
