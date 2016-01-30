@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Date;
+
 @RunWith(AndroidJUnit4.class)
 public class UserContractTest {
 
@@ -100,6 +102,14 @@ public class UserContractTest {
         userContract.deleteUser(new String[]{email});
         Assert.assertEquals(0, countUsers(email));
         Assert.assertEquals(1, countUsers(anotherEmail));
+    }
+
+    @Test
+    public void testUpdateLastUpdated() throws Exception {
+        userContract.insertUser(email);
+        Date lastUpdate = new Date();
+        userContract.updateLastUpdated(email, lastUpdate);
+        Assert.assertEquals(1, countUsers(email, subscriptionStatus, DateHelper.formatAsRfc3992(lastUpdate)));
     }
 
     private int countUsersWithSelection(String selection) {

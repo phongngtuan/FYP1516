@@ -90,6 +90,19 @@ public final class UserContract {
         );
     }
 
+    public long updateLastUpdated(String email, Date lastUpdate) {
+        ContentValues cv = new ContentValues();
+        cv.put(
+                UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
+                DateHelper.formatAsRfc3992(lastUpdate)
+        );
+        return db.getWritableDatabase().update(
+                UserContract.UserEntry.TABLE_NAME,
+                cv,
+                UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+                new String[]{email});
+    }
+
     public class UserEntry implements BaseColumns {
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_NAME_EMAIL = "email";
