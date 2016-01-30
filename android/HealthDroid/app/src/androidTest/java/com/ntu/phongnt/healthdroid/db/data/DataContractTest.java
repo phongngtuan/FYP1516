@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class DataContractTest {
-    private String value = "123";
+    private Float value = 123.0f;
     private String date = "2016-01-10T02:08:50.889+07:00";
     private String user = "test@user.com";
 
@@ -49,7 +49,7 @@ public class DataContractTest {
     }
 
     @Test
-    public void addData() throws Exception {
+    public void testAddData() throws Exception {
         dataContract.addData(value, date, user);
         Cursor cursor = db.getReadableDatabase().query(
                 DataContract.DataEntry.TABLE_NAME,
@@ -88,7 +88,7 @@ public class DataContractTest {
         Assert.assertEquals(1, cursor.getCount());
         cursor.moveToFirst();
         Assert.assertEquals(
-                cursor.getString(
+                (Float) cursor.getFloat(
                         cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
                 value);
         Assert.assertEquals(

@@ -10,7 +10,7 @@ public final class DataContract {
         this.dataHelper = dataHelper;
     }
 
-    public long addData(String value, String date, String user) {
+    public long addData(Float value, String date, String user) {
         ContentValues values = new ContentValues();
         values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, value);
         values.put(DataContract.DataEntry.COLUMN_NAME_DATE, date);
