@@ -8,10 +8,6 @@ import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.db.Constants;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class DataHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
@@ -23,7 +19,6 @@ public class DataHelper extends SQLiteOpenHelper {
                     DataContract.DataEntry.COLUMN_NAME_USER + " TEXT" +
                     " )";
 
-    public static final String RFC3339_TEMPLATE = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
     public static final String ZERO_TIME = "2000-12-19T02:08:50.889+07:00";
     public static final String LAST_UPDATED = "last_updated";
 
@@ -101,10 +96,4 @@ public class DataHelper extends SQLiteOpenHelper {
         throw new RuntimeException("How did we get here?");
     }
 
-    private String getDateTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                RFC3339_TEMPLATE, Locale.getDefault());
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
 }
