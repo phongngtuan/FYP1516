@@ -1,16 +1,12 @@
 package com.ntu.phongnt.healthdroid.services.data;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.user.UserContract;
-import com.ntu.phongnt.healthdroid.db.user.UserHelper;
+import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
 import java.util.Date;
@@ -19,10 +15,15 @@ import java.util.List;
 public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> {
     public static final String TAG = "Getting data";
     public static final String SUBSCRIBED_USERS_KEY = "SUBSCRIBED_USERS_KEY";
-    private Context context;
+    private DataHelper dataHelper = null;
+    private DataContract dataContract = null;
 
     public GetDataRecordsFromEndpointTask(Context context) {
-        this.context = context;
+        this.dataContract = new DataContract(dataHelper);
+    }
+
+    public GetDataRecordsFromEndpointTask(DataContract dataContract) {
+        this.dataContract = dataContract;
     }
 
     @Override
@@ -83,45 +84,36 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         return null;
     }
 
-    private void setUserLastUpdatedTime(String user, Date latestDateFromData) {
-        if (latestDateFromData != null) {
-            Log.d(TAG, "Updating lastUpdated for user: " + user + " - " + latestDateFromData);
-            SQLiteDatabase writableDatabase = UserHelper.getInstance(context).getWritableDatabase();
-            ContentValues cv = new ContentValues();
-            cv.put(
-                    UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
-                    DateHelper.formatAsRfc3992(latestDateFromData)
-            );
-            writableDatabase.update(
-                    UserContract.UserEntry.TABLE_NAME,
-                    cv,
-                    UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
-                    new String[]{user}
-            );
-        } else
-            Log.d(TAG, "No data. Latest date not changed");
-    }
+//    private void setUserLastUpdatedTime(String user, Date latestDateFromData) {
+//        if (latestDateFromData != null) {
+//            Log.d(TAG, "Updating lastUpdated for user: " + user + " - " + latestDateFromData);
+//            SQLiteDatabase writableDatabase = UserHelper.getInstance(context).getWritableDatabase();
+//            ContentValues cv = new ContentValues();
+//            cv.put(
+//                    UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED,
+//                    DateHelper.formatAsRfc3992(latestDateFromData)
+//            );
+//            writableDatabase.update(
+//                    UserContract.UserEntry.TABLE_NAME,
+//                    cv,
+//                    UserContract.UserEntry.COLUMN_NAME_EMAIL + "=?",
+//                    new String[]{user}
+//            );
+//        } else
+//            Log.d(TAG, "No data. Latest date not changed");
+//    }
 
-    Date addDataToDatabase(SQLiteOpenHelper db, List<DataRecord> dataRecords) {
+    Date addDataToDatabase(List<DataRecord> dataRecords) {
         Date latestDateFromData = null;
 
         Log.i(TAG, "processing dataRecords size = " + dataRecords.size());
-        SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
         int count = 0;
         for (DataRecord d : dataRecords) {
             Date createDate = DateHelper.getDate(d.getCreatedAt().toStringRfc3339());
             if (createDate != null) {
                 if (latestDateFromData == null || latestDateFromData.before(createDate))
                     latestDateFromData = createDate;
-
-                ContentValues values = new ContentValues();
-                values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, d.getValue());
-                values.put(DataContract.DataEntry.COLUMN_NAME_DATE, d.getDate().toStringRfc3339());
-                values.put(DataContract.DataEntry.COLUMN_NAME_USER, d.getUser().getEmail());
-                sqLiteDatabase.insert(
-                        DataContract.DataEntry.TABLE_NAME,
-                        DataContract.DataEntry.COLUMN_NAME_DATE,
-                        values);
+                dataContract.addData(d.getValue(), d.getDate().toStringRfc3339(), d.getUser().getEmail());
                 count++;
             }
         }
