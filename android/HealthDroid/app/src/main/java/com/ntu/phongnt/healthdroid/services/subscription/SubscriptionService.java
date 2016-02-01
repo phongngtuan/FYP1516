@@ -246,8 +246,10 @@ public class SubscriptionService extends IntentService {
         protected void onPostExecute(SubscriptionRecord subscriptionRecord) {
             super.onPostExecute(subscriptionRecord);
             if (subscriptionRecord != null) {
-                markUnsubscribed(subscriptionRecord.getTarget().getEmail());
-                deleteLocalDataOfUser(subscriptionRecord.getTarget().getEmail());
+                String email = subscriptionRecord.getTarget().getEmail();
+                markUnsubscribed(email);
+                deleteLocalDataOfUser(email);
+                clearLastUpdatedDate(email);
                 broadcastSubscriptionStatusChanged();
             }
         }
@@ -264,7 +266,6 @@ public class SubscriptionService extends IntentService {
 
     private void markSubscribed(String user) {
         changeSubscriptionStatus(user, UserContract.UserEntry.SUBSCRIBED);
-        clearLastUpdatedDate(user);
     }
 
     private void clearLastUpdatedDate(String user) {
