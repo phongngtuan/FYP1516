@@ -9,13 +9,16 @@ import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class UserContractTest {
@@ -47,7 +50,7 @@ public class UserContractTest {
     @Test
     public void testInsertUser() throws Exception {
         userContract.insertUser(email);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 countUsers(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
     }
 
@@ -55,7 +58,7 @@ public class UserContractTest {
     public void testUpdateExistingUser() throws Exception {
         userContract.insertUser(email);
         userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 countUsers(email, subscriptionStatus, latestDateFromData));
     }
 
@@ -63,7 +66,7 @@ public class UserContractTest {
     public void testUpdateNonExistingUser() throws Exception {
         //TODO: consider updateOrNewUser with all parameters
         userContract.updateOrNewUser(email);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 countUsers(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
     }
 
@@ -84,7 +87,7 @@ public class UserContractTest {
         );
         cursor.moveToFirst();
         String lastUpdatedFromDb = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED));
-        Assert.assertEquals(date, lastUpdatedFromDb);
+        assertEquals(date, lastUpdatedFromDb);
         cursor.close();
     }
 
@@ -92,9 +95,9 @@ public class UserContractTest {
     public void testUpdateSubscriptionStatus() throws Exception {
         userContract.insertUser(email);
         userContract.updateSubscriptionStatus(email, UserContract.UserEntry.PENDING);
-        Assert.assertTrue(countUsers(email, UserContract.UserEntry.PENDING, UserContract.UserEntry.ZERO_DATE) >= 1);
+        assertTrue(countUsers(email, UserContract.UserEntry.PENDING, UserContract.UserEntry.ZERO_DATE) >= 1);
         userContract.updateSubscriptionStatus(email, UserContract.UserEntry.SUBSCRIBED);
-        Assert.assertTrue(countUsers(email, UserContract.UserEntry.SUBSCRIBED, UserContract.UserEntry.ZERO_DATE) >= 1);
+        assertTrue(countUsers(email, UserContract.UserEntry.SUBSCRIBED, UserContract.UserEntry.ZERO_DATE) >= 1);
     }
 
     @Test
@@ -103,8 +106,8 @@ public class UserContractTest {
         String anotherEmail = "another@email.com";
         userContract.insertUser(anotherEmail);
         userContract.deleteUser(new String[]{email});
-        Assert.assertEquals(0, countUsers(email));
-        Assert.assertEquals(1, countUsers(anotherEmail));
+        assertEquals(0, countUsers(email));
+        assertEquals(1, countUsers(anotherEmail));
     }
 
     @Test
@@ -112,7 +115,7 @@ public class UserContractTest {
         userContract.insertUser(email);
         Date lastUpdate = new Date();
         userContract.updateLastUpdated(email, lastUpdate);
-        Assert.assertEquals(1, countUsers(email, subscriptionStatus, DateHelper.formatAsRfc3992(lastUpdate)));
+        assertEquals(1, countUsers(email, subscriptionStatus, DateHelper.formatAsRfc3992(lastUpdate)));
     }
 
     @Test
@@ -121,9 +124,18 @@ public class UserContractTest {
         String anotherEmail = "another@email.com";
         userContract.insertUser(anotherEmail);
         List<UserContract.UserEntry> allUsers = userContract.getAllUsers();
-        Assert.assertEquals(2, allUsers.size());
+        assertEquals(2, allUsers.size());
     }
 
+    @Test
+    public void testGetSubscribedUsers() throws Exception {
+        userContract.insertUser(email);
+        String anotherEmail = "another@email.com";
+        userContract.insertUser(anotherEmail, UserContract.UserEntry.SUBSCRIBED, lastUpdated);
+        List<UserContract.UserEntry> subscribedUsers = userContract.getSubscribedUsers();
+        assertNotNull(subscribedUsers);
+        assertEquals(1, subscribedUsers.size());
+    }
     private int countUsersWithSelection(String selection) {
         Cursor cursor = db.getReadableDatabase().query(
                 UserContract.UserEntry.TABLE_NAME,
@@ -156,5 +168,4 @@ public class UserContractTest {
                         UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED + " = '" + lastUpdated + "'";
         return countUsersWithSelection(selection);
     }
-
 }

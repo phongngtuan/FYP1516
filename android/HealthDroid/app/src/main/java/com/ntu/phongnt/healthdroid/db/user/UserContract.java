@@ -32,7 +32,7 @@ public final class UserContract {
         this.db = db;
     }
 
-    private long insertUser(String email, Integer subscriptionStatus, String lastUpdated) {
+    protected long insertUser(String email, Integer subscriptionStatus, String lastUpdated) {
         ContentValues cv = new ContentValues();
         cv.put(UserEntry.COLUMN_NAME_EMAIL, email);
         cv.put(UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, subscriptionStatus);
@@ -117,7 +117,7 @@ public final class UserContract {
                 new String[]{email});
     }
 
-    public List<UserEntry> getAllUsers() {
+    private List<UserEntry> getUsers(String selection, String[] selectionArgs) {
         List<UserEntry> subscribedUsers = new ArrayList<>();
         Cursor cursor = db.getReadableDatabase().query(
                 true,
@@ -128,8 +128,8 @@ public final class UserContract {
                         UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
                         UserEntry.COLUMN_NAME_LAST_UPDATED
                 },
-                null,
-                null,
+                selection,
+                selectionArgs,
                 null,
                 null,
                 null,
@@ -146,6 +146,16 @@ public final class UserContract {
         }
         cursor.close();
         return subscribedUsers;
+    }
+
+    public List<UserEntry> getAllUsers() {
+        return getUsers(null, null);
+    }
+
+    public List<UserEntry> getSubscribedUsers() {
+        String selection = UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + "=?";
+        String[] selectionArgs = {String.valueOf(UserEntry.SUBSCRIBED)};
+        return getUsers(selection, selectionArgs);
     }
 
     public class UserEntry implements BaseColumns {
