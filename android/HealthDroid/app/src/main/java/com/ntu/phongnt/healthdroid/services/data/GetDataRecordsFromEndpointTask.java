@@ -1,10 +1,12 @@
 package com.ntu.phongnt.healthdroid.services.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.api.client.util.DateTime;
+import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
@@ -20,12 +22,15 @@ import java.util.List;
 public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> {
     public static final String TAG = "GetDataTask";
     public static final String SUBSCRIBED_USERS_KEY = "SUBSCRIBED_USERS_KEY";
-    private Context context = null;
     private HealthDroidDatabaseHelper healthDroidDatabaseHelper = null;
     private UserContract userContract = null;
     private DataContract dataContract = null;
+    String accountName;
 
     public GetDataRecordsFromEndpointTask(Context context) {
+        SharedPreferences settings = context.getSharedPreferences("HealthDroid", 0);
+        accountName = settings.getString(MainActivity.PREF_ACCOUNT_NAME, null);
+
         healthDroidDatabaseHelper = HealthDroidDatabaseHelper.getInstance(context.getApplicationContext());
         this.dataContract = new DataContract(healthDroidDatabaseHelper);
         this.userContract = new UserContract(healthDroidDatabaseHelper);
@@ -38,14 +43,8 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
 
     @Override
     protected Void doInBackground(Void... params) {
-
-        List<UserContract.UserEntry> subscribedUsers = userContract.getAllUsers();
+        List<UserContract.UserEntry> subscribedUsers = userContract.getSubscribedUsers(accountName);
         Log.d(TAG, "Subscribed email set size: " + subscribedUsers.size());
-
-        //Add the current user
-        //TODO: current not get data of local user, need to handle that too
-//        SharedPreferences settings = context.getSharedPreferences("HealthDroid", 0);
-//        String accountName = settings.getString(MainActivity.PREF_ACCOUNT_NAME, null);
 
         //Get the new data only
         Data dataService = DataFactory.getInstance();

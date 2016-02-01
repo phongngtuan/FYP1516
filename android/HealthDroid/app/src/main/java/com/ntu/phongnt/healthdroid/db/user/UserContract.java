@@ -158,6 +158,13 @@ public final class UserContract {
         return getUsers(selection, selectionArgs);
     }
 
+    public List<UserEntry> getSubscribedUsers(String accountName) {
+        String selection = UserEntry.COLUMN_NAME_EMAIL + "= '" + accountName + "' OR " +
+                UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + "=?";
+        String[] selectionArgs = {String.valueOf(UserEntry.SUBSCRIBED)};
+        return getUsers(selection, selectionArgs);
+    }
+
     public class UserEntry implements BaseColumns {
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_NAME_EMAIL = "email";

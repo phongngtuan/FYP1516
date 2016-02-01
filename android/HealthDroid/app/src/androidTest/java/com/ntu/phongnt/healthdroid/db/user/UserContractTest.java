@@ -135,7 +135,12 @@ public class UserContractTest {
         List<UserContract.UserEntry> subscribedUsers = userContract.getSubscribedUsers();
         assertNotNull(subscribedUsers);
         assertEquals(1, subscribedUsers.size());
+
+        List<UserContract.UserEntry> subscribedUsersAndLocal = userContract.getSubscribedUsers(email);
+        assertNotNull(subscribedUsersAndLocal);
+        assertEquals(2, subscribedUsersAndLocal.size());
     }
+
     private int countUsersWithSelection(String selection) {
         Cursor cursor = db.getReadableDatabase().query(
                 UserContract.UserEntry.TABLE_NAME,
