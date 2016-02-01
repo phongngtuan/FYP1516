@@ -7,8 +7,8 @@ import android.util.Log;
 import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
@@ -21,12 +21,12 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
     public static final String TAG = "Getting data";
     public static final String SUBSCRIBED_USERS_KEY = "SUBSCRIBED_USERS_KEY";
     private Context context = null;
-    private DataHelper dataHelper = null;
+    private HealthDroidDatabaseHelper healthDroidDatabaseHelper = null;
     private UserContract userContract = null;
     private DataContract dataContract = null;
 
     public GetDataRecordsFromEndpointTask(Context context) {
-        this.dataContract = new DataContract(dataHelper);
+        this.dataContract = new DataContract(healthDroidDatabaseHelper);
     }
 
     public GetDataRecordsFromEndpointTask(DataContract dataContract, UserContract userContract) {

@@ -3,11 +3,24 @@ package com.ntu.phongnt.healthdroid.db.data;
 import android.content.ContentValues;
 import android.provider.BaseColumns;
 
-public final class DataContract {
-    private DataHelper dataHelper;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 
-    public DataContract(DataHelper dataHelper) {
-        this.dataHelper = dataHelper;
+public final class DataContract {
+
+    public static final String SQL_CREATE_DATA_TABLE =
+            "CREATE TABLE " + DataEntry.TABLE_NAME + " (" +
+                    DataEntry._ID + HealthDroidDatabaseHelper.INTEGER_PRIMARY_KEY +
+                    DataEntry.COLUMN_NAME_VALUE + HealthDroidDatabaseHelper.REAL_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
+                    DataEntry.COLUMN_NAME_DATE + HealthDroidDatabaseHelper.DATE_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
+                    DataEntry.COLUMN_NAME_USER + HealthDroidDatabaseHelper.TEXT_TYPE +
+                    " )";
+    public static final String SQL_DELETE_DATA_TABLE =
+            "DROP TABLE IF EXISTS " + DataEntry.TABLE_NAME;
+
+    private HealthDroidDatabaseHelper healthDroidDatabaseHelper;
+
+    public DataContract(HealthDroidDatabaseHelper healthDroidDatabaseHelper) {
+        this.healthDroidDatabaseHelper = healthDroidDatabaseHelper;
     }
 
     public long addData(Float value, String date, String user) {
@@ -15,7 +28,7 @@ public final class DataContract {
         values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, value);
         values.put(DataContract.DataEntry.COLUMN_NAME_DATE, date);
         values.put(DataContract.DataEntry.COLUMN_NAME_USER, user);
-        return dataHelper
+        return healthDroidDatabaseHelper
                 .getWritableDatabase()
                 .insert(
                         DataContract.DataEntry.TABLE_NAME,

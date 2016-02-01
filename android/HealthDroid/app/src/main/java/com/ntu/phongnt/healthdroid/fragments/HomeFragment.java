@@ -22,7 +22,7 @@ import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
@@ -37,7 +37,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
 
     private static HomeFragment instance;
 
-    DataHelper db = null;
+    HealthDroidDatabaseHelper db = null;
     String accountName = null;
 
     private GoogleSignInAccount account;
@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
         super.onCreateView(inflater, container, savedInstanceState);
         final View view = inflater.inflate(R.layout.content_home, container, false);
         setRetainInstance(true);
-        db = DataHelper.getInstance(getActivity());
+        db = HealthDroidDatabaseHelper.getInstance(getActivity());
         button = (Button) view.findViewById(R.id.button1);
         button.setOnClickListener(this);
         button = (Button) view.findViewById(R.id.button2);

@@ -4,13 +4,13 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 
 class LoadDataCursorTask<T> extends AsyncTask<T, Void, Cursor> {
-    private DataHelper db;
+    private HealthDroidDatabaseHelper db;
 
-    public LoadDataCursorTask(DataHelper db) {
+    public LoadDataCursorTask(HealthDroidDatabaseHelper db) {
         this.db = db;
     }
 
@@ -25,6 +25,7 @@ class LoadDataCursorTask<T> extends AsyncTask<T, Void, Cursor> {
                         .getReadableDatabase()
                         .query(DataContract.DataEntry.TABLE_NAME,
                                 new String[]{
+                                        DataContract.DataEntry._ID,
                                         DataContract.DataEntry.COLUMN_NAME_VALUE,
                                         DataContract.DataEntry.COLUMN_NAME_DATE
                                 },

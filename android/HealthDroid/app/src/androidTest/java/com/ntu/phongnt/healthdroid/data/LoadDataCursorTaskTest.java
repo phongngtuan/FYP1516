@@ -4,7 +4,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.RenamingDelegatingContext;
 
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class LoadDataCursorTaskTest {
-    DataHelper db;
+    HealthDroidDatabaseHelper db;
 
     @Before
     public void setUp() throws Exception {
@@ -21,7 +21,7 @@ public class LoadDataCursorTaskTest {
                 .getInstrumentation()
                 .getTargetContext(), "test_");
 
-        db = new DataHelper(renamingDelegatingContext);
+        db = new HealthDroidDatabaseHelper(renamingDelegatingContext);
     }
 
     @Test

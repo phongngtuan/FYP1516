@@ -6,14 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
-import android.widget.SimpleCursorAdapter;
 
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 
 public class DataFragment extends ListFragment {
-    DataHelper db = null;
+    HealthDroidDatabaseHelper db = null;
     private Cursor current = null;
     private AsyncTask task = null;
 
@@ -24,8 +23,8 @@ public class DataFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SimpleCursorAdapter adapter =
-                new SimpleCursorAdapter(
+        android.support.v4.widget.CursorAdapter adapter =
+                new android.support.v4.widget.SimpleCursorAdapter(
                         getActivity(),
                         R.layout.data_row,
                         current,
@@ -40,13 +39,13 @@ public class DataFragment extends ListFragment {
         setListAdapter(adapter);
 
         if (db == null) {
-            db = DataHelper.getInstance(getActivity());
+            db = HealthDroidDatabaseHelper.getInstance(getActivity());
             task = new LoadCursorTaskLoadData(db).execute();
         }
     }
 
     private class LoadCursorTaskLoadData extends LoadDataCursorTask<Void> {
-        public LoadCursorTaskLoadData(DataHelper db) {
+        public LoadCursorTaskLoadData(HealthDroidDatabaseHelper db) {
             super(db);
         }
 

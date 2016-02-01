@@ -8,8 +8,8 @@ import android.test.RenamingDelegatingContext;
 import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.data.data.model.HealthDroidUser;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +30,8 @@ public class GetDataRecordsFromEndpointTaskTest extends AndroidTestCase {
                 .getInstrumentation()
                 .getTargetContext(), "test_");
 
-        DataHelper dataHelper = new DataHelper(renamingDelegatingContext, null);
-        DataContract dataContract = new DataContract(dataHelper);
+        HealthDroidDatabaseHelper healthDroidDatabaseHelper = new HealthDroidDatabaseHelper(renamingDelegatingContext, null);
+        DataContract dataContract = new DataContract(healthDroidDatabaseHelper);
         task = new GetDataRecordsFromEndpointTask(dataContract, null);
     }
 

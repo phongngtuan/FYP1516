@@ -18,10 +18,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
-import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
@@ -32,7 +31,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class UserFragment extends Fragment implements SubscriptionChangeListener {
-    private static UserHelper db = null;
+    private static HealthDroidDatabaseHelper db = null;
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -63,7 +62,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         }
 
         if (db == null) {
-            db = UserHelper.getInstance(getActivity());
+            db = HealthDroidDatabaseHelper.getInstance(getActivity());
         }
     }
 
@@ -166,7 +165,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             if (userWrapper.getEmail().equalsIgnoreCase(email)) {
                 //Delete from database
                 Log.d(TAG, "Getting data for email: " + email);
-                SQLiteOpenHelper db = DataHelper.getInstance(getActivity());
+                SQLiteOpenHelper db = HealthDroidDatabaseHelper.getInstance(getActivity());
                 SQLiteDatabase writableDatabase = db.getWritableDatabase();
 
                 writableDatabase.delete(DataContract.DataEntry.TABLE_NAME,

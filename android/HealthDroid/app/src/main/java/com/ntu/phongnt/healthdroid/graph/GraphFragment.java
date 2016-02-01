@@ -21,8 +21,8 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.db.data.DataHelper;
 import com.ntu.phongnt.healthdroid.graph.dialogs.DataSetPickerFragment;
 import com.ntu.phongnt.healthdroid.graph.dialogs.TimeRangeDialogFragment;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
@@ -42,7 +42,7 @@ public class GraphFragment extends Fragment implements
 
     private String type = "N/A";
     private LineChart chart = null;
-    private DataHelper db = null;
+    private HealthDroidDatabaseHelper db = null;
     private int formatter_choice;
     private List<String> dataSetChoices = null;
     private DataEntryFormatter formatter = null;
@@ -97,7 +97,7 @@ public class GraphFragment extends Fragment implements
         chart.setBackgroundColor(Color.BLACK);
         chart.setDescriptionColor(Color.WHITE);
 
-        db = DataHelper.getInstance(getActivity());
+        db = HealthDroidDatabaseHelper.getInstance(getActivity());
 
         //Legend
         Legend legend = chart.getLegend();

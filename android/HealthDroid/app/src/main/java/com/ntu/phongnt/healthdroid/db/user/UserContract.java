@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
 import java.util.ArrayList;
@@ -14,10 +15,20 @@ import java.util.List;
 
 public final class UserContract {
 
-    private static final String TAG = "UserContract";
-    private UserHelper db = null;
+    public static final String SQL_CREATE_USERS_TABLE =
+            "CREATE TABLE " + UserEntry.TABLE_NAME + " (" +
+                    UserEntry._ID + " INTEGER PRIMARY KEY, " +
+                    UserEntry.COLUMN_NAME_EMAIL + HealthDroidDatabaseHelper.TEXT_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
+                    UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS + HealthDroidDatabaseHelper.INTEGER_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
+                    UserEntry.COLUMN_NAME_LAST_UPDATED + HealthDroidDatabaseHelper.DATE_TYPE +
+                    " )";
+    public static final String SQL_DELETE_USERS_TABLE =
+            "DROP TABLE IF EXISTS " + UserEntry.TABLE_NAME;
 
-    public UserContract(UserHelper db) {
+    private static final String TAG = "UserContract";
+    private HealthDroidDatabaseHelper db = null;
+
+    public UserContract(HealthDroidDatabaseHelper db) {
         this.db = db;
     }
 

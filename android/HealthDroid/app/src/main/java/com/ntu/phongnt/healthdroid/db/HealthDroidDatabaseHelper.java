@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.db.data;
+package com.ntu.phongnt.healthdroid.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,42 +6,45 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.ntu.phongnt.healthdroid.db.Constants;
+import com.ntu.phongnt.healthdroid.db.data.DataContract;
+import com.ntu.phongnt.healthdroid.db.user.UserContract;
 
-public class DataHelper extends SQLiteOpenHelper {
-    private static final String TEXT_TYPE = " TEXT";
-    private static final String COMMA_SEP = ",";
-    private static final String SQL_CREATE_DATA =
-            "CREATE TABLE " + DataContract.DataEntry.TABLE_NAME + " (" +
-                    DataContract.DataEntry._ID + " INTEGER PRIMARY KEY, " +
-                    DataContract.DataEntry.COLUMN_NAME_VALUE + " REAL" + COMMA_SEP +
-                    DataContract.DataEntry.COLUMN_NAME_DATE + " DATE" + COMMA_SEP +
-                    DataContract.DataEntry.COLUMN_NAME_USER + " TEXT" +
-                    " )";
+public class HealthDroidDatabaseHelper extends SQLiteOpenHelper {
+    public static final String TEXT_TYPE = " TEXT";
+    public static final String INTEGER_TYPE = " INTEGER";
+    public static final String DATE_TYPE = " DATE";
+    public static final String REAL_TYPE = " REAL";
+    public static final String COMMA_SEP = ",";
+    public static final String INTEGER_PRIMARY_KEY = " INTEGER PRIMARY KEY, ";
 
     public static final String ZERO_TIME = "2000-12-19T02:08:50.889+07:00";
     public static final String LAST_UPDATED = "last_updated";
 
-    private static DataHelper dataHelper;
+    private static HealthDroidDatabaseHelper healthDroidDatabaseHelper;
 
-    public DataHelper(Context context) {
+    public HealthDroidDatabaseHelper(Context context) {
         super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
     }
 
-    public DataHelper(Context context, String databaseName) {
+    public HealthDroidDatabaseHelper(Context context, String databaseName) {
         super(context, databaseName, null, Constants.DATABASE_VERSION);
     }
 
-    public static synchronized DataHelper getInstance(Context context) {
-        if (dataHelper == null)
-            dataHelper = new DataHelper(context.getApplicationContext());
-        return dataHelper;
+    public static synchronized HealthDroidDatabaseHelper getInstance(Context context) {
+        if (healthDroidDatabaseHelper == null)
+            healthDroidDatabaseHelper = new HealthDroidDatabaseHelper(context.getApplicationContext());
+        return healthDroidDatabaseHelper;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d("DBHelper", "Inserting into the database");
-        db.execSQL(SQL_CREATE_DATA);
+        db.execSQL(DataContract.SQL_CREATE_DATA_TABLE);
+        db.execSQL(UserContract.SQL_CREATE_USERS_TABLE);
+        fillDummyData(db);
+    }
+
+    private void fillDummyData(SQLiteDatabase db) {
         ContentValues cv = new ContentValues();
 
         String TABLE = DataContract.DataEntry.TABLE_NAME;

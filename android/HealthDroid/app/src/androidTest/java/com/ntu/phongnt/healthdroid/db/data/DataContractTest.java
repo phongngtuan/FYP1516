@@ -5,6 +5,8 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.RenamingDelegatingContext;
 
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +18,7 @@ public class DataContractTest {
     private String date = "2016-01-10T02:08:50.889+07:00";
     private String user = "test@user.com";
 
-    private DataHelper db = null;
+    private HealthDroidDatabaseHelper db = null;
     private DataContract dataContract = null;
     private int countBefore = -1;
 
@@ -27,7 +29,7 @@ public class DataContractTest {
                 .getInstrumentation()
                 .getTargetContext(), "test_");
 
-        db = new DataHelper(renamingDelegatingContext, null);
+        db = new HealthDroidDatabaseHelper(renamingDelegatingContext, null);
         dataContract = new DataContract(db);
 
         Cursor cursor = db.getReadableDatabase().query(

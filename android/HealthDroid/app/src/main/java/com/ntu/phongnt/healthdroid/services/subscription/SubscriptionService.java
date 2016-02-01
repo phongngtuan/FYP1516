@@ -14,8 +14,8 @@ import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
-import com.ntu.phongnt.healthdroid.db.user.UserHelper;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubscriptionService extends IntentService {
-    private static UserHelper db = null;
+    private static HealthDroidDatabaseHelper db = null;
 
     // IntentService can perform
     private static final String ACTION_UPDATE_USER_LIST =
@@ -76,7 +76,7 @@ public class SubscriptionService extends IntentService {
     public void onCreate() {
         super.onCreate();
         if (db == null)
-            db = UserHelper.getInstance(getApplicationContext());
+            db = HealthDroidDatabaseHelper.getInstance(getApplicationContext());
     }
 
     @Override

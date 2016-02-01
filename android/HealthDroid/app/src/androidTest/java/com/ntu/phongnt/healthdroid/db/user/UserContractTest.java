@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.RenamingDelegatingContext;
 
+import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 
 import org.junit.After;
@@ -19,7 +20,7 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class UserContractTest {
 
-    private UserHelper db = null;
+    private HealthDroidDatabaseHelper db = null;
     private UserContract userContract = null;
 
     private String email = "user@test.com";
@@ -34,7 +35,7 @@ public class UserContractTest {
                 .getInstrumentation()
                 .getTargetContext(), "test_");
 
-        db = new UserHelper(renamingDelegatingContext, null);
+        db = new HealthDroidDatabaseHelper(renamingDelegatingContext, null);
         userContract = new UserContract(db);
     }
 
