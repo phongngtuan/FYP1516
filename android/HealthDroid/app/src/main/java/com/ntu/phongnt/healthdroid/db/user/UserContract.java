@@ -71,15 +71,15 @@ public final class UserContract {
         );
         if (updateCount <= 0) {
             Log.d(TAG, "Inserting new row: " + email);
-            return writableDatabase.insert(
-                    UserEntry.TABLE_NAME,
-                    UserEntry.COLUMN_NAME_EMAIL,
-                    cv
-            );
+            return insertUser(email);
         } else {
             Log.d(TAG, "Updating row: " + email);
             return updateCount;
         }
+    }
+
+    public long updateOrNewUser(String email) {
+        return updateOrNewUser(email, null, null);
     }
 
     public long updateSubscriptionStatus(String email, Integer subscriptionStatus) {

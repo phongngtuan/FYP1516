@@ -59,10 +59,11 @@ public class UserContractTest {
     }
 
     @Test
-    public void testUpdateNewUser() throws Exception {
-        userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
+    public void testUpdateNonExistingUser() throws Exception {
+        //TODO: consider updateOrNewUser with all parameters
+        userContract.updateOrNewUser(email);
         Assert.assertEquals(1,
-                countUsers(email, subscriptionStatus, latestDateFromData));
+                countUsers(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
     }
 
     private void checkDate(String date) {

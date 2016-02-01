@@ -171,7 +171,7 @@ public class SubscriptionService extends IntentService {
                 userContract.deleteUser(obsoleteUsers.toArray(new String[obsoleteUsers.size()]));
 
                 for (HealthDroidUser healthDroidUser : healthDroidUsers) {
-                    userContract.insertUser(healthDroidUser.getEmail());
+                    userContract.updateOrNewUser(healthDroidUser.getEmail());
                 }
 
                 List<SubscriptionRecord> subscriptionRecords =
