@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> {
-    public static final String TAG = "Getting data";
+    public static final String TAG = "GetDataTask";
     public static final String SUBSCRIBED_USERS_KEY = "SUBSCRIBED_USERS_KEY";
     private Context context = null;
     private HealthDroidDatabaseHelper healthDroidDatabaseHelper = null;
@@ -26,7 +26,9 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
     private DataContract dataContract = null;
 
     public GetDataRecordsFromEndpointTask(Context context) {
+        healthDroidDatabaseHelper = HealthDroidDatabaseHelper.getInstance(context.getApplicationContext());
         this.dataContract = new DataContract(healthDroidDatabaseHelper);
+        this.userContract = new UserContract(healthDroidDatabaseHelper);
     }
 
     public GetDataRecordsFromEndpointTask(DataContract dataContract, UserContract userContract) {
@@ -58,7 +60,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
     }
 
     private void getDataBelongsToUser(Data dataService, UserContract.UserEntry user) throws IOException {
-        Log.d(TAG, "Getting data for email: " + user);
+        Log.d(TAG, "Getting data for email: " + user.email);
         DateTime after = DateTime.parseRfc3339(DateHelper.formatAsRfc3992(DateHelper.getDate(user.lastUpdated)));
         //Get the data records for this user, after last updated time
         List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).setAfter(after).execute().getItems();

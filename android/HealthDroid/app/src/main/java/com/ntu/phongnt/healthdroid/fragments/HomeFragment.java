@@ -31,7 +31,7 @@ import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 import java.io.IOException;
 import java.util.Date;
 
-public class HomeFragment extends Fragment implements Button.OnClickListener {
+public class HomeFragment extends Fragment {
     public static String TAG = "HOME_FRAG";
     public static String TITLE = "Home";
 
@@ -52,7 +52,12 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
         setRetainInstance(true);
         db = HealthDroidDatabaseHelper.getInstance(getActivity());
         button = (Button) view.findViewById(R.id.button1);
-        button.setOnClickListener(this);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new GetDataRecordsFromEndpointTask(getActivity()).execute();
+            }
+        });
         button = (Button) view.findViewById(R.id.button2);
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -97,11 +102,6 @@ public class HomeFragment extends Fragment implements Button.OnClickListener {
         });
 
         return view;
-    }
-
-    @Override
-    public void onClick(View v) {
-        new GetDataRecordsFromEndpointTask(getActivity()).execute();
     }
 
     private class PostDataRecordsToEndpoint extends AsyncTask<Integer, Void, Void> {
