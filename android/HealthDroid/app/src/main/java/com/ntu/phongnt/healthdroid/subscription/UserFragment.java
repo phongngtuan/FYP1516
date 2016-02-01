@@ -1,10 +1,7 @@
 package com.ntu.phongnt.healthdroid.subscription;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,16 +16,12 @@ import android.widget.Toast;
 
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
-import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
-import com.ntu.phongnt.healthdroid.services.data.GetDataRecordsFromEndpointTask;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class UserFragment extends Fragment implements SubscriptionChangeListener {
     private static HealthDroidDatabaseHelper db = null;
@@ -88,20 +81,20 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             @Override
             public void onItemClick(UserWrapper user) {
                 //TODO: implement
-                Toast.makeText(getActivity(), user.getEmail(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), user.email, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSubscribeClick(UserWrapper user) {
                 switch (user.subscriptionState) {
                     case UserContract.UserEntry.UNSUBSCRIBED:
-                        handleSubscribe(user.getEmail());
+                        handleSubscribe(user.email);
                         break;
                     case UserContract.UserEntry.PENDING:
-                        handleUnsubscribe(user.getEmail());
+                        handleUnsubscribe(user.email);
                         break;
                     case UserContract.UserEntry.SUBSCRIBED:
-                        handleUnsubscribe(user.getEmail());
+                        handleUnsubscribe(user.email);
                         break;
                 }
             }
@@ -140,79 +133,11 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         SubscriptionService.startUnsubscribeUser(getActivity(), user);
     }
 
-    private void notifyChange() {
-        recyclerView.getAdapter().notifyDataSetChanged();
-    }
-
     public interface HealthDroidUserViewInteractionListener {
 
         void onItemClick(UserWrapper user);
 
         void onSubscribeClick(UserWrapper user);
-    }
-
-    private void notifySubscriptionSent(String email) {
-        for (UserWrapper userWrapper : listUser) {
-            if (userWrapper.getEmail().equalsIgnoreCase(email)) {
-                userWrapper.onSubscriptionSent();
-            }
-        }
-    }
-
-    private void notifyUnsubscribed(String email) {
-        //TODO: refactor the flow to do broadcast intent
-        for (UserWrapper userWrapper : listUser) {
-            if (userWrapper.getEmail().equalsIgnoreCase(email)) {
-                //Delete from database
-                Log.d(TAG, "Getting data for email: " + email);
-                SQLiteOpenHelper db = HealthDroidDatabaseHelper.getInstance(getActivity());
-                SQLiteDatabase writableDatabase = db.getWritableDatabase();
-
-                writableDatabase.delete(DataContract.DataEntry.TABLE_NAME,
-                        DataContract.DataEntry.COLUMN_NAME_USER + "=?",
-                        new String[]{email});
-
-                userWrapper.onSubscriptionCancelled();
-            }
-        }
-
-        //TODO: there is duplicated code, consider refactor
-        SharedPreferences dataPreferences =
-                getActivity().getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-        Set<String> subscribedUsers = dataPreferences.getStringSet(
-                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
-                new TreeSet<String>()
-        );
-        subscribedUsers.remove(email);
-        SharedPreferences.Editor editor = dataPreferences.edit();
-        editor.putStringSet(
-                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
-                subscribedUsers
-        );
-        editor.apply();
-        Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
-    }
-
-    private void notifySubscriptionConfirmed(String email) {
-        Log.d(TAG, "Notifying subscription confirm for email " + email);
-        Set<String> subscribedUsers = new TreeSet<>();
-        for (UserWrapper userWrapper : listUser) {
-            if (userWrapper.getEmail().equalsIgnoreCase(email)) {
-                Log.d(TAG, "Notifying subscribed email: " + userWrapper.getEmail());
-                userWrapper.onSubscriptionConfirmed();
-                subscribedUsers.add(userWrapper.getEmail());
-            }
-        }
-        //TODO: there is duplicated code, consider refactor
-        SharedPreferences dataPreferences =
-                getActivity().getSharedPreferences("DATA_PREFERENCES", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = dataPreferences.edit();
-        editor.putStringSet(
-                GetDataRecordsFromEndpointTask.SUBSCRIBED_USERS_KEY,
-                subscribedUsers
-        );
-        editor.apply();
-        Log.d(TAG, "Total subscriptions: " + subscribedUsers.size());
     }
 
     abstract private class BaseUserDbTask<T> extends AsyncTask<T, Void, Cursor> {
@@ -273,46 +198,6 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             this.email = user;
             this.subscriptionState = subscriptionState;
             this.lastUpdated = lastUpdated;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public int getSubscriptionState() {
-            return subscriptionState;
-        }
-
-        public void setSubscriptionState(int subscriptionState) {
-            this.subscriptionState = subscriptionState;
-        }
-
-        public String getLastUpdated() {
-            return lastUpdated;
-        }
-
-        public void setLastUpdated(String lastUpdated) {
-            this.lastUpdated = lastUpdated;
-        }
-
-        //Callback methods
-        public int onSubscriptionSent() {
-            subscriptionState = UserContract.UserEntry.PENDING;
-            return subscriptionState;
-        }
-
-        public int onSubscriptionConfirmed() {
-            subscriptionState = UserContract.UserEntry.SUBSCRIBED;
-            return subscriptionState;
-        }
-
-        public int onSubscriptionCancelled() {
-            subscriptionState = UserContract.UserEntry.UNSUBSCRIBED;
-            return subscriptionState;
         }
     }
 

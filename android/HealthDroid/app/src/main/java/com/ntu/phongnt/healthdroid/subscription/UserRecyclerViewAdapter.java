@@ -34,8 +34,8 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
     @Override
     public void onBindViewHolder(final UserViewHolder holder, int position) {
         holder.userWrapper = healthDroidUsers.get(position);
-        holder.idView.setText(healthDroidUsers.get(position).getEmail());
-        holder.lastUpdatedView.setText(healthDroidUsers.get(position).getLastUpdated());
+        holder.idView.setText(healthDroidUsers.get(position).email);
+        holder.lastUpdatedView.setText(healthDroidUsers.get(position).lastUpdated);
 
         switch (holder.userWrapper.subscriptionState) {
             case UserContract.UserEntry.UNSUBSCRIBED:
