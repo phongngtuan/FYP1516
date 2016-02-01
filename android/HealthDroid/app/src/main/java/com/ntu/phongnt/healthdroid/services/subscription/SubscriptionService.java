@@ -15,6 +15,7 @@ import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
+import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
@@ -264,6 +265,8 @@ public class SubscriptionService extends IntentService {
 
     private void markUnsubscribed(String user) {
         changeSubscriptionStatus(user, UserContract.UserEntry.UNSUBSCRIBED);
+        DataContract dataContract = new DataContract(db);
+        dataContract.deleteDataOfUser(user);
     }
 
 }
