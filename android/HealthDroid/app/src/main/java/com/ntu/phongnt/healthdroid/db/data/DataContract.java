@@ -25,15 +25,25 @@ public final class DataContract {
 
     public long addData(Float value, String date, String user) {
         ContentValues values = new ContentValues();
-        values.put(DataContract.DataEntry.COLUMN_NAME_VALUE, value);
-        values.put(DataContract.DataEntry.COLUMN_NAME_DATE, date);
-        values.put(DataContract.DataEntry.COLUMN_NAME_USER, user);
+        values.put(DataEntry.COLUMN_NAME_VALUE, value);
+        values.put(DataEntry.COLUMN_NAME_DATE, date);
+        values.put(DataEntry.COLUMN_NAME_USER, user);
         return healthDroidDatabaseHelper
                 .getWritableDatabase()
                 .insert(
                         DataContract.DataEntry.TABLE_NAME,
                         DataContract.DataEntry.COLUMN_NAME_DATE,
                         values);
+    }
+
+    public long deleteDataOfUser(String user) {
+        return healthDroidDatabaseHelper
+                .getWritableDatabase()
+                .delete(
+                        DataEntry.TABLE_NAME,
+                        DataEntry.COLUMN_NAME_USER + "=?",
+                        new String[]{user}
+                );
     }
 
     public class DataEntry implements BaseColumns {

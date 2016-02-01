@@ -104,4 +104,27 @@ public class DataContractTest {
                 date);
         cursor.close();
     }
+
+    @Test
+    public void testDeleteDataOfUser() throws Exception {
+        dataContract.addData(value, date, user);
+        String anotherUser = "another@user.com";
+        dataContract.addData(value, date, anotherUser);
+        Cursor cursor = db.getReadableDatabase().query(
+                DataContract.DataEntry.TABLE_NAME,
+                new String[]{
+                        DataContract.DataEntry.COLUMN_NAME_VALUE,
+                        DataContract.DataEntry.COLUMN_NAME_DATE,
+                        DataContract.DataEntry.COLUMN_NAME_USER
+                },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        dataContract.deleteDataOfUser(anotherUser);
+        Assert.assertEquals(cursor.getCount(), countBefore + 1);
+        cursor.close();
+    }
 }
