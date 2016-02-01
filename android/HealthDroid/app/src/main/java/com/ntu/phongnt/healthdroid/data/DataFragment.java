@@ -4,9 +4,8 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
+import android.support.v4.widget.CursorAdapter;
 import android.view.View;
-import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
 
 import com.ntu.phongnt.healthdroid.R;
@@ -42,43 +41,19 @@ public class DataFragment extends ListFragment {
 
         if (db == null) {
             db = DataHelper.getInstance(getActivity());
-            task = new LoadCursorTask().execute();
+            task = new LoadCursorTaskLoadData(db).execute();
         }
     }
 
-    abstract private class BaseTask<T> extends AsyncTask<T, Void, Cursor> {
+    private class LoadCursorTaskLoadData extends LoadDataCursorTask<Void> {
+        public LoadCursorTaskLoadData(DataHelper db) {
+            super(db);
+        }
+
         @Override
         public void onPostExecute(Cursor result) {
             ((CursorAdapter) getListAdapter()).changeCursor(result);
             task = null;
-        }
-
-        protected Cursor doQuery() {
-            Cursor result =
-                    db
-                            .getReadableDatabase()
-                            .query(DataContract.DataEntry.TABLE_NAME,
-                                    new String[]{
-                                            DataContract.DataEntry._ID,
-                                            DataContract.DataEntry.COLUMN_NAME_VALUE,
-                                            DataContract.DataEntry.COLUMN_NAME_DATE
-                                    },
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    DataContract.DataEntry.COLUMN_NAME_DATE);
-
-            Log.i("DataFragment", String.valueOf(result.getCount()));
-
-            return (result);
-        }
-    }
-
-    private class LoadCursorTask extends BaseTask<Void> {
-        @Override
-        protected Cursor doInBackground(Void... params) {
-            return (doQuery());
         }
     }
 
