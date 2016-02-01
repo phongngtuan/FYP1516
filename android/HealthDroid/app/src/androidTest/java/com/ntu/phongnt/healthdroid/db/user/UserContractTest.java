@@ -27,6 +27,7 @@ public class UserContractTest {
     private UserContract userContract = null;
 
     private String email = "user@test.com";
+    private String anotherEmail = "another@email.com";
     private int subscriptionStatus = UserContract.UserEntry.UNSUBSCRIBED;
     private String lastUpdated = "2016-01-10T02:08:50.889+08:00";
     private String latestDateFromData = "2016-02-10T02:08:50.889+08:00";
@@ -48,26 +49,36 @@ public class UserContractTest {
     }
 
     @Test
+    public void testNewUser() throws Exception {
+        userContract.newUser(email, subscriptionStatus, lastUpdated);
+        assertEquals(1, countUsers(email, subscriptionStatus, lastUpdated));
+
+        userContract.newUser(anotherEmail, null, null);
+        assertEquals(1, countUsers(anotherEmail, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
+    }
+
+    @Test
     public void testInsertUser() throws Exception {
-        userContract.insertUser(email);
+        //TODO: idk if i try to make it to complicated here
+        //Insert user for the 1st time, create new row
+        userContract.insertUser(email, subscriptionStatus, lastUpdated);
         assertEquals(1,
-                countUsers(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
-    }
+                countUsers(email, subscriptionStatus, lastUpdated));
 
-    @Test
-    public void testUpdateExistingUser() throws Exception {
-        userContract.insertUser(email);
-        userContract.updateOrNewUser(email, subscriptionStatus, DateHelper.getDate(latestDateFromData));
+        //Insert again, overwrite existing entry with all parameters
+        userContract.insertUser(email, UserContract.UserEntry.SUBSCRIBED, latestDateFromData);
         assertEquals(1,
-                countUsers(email, subscriptionStatus, latestDateFromData));
-    }
+                countUsers(email, UserContract.UserEntry.SUBSCRIBED, latestDateFromData));
 
-    @Test
-    public void testUpdateNonExistingUser() throws Exception {
-        //TODO: consider updateOrNewUser with all parameters
-        userContract.updateOrNewUser(email);
+        //insert again but update partially
+        userContract.insertUser(email, null, lastUpdated);
         assertEquals(1,
-                countUsers(email, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
+                countUsers(email, UserContract.UserEntry.SUBSCRIBED, lastUpdated));
+
+        //insert a another user
+        userContract.insertUser(anotherEmail, null, null);
+        assertEquals(1,
+                countUsers(anotherEmail, UserContract.UserEntry.UNSUBSCRIBED, UserContract.UserEntry.ZERO_DATE));
     }
 
     private void checkDate(String date) {
@@ -93,7 +104,7 @@ public class UserContractTest {
 
     @Test
     public void testUpdateSubscriptionStatus() throws Exception {
-        userContract.insertUser(email);
+        userContract.newUser(email);
         userContract.updateSubscriptionStatus(email, UserContract.UserEntry.PENDING);
         assertTrue(countUsers(email, UserContract.UserEntry.PENDING, UserContract.UserEntry.ZERO_DATE) >= 1);
         userContract.updateSubscriptionStatus(email, UserContract.UserEntry.SUBSCRIBED);
@@ -102,9 +113,8 @@ public class UserContractTest {
 
     @Test
     public void testDeleteUser() throws Exception {
-        userContract.insertUser(email);
-        String anotherEmail = "another@email.com";
-        userContract.insertUser(anotherEmail);
+        userContract.newUser(email);
+        userContract.newUser(anotherEmail);
         userContract.deleteUser(new String[]{email});
         assertEquals(0, countUsers(email));
         assertEquals(1, countUsers(anotherEmail));
@@ -112,7 +122,7 @@ public class UserContractTest {
 
     @Test
     public void testUpdateLastUpdated() throws Exception {
-        userContract.insertUser(email);
+        userContract.newUser(email);
         Date lastUpdate = new Date();
         userContract.updateLastUpdated(email, lastUpdate);
         assertEquals(1, countUsers(email, subscriptionStatus, DateHelper.formatAsRfc3992(lastUpdate)));
@@ -120,16 +130,16 @@ public class UserContractTest {
 
     @Test
     public void testGetAllUsers() throws Exception {
-        userContract.insertUser(email);
+        userContract.newUser(email);
         String anotherEmail = "another@email.com";
-        userContract.insertUser(anotherEmail);
+        userContract.newUser(anotherEmail);
         List<UserContract.UserEntry> allUsers = userContract.getAllUsers();
         assertEquals(2, allUsers.size());
     }
 
     @Test
     public void testGetSubscribedUsers() throws Exception {
-        userContract.insertUser(email);
+        userContract.newUser(email);
         String anotherEmail = "another@email.com";
         userContract.insertUser(anotherEmail, UserContract.UserEntry.SUBSCRIBED, lastUpdated);
         List<UserContract.UserEntry> subscribedUsers = userContract.getSubscribedUsers();

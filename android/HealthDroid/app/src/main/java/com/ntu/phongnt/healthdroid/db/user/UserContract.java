@@ -32,11 +32,35 @@ public final class UserContract {
         this.db = db;
     }
 
-    protected long insertUser(String email, Integer subscriptionStatus, String lastUpdated) {
+    protected long newUser(String email, Integer subscriptionStatus, String lastUpdated) {
         ContentValues cv = new ContentValues();
-        cv.put(UserEntry.COLUMN_NAME_EMAIL, email);
-        cv.put(UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS, subscriptionStatus);
-        cv.put(UserEntry.COLUMN_NAME_LAST_UPDATED, lastUpdated);
+        cv.put(
+                UserEntry.COLUMN_NAME_EMAIL,
+                email
+        );
+
+        if (subscriptionStatus != null)
+            cv.put(
+                    UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                    subscriptionStatus
+            );
+        else
+            cv.put(
+                    UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                    UserEntry.UNSUBSCRIBED
+            );
+
+        if (lastUpdated != null)
+            cv.put(
+                    UserEntry.COLUMN_NAME_LAST_UPDATED,
+                    lastUpdated
+            );
+        else
+            cv.put(
+                    UserEntry.COLUMN_NAME_LAST_UPDATED,
+                    UserEntry.ZERO_DATE
+            );
+
         return db.getWritableDatabase()
                 .insert(
                         UserEntry.TABLE_NAME,
@@ -45,8 +69,44 @@ public final class UserContract {
                 );
     }
 
-    public long insertUser(String email) {
-        return insertUser(email, UserEntry.UNSUBSCRIBED, UserEntry.ZERO_DATE);
+    protected long newUser(String email) {
+        return newUser(email, null, null);
+    }
+
+    public long insertUser(String email, Integer subscriptionStatus, String lastUpdated) {
+        SQLiteDatabase writableDatabase = db.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(
+                UserEntry.COLUMN_NAME_EMAIL,
+                email
+        );
+
+        if (lastUpdated != null)
+            cv.put(
+                    UserEntry.COLUMN_NAME_LAST_UPDATED,
+                    lastUpdated
+            );
+
+        if (subscriptionStatus != null)
+            cv.put(
+                    UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
+                    subscriptionStatus
+            );
+
+        long updateCount = writableDatabase.update(
+                UserEntry.TABLE_NAME,
+                cv,
+                UserEntry.COLUMN_NAME_EMAIL + "=?",
+                new String[]{email}
+        );
+
+        if (updateCount <= 0) {
+            Log.d(TAG, "Inserting new row: " + email);
+            return newUser(email, subscriptionStatus, lastUpdated);
+        } else {
+            Log.d(TAG, "Updating row: " + email);
+            return updateCount;
+        }
     }
 
     public long deleteUser(String[] emails) {
@@ -57,7 +117,7 @@ public final class UserContract {
         );
     }
 
-    public long updateOrNewUser(String email, Integer subscriptionStatus, Date date) {
+    public long updateUser(String email, Integer subscriptionStatus, String date) {
         SQLiteDatabase writableDatabase = db.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(
@@ -67,30 +127,19 @@ public final class UserContract {
         if (date != null)
             cv.put(
                     UserEntry.COLUMN_NAME_LAST_UPDATED,
-                    DateHelper.formatAsRfc3992(date)
+                    date
             );
         if (subscriptionStatus != null)
             cv.put(
                     UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS,
                     subscriptionStatus
             );
-        long updateCount = writableDatabase.update(
+        return writableDatabase.update(
                 UserEntry.TABLE_NAME,
                 cv,
                 UserEntry.COLUMN_NAME_EMAIL + "=?",
                 new String[]{email}
         );
-        if (updateCount <= 0) {
-            Log.d(TAG, "Inserting new row: " + email);
-            return insertUser(email);
-        } else {
-            Log.d(TAG, "Updating row: " + email);
-            return updateCount;
-        }
-    }
-
-    public long updateOrNewUser(String email) {
-        return updateOrNewUser(email, null, null);
     }
 
     public long updateSubscriptionStatus(String email, Integer subscriptionStatus) {

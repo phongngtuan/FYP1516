@@ -20,6 +20,7 @@ import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
+import com.ntu.phongnt.healthdroid.services.data.DataFetchingService;
 import com.ntu.phongnt.healthdroid.subscription.UserFragment;
 
 import java.io.IOException;
@@ -117,6 +118,7 @@ public class SubscriptionService extends IntentService {
 
     private void confirmSubscribed(String user) {
         markSubscribed(user);
+        DataFetchingService.startFetchingData(this);
         broadcastSubscriptionStatusChanged();
     }
 
@@ -172,7 +174,7 @@ public class SubscriptionService extends IntentService {
                 userContract.deleteUser(obsoleteUsers.toArray(new String[obsoleteUsers.size()]));
 
                 for (HealthDroidUser healthDroidUser : healthDroidUsers) {
-                    userContract.updateOrNewUser(healthDroidUser.getEmail());
+                    userContract.insertUser(healthDroidUser.getEmail(), null, null);
                 }
 
                 List<SubscriptionRecord> subscriptionRecords =
@@ -245,6 +247,7 @@ public class SubscriptionService extends IntentService {
             super.onPostExecute(subscriptionRecord);
             if (subscriptionRecord != null) {
                 markUnsubscribed(subscriptionRecord.getTarget().getEmail());
+                deleteLocalDataOfUser(subscriptionRecord.getTarget().getEmail());
                 broadcastSubscriptionStatusChanged();
             }
         }
@@ -261,10 +264,19 @@ public class SubscriptionService extends IntentService {
 
     private void markSubscribed(String user) {
         changeSubscriptionStatus(user, UserContract.UserEntry.SUBSCRIBED);
+        clearLastUpdatedDate(user);
+    }
+
+    private void clearLastUpdatedDate(String user) {
+        UserContract userContract = new UserContract(db);
+        userContract.updateUser(user, null, UserContract.UserEntry.ZERO_DATE);
     }
 
     private void markUnsubscribed(String user) {
         changeSubscriptionStatus(user, UserContract.UserEntry.UNSUBSCRIBED);
+    }
+
+    private void deleteLocalDataOfUser(String user) {
         DataContract dataContract = new DataContract(db);
         dataContract.deleteDataOfUser(user);
     }
