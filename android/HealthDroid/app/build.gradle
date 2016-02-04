@@ -18,10 +18,10 @@ android {
     }
     buildTypes {
         debug {
-            resValue "string", "rootUrl", "http://192.168.0.124:8080/_ah/api/"
+            resValue "string", "rootUrl", "http://192.168.1.25:8080/_ah/api/"
         }
         release {
-            resValue "string", "rootUrl", "http://192.168.0.124:8080/_ah/api/"
+            resValue "string", "rootUrl", "http://192.168.1.25:8080/_ah/api/"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
