@@ -9,8 +9,11 @@
     <android.support.design.widget.TabLayout
         app:tabBackground="@color/colorPrimary"
         app:tabTextColor="#FFFFFF"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
         android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
+        android:background="#FF00FF"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
     <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"

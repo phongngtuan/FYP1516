@@ -65,7 +65,7 @@ public class GraphFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        setRetainInstance(true);
+//        setRetainInstance(true);
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.content_graph, container, false);
 
