@@ -38,6 +38,8 @@ import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.graph.GraphTabsFragment;
+import com.ntu.phongnt.healthdroid.request.PendingRequestChangeListener;
+import com.ntu.phongnt.healthdroid.request.PendingRequestChangePublisher;
 import com.ntu.phongnt.healthdroid.request.PendingRequestFragment;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
@@ -55,7 +57,8 @@ import java.util.List;
 
 public class MainActivity extends SignInActivity implements
         NavigationView.OnNavigationItemSelectedListener,
-        SubscriptionChangePublisher {
+        SubscriptionChangePublisher,
+        PendingRequestChangePublisher {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
@@ -67,6 +70,7 @@ public class MainActivity extends SignInActivity implements
     private GraphTabsFragment graphTabsFragment = null;
     private PendingRequestFragment pendingRequestFragment = null;
     private List<SubscriptionChangeListener> subscriptionChangeListeners = new ArrayList<>();
+    private List<PendingRequestChangeListener> pendingRequestChangeListeners = new ArrayList<>();
 
     private ImageView profileImage = null;
 
@@ -130,6 +134,19 @@ public class MainActivity extends SignInActivity implements
                 new IntentFilter(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED);
         broadcastManager.registerReceiver(
                 subscriptionStatusBroadcastReceiver, subscriptionStatusChangedFilter);
+
+        //Pending request change receiver
+        BroadcastReceiver pendingRequestChangedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "received pending request change broadcast");
+                long subscriptionId = intent.getLongExtra(SubscriptionService.EXTRA_PARAM_SUBSCRIPTION_ID, 0);
+                notifyPendingRequestAccepted(subscriptionId);
+            }
+        };
+        IntentFilter pendingRequestChangedFilter =
+                new IntentFilter(QuickstartPreferences.PENDING_REQUEST_ACCEPTED);
+        broadcastManager.registerReceiver(pendingRequestChangedReceiver, pendingRequestChangedFilter);
 
         settings = getSharedPreferences(SHARED_PREFERENCE_NAME, 0);
         credential = GoogleAccountCredential.usingAudience(
@@ -276,8 +293,9 @@ public class MainActivity extends SignInActivity implements
 
         } else if (id == R.id.nav_pending_request) {
             pendingRequestFragment = (PendingRequestFragment) getSupportFragmentManager().findFragmentByTag("PENDING_REQUEST_FRAGMENT");
-            if (pendingRequestFragment == null)
-                pendingRequestFragment = new PendingRequestFragment();
+            if (pendingRequestFragment == null) {
+                pendingRequestFragment = PendingRequestFragment.getInstance(this);
+            }
             if (!pendingRequestFragment.isVisible())
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, pendingRequestFragment, "PENDING_REQUEST_FRAGMENT").commit();
@@ -354,6 +372,22 @@ public class MainActivity extends SignInActivity implements
     public void notifySubscriptionChange() {
         for (SubscriptionChangeListener listener : subscriptionChangeListeners)
             listener.subscriptionChanged();
+    }
+
+    @Override
+    public void registerPendingRequestListener(PendingRequestChangeListener listener) {
+        pendingRequestChangeListeners.add(listener);
+    }
+
+    @Override
+    public void unregisterPendingRequestListener(PendingRequestChangeListener listener) {
+        pendingRequestChangeListeners.remove(listener);
+    }
+
+    @Override
+    public void notifyPendingRequestAccepted(Long subscriptionId) {
+        for (PendingRequestChangeListener listener : pendingRequestChangeListeners)
+            listener.pendingRequestAccepted(subscriptionId);
     }
 
     private class LoadProfileImageTask extends AsyncTask<String, Void, Bitmap> {

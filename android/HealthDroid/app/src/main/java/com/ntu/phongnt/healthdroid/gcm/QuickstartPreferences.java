@@ -22,5 +22,5 @@ public class QuickstartPreferences {
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
 
     public static final String SUBSCRIPTION_REQUEST_CHANGED = "subscriptionRequestSent";
-    public static final String REQUEST_ACCEPTED = "requestAccepted";
+    public static final String PENDING_REQUEST_ACCEPTED = "pendingRequestAccepted";
 }

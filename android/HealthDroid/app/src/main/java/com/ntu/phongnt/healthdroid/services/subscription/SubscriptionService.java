@@ -32,20 +32,20 @@ public class SubscriptionService extends IntentService {
     private static HealthDroidDatabaseHelper db = null;
 
     // IntentService can perform
-    private static final String ACTION_UPDATE_USER_LIST =
+    public static final String ACTION_UPDATE_USER_LIST =
             "com.ntu.phongnt.healthdroid.services.subscription.action.update_user_list";
-    private static final String ACTION_SUBSCRIBE_USER =
+    public static final String ACTION_SUBSCRIBE_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.action.add_subscribed_user";
-    private static final String ACTION_UNSUBSCRIBED_USER =
+    public static final String ACTION_UNSUBSCRIBED_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.action.remove_subscribed_user";
-    private static final String ACTION_CONFIRM_SUBSCRIBED =
+    public static final String ACTION_CONFIRM_SUBSCRIBED =
             "com.ntu.phongnt.healthdroid.services.subscription.action.action_confirm_subscribed";
-    private static final String ACTION_ACCEPT_REQUEST =
+    public static final String ACTION_ACCEPT_REQUEST =
             "com.ntu.phongnt.healthdroid.services.subscription.action.accept_request";
 
-    private static final String EXTRA_PARAM_USER =
+    public static final String EXTRA_PARAM_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.param.email";
-    private static final String EXTRA_PARAM_SUBSCRIPTION_ID =
+    public static final String EXTRA_PARAM_SUBSCRIPTION_ID =
             "com.ntu.phongnt.healthdroid.services.subscription.param.subscription_id";
 
     public SubscriptionService() {
@@ -147,6 +147,14 @@ public class SubscriptionService extends IntentService {
         LocalBroadcastManager localBroadcastManager =
                 LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
         localBroadcastManager.sendBroadcast(new Intent(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED));
+    }
+
+    private void broadcastPendingRequestAccepted(Long id) {
+        LocalBroadcastManager localBroadcastManager =
+                LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
+        Intent intent = new Intent(QuickstartPreferences.PENDING_REQUEST_ACCEPTED);
+        intent.putExtra(EXTRA_PARAM_SUBSCRIPTION_ID, id);
+        localBroadcastManager.sendBroadcast(intent);
     }
 
     private class ListUserTask extends AsyncTask<Void, Void, Void> {
@@ -294,6 +302,13 @@ public class SubscriptionService extends IntentService {
                 }
             }
             return resultedList;
+        }
+
+        @Override
+        protected void onPostExecute(List<SubscriptionRecord> subscriptionRecords) {
+            super.onPostExecute(subscriptionRecords);
+            for (SubscriptionRecord record : subscriptionRecords)
+                broadcastPendingRequestAccepted(record.getId());
         }
     }
 
