@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubscriptionService extends IntentService {
+    private static final String TAG = "SubscriptionService";
     private static HealthDroidDatabaseHelper db = null;
 
     // IntentService can perform
@@ -39,9 +40,13 @@ public class SubscriptionService extends IntentService {
             "com.ntu.phongnt.healthdroid.services.subscription.action.remove_subscribed_user";
     private static final String ACTION_CONFIRM_SUBSCRIBED =
             "com.ntu.phongnt.healthdroid.services.subscription.action.action_confirm_subscribed";
+    private static final String ACTION_ACCEPT_REQUEST =
+            "com.ntu.phongnt.healthdroid.services.subscription.action.accept_request";
 
     private static final String EXTRA_PARAM_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.param.email";
+    private static final String EXTRA_PARAM_SUBSCRIPTION_ID =
+            "com.ntu.phongnt.healthdroid.services.subscription.param.subscription_id";
 
     public SubscriptionService() {
         super("SubscriptionService");
@@ -74,6 +79,14 @@ public class SubscriptionService extends IntentService {
         context.startService(intent);
     }
 
+    public static void startAcceptRequest(Context context, String user, Long id) {
+        Intent intent = new Intent(context, SubscriptionService.class);
+        intent.setAction(ACTION_ACCEPT_REQUEST);
+        intent.putExtra(EXTRA_PARAM_USER, user);
+        intent.putExtra(EXTRA_PARAM_SUBSCRIPTION_ID, id);
+        context.startService(intent);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -96,6 +109,10 @@ public class SubscriptionService extends IntentService {
             } else if (ACTION_CONFIRM_SUBSCRIBED.equals(action)) {
                 final String user = intent.getStringExtra(EXTRA_PARAM_USER);
                 confirmSubscribed(user);
+            } else if (ACTION_ACCEPT_REQUEST.equals(action)) {
+                final String user = intent.getStringExtra(EXTRA_PARAM_USER);
+                final Long subscriptionId = intent.getLongExtra(EXTRA_PARAM_SUBSCRIPTION_ID, 0);
+                acceptRequest(subscriptionId);
             }
         }
     }
@@ -120,6 +137,10 @@ public class SubscriptionService extends IntentService {
         markSubscribed(user);
         DataFetchingService.startFetchingData(this);
         broadcastSubscriptionStatusChanged();
+    }
+
+    private void acceptRequest(Long subscriptionId) {
+        new AcceptPendingRequestTask().execute(subscriptionId);
     }
 
     private void broadcastSubscriptionStatusChanged() {
@@ -252,6 +273,27 @@ public class SubscriptionService extends IntentService {
                 clearLastUpdatedDate(email);
                 broadcastSubscriptionStatusChanged();
             }
+        }
+    }
+
+    private class AcceptPendingRequestTask extends AsyncTask<Long, Void, List<SubscriptionRecord>> {
+        @Override
+        protected List<SubscriptionRecord> doInBackground(Long... params) {
+            Subscription subscriptionService = SubscriptionFactory.getInstance();
+            List<SubscriptionRecord> resultedList = new ArrayList<>();
+            for (Long subscriptionId : params) {
+                try {
+                    SubscriptionRecord returnedObject = subscriptionService.accept(subscriptionId).execute();
+                    if (returnedObject != null) {
+                        Log.d(TAG, "Accepted pending request (id " + returnedObject.getId() + ")");
+                        resultedList.add(returnedObject);
+                    }
+                } catch (IOException e) {
+                    Log.d(TAG, "Cannot accept pending request " + subscriptionId);
+                    e.printStackTrace();
+                }
+            }
+            return resultedList;
         }
     }
 
