@@ -45,6 +45,7 @@ import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
+import com.ntu.phongnt.healthdroid.services.subscription.PendingRequest;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangeListener;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangePublisher;
@@ -135,11 +136,11 @@ public class MainActivity extends SignInActivity implements
         broadcastManager.registerReceiver(
                 subscriptionStatusBroadcastReceiver, subscriptionStatusChangedFilter);
 
-        //Pending request change receiver
+        //Pending request accepted
         BroadcastReceiver pendingRequestChangedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d(TAG, "received pending request change broadcast");
+                Log.d(TAG, "received pending request accepted broadcast");
                 long subscriptionId = intent.getLongExtra(SubscriptionService.EXTRA_PARAM_SUBSCRIPTION_ID, 0);
                 notifyPendingRequestAccepted(subscriptionId);
             }
@@ -147,6 +148,19 @@ public class MainActivity extends SignInActivity implements
         IntentFilter pendingRequestChangedFilter =
                 new IntentFilter(QuickstartPreferences.PENDING_REQUEST_ACCEPTED);
         broadcastManager.registerReceiver(pendingRequestChangedReceiver, pendingRequestChangedFilter);
+
+        //Pending request loaded
+        BroadcastReceiver pendingRequestLoadedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "received pending request loaded broadcast");
+                ArrayList<PendingRequest> pendingRequests = intent.getParcelableArrayListExtra(SubscriptionService.EXTRA_PARAM_REQUESTS);
+                notifyPendingRequestLoaded(pendingRequests);
+            }
+        };
+        IntentFilter pendingRequestLoadedFilter =
+                new IntentFilter(QuickstartPreferences.PENDING_REQUESTS_LOADED);
+        broadcastManager.registerReceiver(pendingRequestLoadedReceiver, pendingRequestLoadedFilter);
 
         settings = getSharedPreferences(SHARED_PREFERENCE_NAME, 0);
         credential = GoogleAccountCredential.usingAudience(
@@ -388,6 +402,12 @@ public class MainActivity extends SignInActivity implements
     public void notifyPendingRequestAccepted(Long subscriptionId) {
         for (PendingRequestChangeListener listener : pendingRequestChangeListeners)
             listener.pendingRequestAccepted(subscriptionId);
+    }
+
+    private void notifyPendingRequestLoaded(ArrayList<PendingRequest> loadedPendingRequests) {
+        for (PendingRequestChangeListener listener : pendingRequestChangeListeners) {
+            listener.pendingRequestLoaded(loadedPendingRequests);
+        }
     }
 
     private class LoadProfileImageTask extends AsyncTask<String, Void, Bitmap> {

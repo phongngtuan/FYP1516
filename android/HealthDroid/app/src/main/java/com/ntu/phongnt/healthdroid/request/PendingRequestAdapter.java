@@ -6,16 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
+import com.ntu.phongnt.healthdroid.services.subscription.PendingRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestViewHolder> {
-    private List<SubscriptionRecord> pendingRequests = new ArrayList<>();
+    private List<PendingRequest> pendingRequests = new ArrayList<>();
     private PendingRequestInteractionListener listener;
 
-    public List<SubscriptionRecord> getPendingRequests() {
+    public List<PendingRequest> getPendingRequests() {
         return pendingRequests;
     }
 
@@ -27,7 +27,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestVi
         this.listener = listener;
     }
 
-    public void setPendingRequests(List<SubscriptionRecord> pendingRequests) {
+    public void setPendingRequests(List<PendingRequest> pendingRequests) {
         this.pendingRequests = pendingRequests;
     }
 
@@ -40,7 +40,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestVi
 
     @Override
     public void onBindViewHolder(PendingRequestViewHolder holder, final int position) {
-        String user = pendingRequests.get(position).getSubscriber().getEmail();
+        String user = pendingRequests.get(position).getSubscriber();
         holder.userView.setText(user);
 
         holder.acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +58,6 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestVi
 
 
     public interface PendingRequestInteractionListener {
-        public void onRequestAccepted(SubscriptionRecord subscriptionRecord);
+        public void onRequestAccepted(PendingRequest subscriptionRecord);
     }
 }
