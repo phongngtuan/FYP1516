@@ -32,7 +32,7 @@ public class TimeRangeDialogFragment extends DialogFragment {
                         listener.onTimeRangePicked(which);
                     }
                 })
-                .setPositiveButton("Wai?", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
