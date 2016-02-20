@@ -7,10 +7,12 @@ import android.test.RenamingDelegatingContext;
 
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class DataContractTest {
@@ -46,7 +48,7 @@ public class DataContractTest {
                 null
         );
         countBefore = cursor.getCount();
-        Assert.assertTrue(countBefore >= 0);
+        assertTrue(countBefore >= 0);
         cursor.close();
     }
 
@@ -66,12 +68,12 @@ public class DataContractTest {
                 null,
                 null
         );
-        Assert.assertEquals(cursor.getCount(), countBefore + 1);
+        assertEquals(cursor.getCount(), countBefore + 1);
         cursor.close();
     }
 
     @Test
-    public void addData2() throws Exception {
+    public void testAddData2() throws Exception {
         dataContract.addData(value, date, user);
         Cursor cursor = db.getReadableDatabase().query(
                 DataContract.DataEntry.TABLE_NAME,
@@ -88,19 +90,50 @@ public class DataContractTest {
                 null,
                 null
         );
-        Assert.assertEquals(1, cursor.getCount());
+        assertEquals(1, cursor.getCount());
         cursor.moveToFirst();
-        Assert.assertEquals(
-                (Float) cursor.getFloat(
-                        cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
+        assertEquals(
+                (Float) cursor.getFloat(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
                 value);
-        Assert.assertEquals(
-                cursor.getString(
-                        cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_USER)),
+        assertEquals(
+                cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_USER)),
                 user);
-        Assert.assertEquals(
-                cursor.getString(
-                        cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_DATE)),
+        assertEquals(
+                cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_DATE)),
+                date);
+        cursor.close();
+    }
+
+    public void testAddData3() throws Exception {
+        dataContract.addData(value, date, user, 0);
+        dataContract.addData(value, date, user, 1);
+        Cursor cursor = db.getReadableDatabase().query(
+                DataContract.DataEntry.TABLE_NAME,
+                new String[]{
+                        DataContract.DataEntry.COLUMN_NAME_VALUE,
+                        DataContract.DataEntry.COLUMN_NAME_DATE,
+                        DataContract.DataEntry.COLUMN_NAME_USER,
+                        DataContract.DataEntry.COLUMN_NAME_TYPE
+                },
+                DataContract.DataEntry.COLUMN_NAME_USER + "= '" + user + "' AND " +
+                        DataContract.DataEntry.COLUMN_NAME_DATE + "= '" + date + "' AND " +
+                        DataContract.DataEntry.COLUMN_NAME_VALUE + "=" + value + " AND " +
+                        DataContract.DataEntry.COLUMN_NAME_TYPE + "= 1",
+                null,
+                null,
+                null,
+                null
+        );
+        assertEquals(1, cursor.getCount());
+        cursor.moveToFirst();
+        assertEquals(
+                (Float) cursor.getFloat(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
+                value);
+        assertEquals(
+                cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_USER)),
+                user);
+        assertEquals(
+                cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_DATE)),
                 date);
         cursor.close();
     }
@@ -124,7 +157,7 @@ public class DataContractTest {
                 null
         );
         dataContract.deleteDataOfUser(anotherUser);
-        Assert.assertEquals(cursor.getCount(), countBefore + 1);
+        assertEquals(cursor.getCount(), countBefore + 1);
         cursor.close();
     }
 }
