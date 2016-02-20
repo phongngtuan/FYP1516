@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.fragments;
+package com.ntu.phongnt.healthdroid.home;
 
 import android.app.Notification;
 import android.app.NotificationManager;

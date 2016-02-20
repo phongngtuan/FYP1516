@@ -33,10 +33,10 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.ntu.phongnt.healthdroid.data.DataFragment;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
 import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.graph.GraphTabsFragment;
+import com.ntu.phongnt.healthdroid.home.HomeFragment;
 import com.ntu.phongnt.healthdroid.request.PendingRequestChangeListener;
 import com.ntu.phongnt.healthdroid.request.PendingRequestChangePublisher;
 import com.ntu.phongnt.healthdroid.request.PendingRequestFragment;
