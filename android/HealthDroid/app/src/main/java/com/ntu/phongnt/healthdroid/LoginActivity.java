@@ -62,8 +62,9 @@ public class LoginActivity extends AppCompatActivity implements
     };
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LoginActivity";
-    private static final String USER_PREFERENCE = "user";
-    private static final String IS_SIGNED_IN = "isSignedIn";
+    public static final String USER_PREFERENCE = "user";
+    public static final String IS_SIGNED_IN = "isSignedIn";
+    public static final String USER_ACCOUNT = "userAccount";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -156,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements
             GoogleSignInAccount acct = result.getSignInAccount();
             getSharedPreferences(USER_PREFERENCE, MODE_PRIVATE).edit()
                     .putBoolean(IS_SIGNED_IN, true)
-                    .putString("userAccount", acct.getEmail())
+                    .putString(USER_ACCOUNT, acct.getEmail())
                     .apply();
 
             startMainActivity();

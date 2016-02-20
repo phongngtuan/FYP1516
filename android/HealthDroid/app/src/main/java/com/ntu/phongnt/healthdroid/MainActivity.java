@@ -25,11 +25,12 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.data.DataFragment;
-import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.fragments.HomeFragment;
@@ -79,14 +80,6 @@ public class MainActivity extends AppCompatActivity implements
     SharedPreferences settings = null;
 
     private BroadcastReceiver tokenBroadcastReceiver = null;
-
-    private String accountName = null;
-    private HealthDroidUser healthDroidUser = null;
-    private List<SubscriptionRecord> subscriptionRecords = null;
-
-//    public GoogleSignInAccount getAccount() {
-//        return account;
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -320,9 +313,17 @@ public class MainActivity extends AppCompatActivity implements
     private void pickAccount() {
         String savedAccountName = settings.getString(PREF_ACCOUNT_NAME, null);
         if (credential.getSelectedAccountName() == null)
-            if (savedAccountName == null)
-                startActivityForResult(credential.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER);
+            if (savedAccountName == null) {
+                Intent newChooseAccountIntent = AccountPicker.newChooseAccountIntent(null,
+                        null,
+                        new String[]{GoogleAccountManager.ACCOUNT_TYPE},
+                        false,
+                        null,
+                        null,
+                        null,
+                        null);
+                startActivityForResult(newChooseAccountIntent, REQUEST_ACCOUNT_PICKER);
+            }
             else {
                 handleAccountSelected(savedAccountName);
             }
@@ -362,7 +363,6 @@ public class MainActivity extends AppCompatActivity implements
         editor.putString(PREF_ACCOUNT_NAME, accountName);
         editor.apply();
         credential.setSelectedAccountName(accountName);
-        this.accountName = accountName;
     }
 
     @Override
@@ -453,7 +453,6 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(HealthDroidUser resultedHealthDroidUser) {
             super.onPostExecute(resultedHealthDroidUser);
-            healthDroidUser = resultedHealthDroidUser;
         }
     }
 }
