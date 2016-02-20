@@ -73,7 +73,7 @@ public final class DataContract {
 
 
         public DataEntry(String value, String date, String user) {
-            this(value, date, user, "N/A");
+            this(value, date, user, "0");
         }
     }
 }
