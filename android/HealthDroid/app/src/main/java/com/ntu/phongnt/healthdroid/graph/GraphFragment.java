@@ -71,19 +71,9 @@ public class GraphFragment extends Fragment implements
 
         //Set title
         TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
-//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                TimeRangeDialogFragment dialogFragment = new TimeRangeDialogFragment();
-//                dialogFragment.listener = GraphFragment.this;
-//                dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
-////                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-////                        .setAction("Action", null).show();
-//            }
-//        });
 
         chart = new LineChart(inflater.getContext());
+        chart.setDescription(getDescription());
         chartAdapter = new LineChartAdapter(chart);
         chart.setData(new LineData());
         FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
@@ -165,6 +155,10 @@ public class GraphFragment extends Fragment implements
                 new DisplayDataByMonthTask().execute();
                 break;
         }
+    }
+
+    public String getDescription() {
+        return "BaseGraph";
     }
 
     abstract private class GetCursorTask<T> extends AsyncTask<T, Void, Cursor> {

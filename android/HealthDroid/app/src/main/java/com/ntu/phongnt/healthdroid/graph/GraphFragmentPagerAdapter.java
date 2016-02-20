@@ -12,13 +12,12 @@ public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         //TODO: do this according to graph subclass later
         graphFragments[0] = new GraphFragment();
-        graphFragments[1] = new GraphFragment();
+        graphFragments[1] = new BloodPressureFragment();
         graphFragments[2] = new GraphFragment();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        //TODO: change appropriately
         return graphFragments[position].getType();
     }
 
