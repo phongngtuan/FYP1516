@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -18,6 +17,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -25,8 +25,6 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -56,7 +54,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends SignInActivity implements
+public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         SubscriptionChangePublisher,
         PendingRequestChangePublisher {
@@ -86,9 +84,9 @@ public class MainActivity extends SignInActivity implements
     private HealthDroidUser healthDroidUser = null;
     private List<SubscriptionRecord> subscriptionRecords = null;
 
-    public GoogleSignInAccount getAccount() {
-        return account;
-    }
+//    public GoogleSignInAccount getAccount() {
+//        return account;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,11 +177,6 @@ public class MainActivity extends SignInActivity implements
             fragmentTransaction.add(R.id.fragment_container, homeFragment);
             fragmentTransaction.commit();
         }
-
-        Log.d(TAG, "Is connected = " + googleApiClient.isConnected());
-        if (!googleApiClient.isConnected()) {
-            signIn();
-        }
     }
 
     @Override
@@ -240,15 +233,15 @@ public class MainActivity extends SignInActivity implements
         return true;
     }
 
-    @Override
-    protected void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "in handle sign in result");
-        account = result.getSignInAccount();
-        if (account != null) {
-            Uri personPhoto = account.getPhotoUrl();
-            new LoadProfileImageTask(profileImage).execute(personPhoto.toString());
-        }
-    }
+//    @Override
+//    protected void handleSignInResult(GoogleSignInResult result) {
+//        Log.d(TAG, "in handle sign in result");
+//        account = result.getSignInAccount();
+//        if (account != null) {
+//            Uri personPhoto = account.getPhotoUrl();
+//            new LoadProfileImageTask(profileImage).execute(personPhoto.toString());
+//        }
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
