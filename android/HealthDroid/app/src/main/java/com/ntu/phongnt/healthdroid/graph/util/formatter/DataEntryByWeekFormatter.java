@@ -40,6 +40,7 @@ public class DataEntryByWeekFormatter extends BaseDataEntryFormatter {
 
     public static class DateRangeByWeek extends DateRange {
         public DateRangeByWeek(String firstDate, String lastDate) {
+            //TODO: year is incorrect, to be fix later (off by 1)
             String[] firstKey = firstDate.split("/");
             String[] lastKey = lastDate.split("/");
             int firstWeek = Integer.parseInt(firstKey[0]);
