@@ -28,7 +28,8 @@ public class GraphTabsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         TitleUtil.setSupportActionBarTitle(getActivity(), "Tabbed Graphs");
         View view = inflater.inflate(R.layout.graphs, container, false);
-        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
+        final NonSwipeableViewPager viewPager = (NonSwipeableViewPager) view.findViewById(R.id.pager);
+        viewPager.setPagingEnabled(false);
         viewPager.setAdapter(new GraphFragmentPagerAdapter(getChildFragmentManager()));
         Log.d(TAG, "onCreateView()");
 
