@@ -23,7 +23,7 @@ public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
     public String createKey(String createdAt) {
         int month = DateHelper.getMonth(createdAt);
         int year = DateHelper.getYear(createdAt);
-        return String.format("%02d", month) + "/" + String.format("%04d", year);
+        return String.format("%02d", month + 1) + "/" + String.format("%04d", year);
     }
 
     @Override
@@ -46,11 +46,11 @@ public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
             int lastYear = Integer.parseInt(lastKey[1]);
 
             GregorianCalendar first = new GregorianCalendar();
-            first.set(Calendar.MONTH, firstMonth);
+            first.set(Calendar.MONTH, firstMonth - 1);
             first.set(Calendar.YEAR, firstYear);
 
             GregorianCalendar last = new GregorianCalendar();
-            last.set(Calendar.MONTH, lastMonth);
+            last.set(Calendar.MONTH, lastMonth - 1);
             last.set(Calendar.YEAR, lastYear);
 
             setFirst(first);
