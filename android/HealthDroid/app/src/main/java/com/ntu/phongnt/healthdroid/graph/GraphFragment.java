@@ -162,29 +162,34 @@ public class GraphFragment extends Fragment implements
     }
 
     abstract private class GetCursorTask<T> extends AsyncTask<T, Void, Cursor> {
-        protected Cursor doQuery() {
-            Cursor result =
-                    db
-                            .getReadableDatabase()
-                            .query(DataContract.DataEntry.TABLE_NAME,
-                                    new String[]{DataContract.DataEntry._ID,
-                                            DataContract.DataEntry.COLUMN_NAME_VALUE,
-                                            DataContract.DataEntry.COLUMN_NAME_DATE,
-                                            DataContract.DataEntry.COLUMN_NAME_USER},
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    DataContract.DataEntry.COLUMN_NAME_DATE);
-            Log.i("GraphFragment", String.valueOf(result.getCount()));
+        protected Cursor doQuery(HealthDroidDatabaseHelper db) {
+            Cursor result = getQuery(db);
+            Log.i("GraphFragment", "cursor return " + result.getCount() + " records");
             return (result);
         }
+    }
+
+    protected Cursor getQuery(HealthDroidDatabaseHelper db) {
+        return db
+                .getReadableDatabase()
+                .query(DataContract.DataEntry.TABLE_NAME,
+                        new String[]{DataContract.DataEntry._ID,
+                                DataContract.DataEntry.COLUMN_NAME_VALUE,
+                                DataContract.DataEntry.COLUMN_NAME_DATE,
+                                DataContract.DataEntry.COLUMN_NAME_USER,
+                                DataContract.DataEntry.COLUMN_NAME_TYPE
+                        },
+                        DataContract.DataEntry.COLUMN_NAME_TYPE + " = 0",
+                        null,
+                        null,
+                        null,
+                        DataContract.DataEntry.COLUMN_NAME_DATE);
     }
 
     private abstract class DisplayDataTask extends GetCursorTask<String> {
         @Override
         protected Cursor doInBackground(String... params) {
-            return (doQuery());
+            return (doQuery(db));
         }
 
         @Override

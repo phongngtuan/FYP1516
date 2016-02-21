@@ -51,46 +51,79 @@ public class HealthDroidDatabaseHelper extends SQLiteOpenHelper {
         String VALUE = DataContract.DataEntry.COLUMN_NAME_VALUE;
         String DATE = DataContract.DataEntry.COLUMN_NAME_DATE;
         String USER = DataContract.DataEntry.COLUMN_NAME_USER;
+        String TYPE = DataContract.DataEntry.COLUMN_NAME_TYPE;
 
         //TODO: Hard coded value for dev purpose, change later
+        cv.put(TYPE, 0);
         cv.put(VALUE, 1);
         cv.put(DATE, "2015-10-26T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
+        cv.put(TYPE, 0);
         cv.put(VALUE, 2);
         cv.put(DATE, "2015-11-26T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
+        cv.put(TYPE, 0);
         cv.put(VALUE, 4);
         cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
+        cv.put(TYPE, 0);
         cv.put(VALUE, 8);
         cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
+        cv.put(TYPE, 0);
         cv.put(VALUE, 8);
         cv.put(DATE, "2015-12-24T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
+        cv.put(TYPE, 0);
         cv.put(VALUE, 8);
         cv.put(DATE, "2015-12-25T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
         db.insert(TABLE, VALUE, cv);
 
+        cv.put(TYPE, 0);
         cv.put(VALUE, 6);
         cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
         cv.put(USER, "email@example.com");
         db.insert(TABLE, VALUE, cv);
 
+        cv.put(TYPE, 0);
         cv.put(VALUE, 10);
         cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
         cv.put(USER, "email@example.com");
+        db.insert(TABLE, VALUE, cv);
+
+    cv.put(VALUE, 8);
+        cv.put(DATE, "2015-12-24T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
+        cv.put(TYPE, 1);
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 8);
+        cv.put(DATE, "2015-12-25T03:37:48.038+07:00");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
+        cv.put(TYPE, 1);
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 6);
+        cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
+        cv.put(USER, "email@example.com");
+        cv.put(TYPE, 1);
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 10);
+        cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
+        cv.put(USER, "email@example.com");
+        cv.put(TYPE, 1);
         db.insert(TABLE, VALUE, cv);
     }
 
