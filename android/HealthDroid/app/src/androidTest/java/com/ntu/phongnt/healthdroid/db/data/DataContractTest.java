@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class DataContractTest {
-    private Float value = 123.0f;
+    private String value = "123";
     private String date = "2016-01-10T02:08:50.889+07:00";
     private String user = "test@user.com";
 
@@ -93,7 +93,7 @@ public class DataContractTest {
         assertEquals(1, cursor.getCount());
         cursor.moveToFirst();
         assertEquals(
-                (Float) cursor.getFloat(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
+                cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
                 value);
         assertEquals(
                 cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_USER)),

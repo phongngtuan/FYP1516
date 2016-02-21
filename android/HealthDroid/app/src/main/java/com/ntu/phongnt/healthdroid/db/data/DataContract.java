@@ -10,7 +10,7 @@ public final class DataContract {
     public static final String SQL_CREATE_DATA_TABLE =
             "CREATE TABLE " + DataEntry.TABLE_NAME + " (" +
                     DataEntry._ID + HealthDroidDatabaseHelper.INTEGER_PRIMARY_KEY +
-                    DataEntry.COLUMN_NAME_VALUE + HealthDroidDatabaseHelper.REAL_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
+                    DataEntry.COLUMN_NAME_VALUE + HealthDroidDatabaseHelper.TEXT_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
                     DataEntry.COLUMN_NAME_DATE + HealthDroidDatabaseHelper.DATE_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
                     DataEntry.COLUMN_NAME_USER + HealthDroidDatabaseHelper.TEXT_TYPE + HealthDroidDatabaseHelper.COMMA_SEP +
                     DataEntry.COLUMN_NAME_TYPE + HealthDroidDatabaseHelper.INTEGER_TYPE +
@@ -24,7 +24,7 @@ public final class DataContract {
         this.healthDroidDatabaseHelper = healthDroidDatabaseHelper;
     }
 
-    public long addData(Float value, String date, String user, int type) {
+    public long addData(String value, String date, String user, int type) {
         ContentValues values = new ContentValues();
         values.put(DataEntry.COLUMN_NAME_VALUE, value);
         values.put(DataEntry.COLUMN_NAME_DATE, date);
@@ -38,7 +38,7 @@ public final class DataContract {
                         values);
     }
 
-    public long addData(Float value, String date, String user) {
+    public long addData(String value, String date, String user) {
         return addData(value, date, user, 0);
     }
 
