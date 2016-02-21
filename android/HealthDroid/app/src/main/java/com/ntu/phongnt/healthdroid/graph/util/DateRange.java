@@ -13,8 +13,8 @@ public abstract class DateRange {
         GregorianCalendar temp = new GregorianCalendar();
         temp.setTime(first.getTime());
         temp.add(getTimeUnit(), 10);
-        if (!temp.before(last)) {
-            last.add(getTimeUnit(), 10);
+        if (temp.after(last)) {
+            last.setTime(temp.getTime());
         }
     }
 

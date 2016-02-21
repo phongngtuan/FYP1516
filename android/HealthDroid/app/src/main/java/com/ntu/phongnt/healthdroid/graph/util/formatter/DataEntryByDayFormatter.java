@@ -26,7 +26,7 @@ public class DataEntryByDayFormatter extends BaseDataEntryFormatter {
         int month = DateHelper.getProperty(createdAt, Calendar.MONTH);
         int year = DateHelper.getProperty(createdAt, Calendar.YEAR);
         return String.format("%02d", dayOfMonth) + "/"
-                + String.format("%02d", month) + "/"
+                + String.format("%02d", month + 1) + "/"
                 + String.format("%04d", year);
     }
 
@@ -52,9 +52,9 @@ public class DataEntryByDayFormatter extends BaseDataEntryFormatter {
             int lastYear = Integer.parseInt(lastKey[2]);
 
             GregorianCalendar first = new GregorianCalendar();
-            first.set(firstYear, firstMonth, firstDayOfMonth);
+            first.set(firstYear, firstMonth - 1, firstDayOfMonth);
             GregorianCalendar last = new GregorianCalendar();
-            last.set(lastYear, lastMonth, lastDayOfMonth);
+            last.set(lastYear, lastMonth - 1, lastDayOfMonth);
 
             setFirst(first);
             setLast(last);
