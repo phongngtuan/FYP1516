@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.graph;
+package com.ntu.phongnt.healthdroid.graph.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

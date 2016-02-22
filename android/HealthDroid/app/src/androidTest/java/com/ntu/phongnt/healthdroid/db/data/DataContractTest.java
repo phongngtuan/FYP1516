@@ -127,7 +127,7 @@ public class DataContractTest {
         assertEquals(1, cursor.getCount());
         cursor.moveToFirst();
         assertEquals(
-                (Float) cursor.getFloat(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
+                cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_VALUE)),
                 value);
         assertEquals(
                 cursor.getString(cursor.getColumnIndex(DataContract.DataEntry.COLUMN_NAME_USER)),

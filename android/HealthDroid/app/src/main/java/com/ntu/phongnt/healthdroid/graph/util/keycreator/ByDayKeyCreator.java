@@ -1,11 +1,7 @@
-package com.ntu.phongnt.healthdroid.graph.util.formatter;
-
-import android.database.Cursor;
-import android.support.annotation.NonNull;
+package com.ntu.phongnt.healthdroid.graph.util.keycreator;
 
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateRange;
-import com.ntu.phongnt.healthdroid.graph.util.chart.ChartAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,18 +9,12 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public class DataEntryByDayFormatter extends BaseDataEntryFormatter {
-
-    public DataEntryByDayFormatter(Cursor cursor, ChartAdapter chartAdapter) {
-        super(cursor, chartAdapter);
-    }
-
-    @NonNull
+public class ByDayKeyCreator implements KeyCreator {
     @Override
-    public String createKey(String createdAt) {
-        int dayOfMonth = DateHelper.getProperty(createdAt, Calendar.DAY_OF_MONTH);
-        int month = DateHelper.getProperty(createdAt, Calendar.MONTH);
-        int year = DateHelper.getProperty(createdAt, Calendar.YEAR);
+    public String createKey(String date) {
+        int dayOfMonth = DateHelper.getProperty(date, Calendar.DAY_OF_MONTH);
+        int month = DateHelper.getProperty(date, Calendar.MONTH);
+        int year = DateHelper.getProperty(date, Calendar.YEAR);
         return String.format("%02d", dayOfMonth) + "/"
                 + String.format("%02d", month + 1) + "/"
                 + String.format("%04d", year);
@@ -38,6 +28,11 @@ public class DataEntryByDayFormatter extends BaseDataEntryFormatter {
     @Override
     public DateFormat getDateFormat() {
         return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    }
+
+    @Override
+    public int getTimeUnit() {
+        return Calendar.DAY_OF_YEAR;
     }
 
     public static class DateRangeByDay extends DateRange {

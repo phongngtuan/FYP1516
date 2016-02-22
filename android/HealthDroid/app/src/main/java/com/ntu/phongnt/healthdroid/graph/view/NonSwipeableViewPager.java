@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.graph;
+package com.ntu.phongnt.healthdroid.graph.view;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

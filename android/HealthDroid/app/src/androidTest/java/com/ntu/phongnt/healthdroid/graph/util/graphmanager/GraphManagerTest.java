@@ -1,27 +1,28 @@
-package com.ntu.phongnt.healthdroid.graph.util.formatter;
+package com.ntu.phongnt.healthdroid.graph.util.graphmanager;
 
 import android.database.Cursor;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 import android.test.RenamingDelegatingContext;
 
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
+import com.ntu.phongnt.healthdroid.graph.util.DateRange;
+import com.ntu.phongnt.healthdroid.graph.util.keycreator.ByMonthKeyCreator;
+import com.ntu.phongnt.healthdroid.graph.util.keycreator.KeyCreator;
+import com.ntu.phongnt.healthdroid.graph.util.simple.SimpleDataPool;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
-public class BaseDataEntryFormatterTest {
+public class GraphManagerTest {
     private String value = "123";
     private String date = "2016-01-10T02:08:50.889+07:00";
     private String user = "test@user.com";
 
     private HealthDroidDatabaseHelper db = null;
+    //TODO: revisit test here
     private DataContract dataContract = null;
     private int countBefore = -1;
 
@@ -55,7 +56,6 @@ public class BaseDataEntryFormatterTest {
 
     @Test
     public void testGetDataByUser() throws Exception {
-        dataContract.addData(value, date, user, 1);
         Cursor cursor = db.getReadableDatabase().query(
                 DataContract.DataEntry.TABLE_NAME,
                 new String[]{
@@ -64,13 +64,21 @@ public class BaseDataEntryFormatterTest {
                         DataContract.DataEntry.COLUMN_NAME_USER,
                         DataContract.DataEntry.COLUMN_NAME_TYPE
                 },
-                DataContract.DataEntry.COLUMN_NAME_TYPE + " = 1",
+                DataContract.DataEntry.COLUMN_NAME_TYPE + " = 0",
                 null,
                 null,
                 null,
                 null
         );
-        assertEquals(countBefore + 1, cursor.getCount());
+        GraphManager adapter
+                = new GraphManager(cursor);
+        DataPool dataPool = new SimpleDataPool();
+        KeyCreator keyCreator = new ByMonthKeyCreator();
+        adapter.setKeyCreator(keyCreator);
+        adapter.setDataPool(dataPool);
+        adapter.getDataByUser();
+        adapter.accumulateDataByUser();
+        DateRange range = dataPool.findRange();
         cursor.close();
     }
 }

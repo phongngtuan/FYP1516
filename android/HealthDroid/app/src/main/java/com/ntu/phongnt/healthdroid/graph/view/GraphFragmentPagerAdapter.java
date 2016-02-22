@@ -1,8 +1,10 @@
-package com.ntu.phongnt.healthdroid.graph;
+package com.ntu.phongnt.healthdroid.graph.view;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.ntu.phongnt.healthdroid.graph.util.bloodpressure.BloodPressureFragment;
 
 public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     public static final int GRAPH_COUNT = 3;
