@@ -86,7 +86,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
             if (createDate != null) {
                 if (latestDateFromData == null || latestDateFromData.before(createDate))
                     latestDateFromData = createDate;
-                dataContract.addData(d.getValue(), d.getDate().toStringRfc3339(), d.getUser().getEmail());
+                dataContract.addData(String.valueOf(d.getValue()), d.getDate().toStringRfc3339(), d.getUser().getEmail());
                 count++;
             }
         }

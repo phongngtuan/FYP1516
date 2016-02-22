@@ -1,8 +1,10 @@
-package com.ntu.phongnt.healthdroid.graph;
+package com.ntu.phongnt.healthdroid.graph.view;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.ntu.phongnt.healthdroid.graph.util.bloodpressure.BloodPressureFragment;
 
 public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     public static final int GRAPH_COUNT = 3;
@@ -12,13 +14,12 @@ public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         //TODO: do this according to graph subclass later
         graphFragments[0] = new GraphFragment();
-        graphFragments[1] = new GraphFragment();
+        graphFragments[1] = new BloodPressureFragment();
         graphFragments[2] = new GraphFragment();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        //TODO: change appropriately
         return graphFragments[position].getType();
     }
 

@@ -1,11 +1,7 @@
-package com.ntu.phongnt.healthdroid.graph.util.formatter;
-
-import android.database.Cursor;
-import android.support.annotation.NonNull;
+package com.ntu.phongnt.healthdroid.graph.util.keycreator;
 
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateRange;
-import com.ntu.phongnt.healthdroid.graph.util.chart.ChartAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,17 +9,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public class DataEntryByWeekFormatter extends BaseDataEntryFormatter {
-
-    public DataEntryByWeekFormatter(Cursor cursor, ChartAdapter chartAdapter) {
-        super(cursor, chartAdapter);
-    }
-
-    @NonNull
+public class ByWeekKeyCreator implements KeyCreator {
     @Override
-    public String createKey(String createdAt) {
-        int weekOfYear = DateHelper.getProperty(createdAt, Calendar.WEEK_OF_YEAR);
-        int year = DateHelper.getProperty(createdAt, Calendar.YEAR);
+    public String createKey(String date) {
+        int weekOfYear = DateHelper.getProperty(date, Calendar.WEEK_OF_YEAR);
+        int year = DateHelper.getProperty(date, Calendar.YEAR);
         return String.format("%02d", weekOfYear) + "/"
                 + String.format("%04d", year);
     }
@@ -38,8 +28,14 @@ public class DataEntryByWeekFormatter extends BaseDataEntryFormatter {
         return new SimpleDateFormat("ww/yyyy", Locale.getDefault());
     }
 
+    @Override
+    public int getTimeUnit() {
+        return Calendar.WEEK_OF_YEAR;
+    }
+
     public static class DateRangeByWeek extends DateRange {
         public DateRangeByWeek(String firstDate, String lastDate) {
+            //TODO: year is incorrect, to be fix later (off by 1)
             String[] firstKey = firstDate.split("/");
             String[] lastKey = lastDate.split("/");
             int firstWeek = Integer.parseInt(firstKey[0]);

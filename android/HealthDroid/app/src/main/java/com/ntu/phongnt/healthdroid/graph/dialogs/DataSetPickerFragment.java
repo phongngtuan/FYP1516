@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
-import com.ntu.phongnt.healthdroid.graph.GraphFragment;
+import com.ntu.phongnt.healthdroid.graph.view.GraphFragment;
 
 import java.util.ArrayList;
 import java.util.List;

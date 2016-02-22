@@ -1,29 +1,19 @@
-package com.ntu.phongnt.healthdroid.graph.util.formatter;
-
-import android.database.Cursor;
-import android.support.annotation.NonNull;
+package com.ntu.phongnt.healthdroid.graph.util.keycreator;
 
 import com.ntu.phongnt.healthdroid.graph.util.DateHelper;
 import com.ntu.phongnt.healthdroid.graph.util.DateRange;
-import com.ntu.phongnt.healthdroid.graph.util.chart.ChartAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
-
-    public DataEntryByMonthFormatter(Cursor cursor, ChartAdapter chartAdapter) {
-        super(cursor, chartAdapter);
-    }
-
+public class ByMonthKeyCreator implements KeyCreator {
     @Override
-    @NonNull
-    public String createKey(String createdAt) {
-        int month = DateHelper.getMonth(createdAt);
-        int year = DateHelper.getYear(createdAt);
-        return String.format("%02d", month) + "/" + String.format("%04d", year);
+    public String createKey(String date) {
+        int month = DateHelper.getMonth(date);
+        int year = DateHelper.getYear(date);
+        return String.format("%02d", month + 1) + "/" + String.format("%04d", year);
     }
 
     @Override
@@ -36,6 +26,11 @@ public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
         return new SimpleDateFormat("MM/yyyy");
     }
 
+    @Override
+    public int getTimeUnit() {
+        return Calendar.MONTH;
+    }
+
     public static class DateRangeByMonth extends DateRange {
         public DateRangeByMonth(String firstDate, String lastDate) {
             String[] firstKey = firstDate.split("/");
@@ -46,11 +41,11 @@ public class DataEntryByMonthFormatter extends BaseDataEntryFormatter {
             int lastYear = Integer.parseInt(lastKey[1]);
 
             GregorianCalendar first = new GregorianCalendar();
-            first.set(Calendar.MONTH, firstMonth);
+            first.set(Calendar.MONTH, firstMonth - 1);
             first.set(Calendar.YEAR, firstYear);
 
             GregorianCalendar last = new GregorianCalendar();
-            last.set(Calendar.MONTH, lastMonth);
+            last.set(Calendar.MONTH, lastMonth - 1);
             last.set(Calendar.YEAR, lastYear);
 
             setFirst(first);

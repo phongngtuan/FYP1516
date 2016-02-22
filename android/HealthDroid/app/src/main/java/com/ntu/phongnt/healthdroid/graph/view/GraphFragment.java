@@ -1,5 +1,6 @@
-package com.ntu.phongnt.healthdroid.graph;
+package com.ntu.phongnt.healthdroid.graph.view;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -26,12 +28,15 @@ import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.graph.dialogs.DataSetPickerFragment;
 import com.ntu.phongnt.healthdroid.graph.dialogs.TimeRangeDialogFragment;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
-import com.ntu.phongnt.healthdroid.graph.util.chart.ChartAdapter;
-import com.ntu.phongnt.healthdroid.graph.util.chart.LineChartAdapter;
-import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryByDayFormatter;
-import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryByMonthFormatter;
-import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryByWeekFormatter;
-import com.ntu.phongnt.healthdroid.graph.util.formatter.DataEntryFormatter;
+import com.ntu.phongnt.healthdroid.graph.util.chartadapter.ChartAdapter;
+import com.ntu.phongnt.healthdroid.graph.util.chartadapter.LineChartAdapter;
+import com.ntu.phongnt.healthdroid.graph.util.graphmanager.DataPool;
+import com.ntu.phongnt.healthdroid.graph.util.graphmanager.GraphManager;
+import com.ntu.phongnt.healthdroid.graph.util.keycreator.ByDayKeyCreator;
+import com.ntu.phongnt.healthdroid.graph.util.keycreator.ByMonthKeyCreator;
+import com.ntu.phongnt.healthdroid.graph.util.keycreator.ByWeekKeyCreator;
+import com.ntu.phongnt.healthdroid.graph.util.keycreator.KeyCreator;
+import com.ntu.phongnt.healthdroid.graph.util.simple.SimpleDataPool;
 
 import java.util.List;
 
@@ -41,12 +46,10 @@ public class GraphFragment extends Fragment implements
     public static String TITLE = "Graph";
 
     private String type = "N/A";
-    private LineChart chart = null;
+    private Chart chart = null;
     private HealthDroidDatabaseHelper db = null;
     private int formatter_choice;
     private List<String> dataSetChoices = null;
-    private DataEntryFormatter formatter = null;
-    private LineChartAdapter chartAdapter = null;
 
     public GraphFragment() {
         super();
@@ -71,50 +74,11 @@ public class GraphFragment extends Fragment implements
 
         //Set title
         TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
-//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                TimeRangeDialogFragment dialogFragment = new TimeRangeDialogFragment();
-//                dialogFragment.listener = GraphFragment.this;
-//                dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
-////                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-////                        .setAction("Action", null).show();
-//            }
-//        });
-
-        chart = new LineChart(inflater.getContext());
-        chartAdapter = new LineChartAdapter(chart);
-        chart.setData(new LineData());
-        FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
-
-        chart.setExtraOffsets(5, 20, 20, 20);
-        chart.setTouchEnabled(true);
-        chart.setScaleEnabled(true);
-        chart.setDragEnabled(true);
-        chart.setPinchZoom(true);
-        chart.setDrawGridBackground(false);
-        chart.setBackgroundColor(Color.BLACK);
-        chart.setDescriptionColor(Color.WHITE);
 
         db = HealthDroidDatabaseHelper.getInstance(getActivity());
 
-        //Legend
-        Legend legend = chart.getLegend();
-        legend.setTextColor(Color.WHITE);
-
-        //Appearance
-        XAxis x1 = chart.getXAxis();
-        x1.setDrawGridLines(false);
-        x1.setAvoidFirstLastClipping(true);
-        x1.setTextColor(Color.WHITE);
-        YAxis y1 = chart.getAxisLeft();
-        y1.setDrawGridLines(true);
-        y1.setTextColor(Color.WHITE);
-        chart.getAxisRight().setEnabled(false);
-
-        chart.invalidate();
-
+        chart = makeChart(inflater.getContext());
+        FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
         chart_container.addView(chart);
 
         onTimeRangePicked(formatter_choice);
@@ -147,7 +111,7 @@ public class GraphFragment extends Fragment implements
 
     @Override
     public void onDataSetPicked(List<String> items) {
-        chartAdapter.showDataSetsByLabel(items);
+//        chartAdapter.showDataSetsByLabel(items);
     }
 
     @Override
@@ -167,62 +131,111 @@ public class GraphFragment extends Fragment implements
         }
     }
 
+    public String getDescription() {
+        return "BaseGraph";
+    }
+
     abstract private class GetCursorTask<T> extends AsyncTask<T, Void, Cursor> {
-        protected Cursor doQuery() {
-            Cursor result =
-                    db
-                            .getReadableDatabase()
-                            .query(DataContract.DataEntry.TABLE_NAME,
-                                    new String[]{DataContract.DataEntry._ID,
-                                            DataContract.DataEntry.COLUMN_NAME_VALUE,
-                                            DataContract.DataEntry.COLUMN_NAME_DATE,
-                                            DataContract.DataEntry.COLUMN_NAME_USER},
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    DataContract.DataEntry.COLUMN_NAME_DATE);
-            Log.i("GraphFragment", String.valueOf(result.getCount()));
+        protected Cursor doQuery(HealthDroidDatabaseHelper db) {
+            Cursor result = getQuery(db);
+            Log.i("GraphFragment", "cursor return " + result.getCount() + " records");
             return (result);
         }
     }
 
+    protected Cursor getQuery(HealthDroidDatabaseHelper db) {
+        return db
+                .getReadableDatabase()
+                .query(DataContract.DataEntry.TABLE_NAME,
+                        new String[]{DataContract.DataEntry._ID,
+                                DataContract.DataEntry.COLUMN_NAME_VALUE,
+                                DataContract.DataEntry.COLUMN_NAME_DATE,
+                                DataContract.DataEntry.COLUMN_NAME_USER,
+                                DataContract.DataEntry.COLUMN_NAME_TYPE
+                        },
+                        DataContract.DataEntry.COLUMN_NAME_TYPE + " = 0",
+                        null,
+                        null,
+                        null,
+                        DataContract.DataEntry.COLUMN_NAME_DATE);
+    }
+
+    protected Chart makeChart(Context context) {
+        LineChart chart = new LineChart(context);
+        chart.setDescription(getDescription());
+        chart.setData(new LineData());
+        chart.setExtraOffsets(5, 20, 20, 20);
+        chart.setTouchEnabled(true);
+        chart.setScaleEnabled(true);
+        chart.setDragEnabled(true);
+        chart.setPinchZoom(true);
+        chart.setDrawGridBackground(false);
+        chart.setBackgroundColor(Color.BLACK);
+        chart.setDescriptionColor(Color.WHITE);
+
+        //Legend
+        Legend legend = chart.getLegend();
+        legend.setTextColor(Color.WHITE);
+
+        //Appearance
+        XAxis x1 = chart.getXAxis();
+        x1.setDrawGridLines(false);
+        x1.setAvoidFirstLastClipping(true);
+        x1.setTextColor(Color.WHITE);
+        YAxis y1 = chart.getAxisLeft();
+        y1.setDrawGridLines(true);
+        y1.setTextColor(Color.WHITE);
+        chart.getAxisRight().setEnabled(false);
+
+        chart.invalidate();
+        return chart;
+    }
+
+    protected DataPool makeDataPool() {
+        return new SimpleDataPool();
+    }
+
+    protected ChartAdapter makeChartAdapter(Chart chart) {
+        return new LineChartAdapter((LineChart) chart);
+    }
+
     private abstract class DisplayDataTask extends GetCursorTask<String> {
+        GraphManager graphManager = null;
         @Override
         protected Cursor doInBackground(String... params) {
-            return (doQuery());
+            return (doQuery(db));
         }
 
         @Override
         protected void onPostExecute(Cursor cursor) {
-            formatter = getDataEntryFormatter(cursor, chartAdapter);
-            //TODO: The 2 following lines need to be executed in order, may need to refactor this
-            formatter.format(chart);
-            dataSetChoices = formatter.getDataSetLabels();
+            graphManager = new GraphManager(cursor);
+            graphManager.setKeyCreator(makeKeyCreator());
+            graphManager.setDataPool(makeDataPool());
+            graphManager.addDataToChart(makeChartAdapter(chart));
             chart.invalidate();
         }
 
-        abstract DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter);
+        protected abstract KeyCreator makeKeyCreator();
     }
 
     private class DisplayDataByDayTask extends DisplayDataTask {
         @Override
-        DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter) {
-            return new DataEntryByDayFormatter(cursor, chartAdapter);
+        protected KeyCreator makeKeyCreator() {
+            return new ByDayKeyCreator();
         }
     }
 
     private class DisplayDataByWeekTask extends DisplayDataTask {
         @Override
-        DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter) {
-            return new DataEntryByWeekFormatter(cursor, chartAdapter);
+        protected KeyCreator makeKeyCreator() {
+            return new ByWeekKeyCreator();
         }
     }
 
     private class DisplayDataByMonthTask extends DisplayDataTask {
         @Override
-        DataEntryFormatter getDataEntryFormatter(Cursor cursor, ChartAdapter chartAdapter) {
-            return new DataEntryByMonthFormatter(cursor, chartAdapter);
+        protected KeyCreator makeKeyCreator() {
+            return new ByMonthKeyCreator();
         }
     }
 

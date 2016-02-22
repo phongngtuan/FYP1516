@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
-import com.ntu.phongnt.healthdroid.graph.GraphFragment;
+import com.ntu.phongnt.healthdroid.graph.view.GraphFragment;
 
 public class TimeRangeDialogFragment extends DialogFragment {
     public static final String DAY = "Day";
@@ -32,7 +32,7 @@ public class TimeRangeDialogFragment extends DialogFragment {
                         listener.onTimeRangePicked(which);
                     }
                 })
-                .setPositiveButton("Wai?", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
