@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.ntu.phongnt.healthdroid.AppPreferences;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
@@ -17,7 +18,6 @@ import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
-import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
 import com.ntu.phongnt.healthdroid.services.data.DataFetchingService;
@@ -162,13 +162,13 @@ public class SubscriptionService extends IntentService {
     private void broadcastSubscriptionStatusChanged() {
         LocalBroadcastManager localBroadcastManager =
                 LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
-        localBroadcastManager.sendBroadcast(new Intent(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED));
+        localBroadcastManager.sendBroadcast(new Intent(AppPreferences.SUBSCRIPTION_REQUEST_CHANGED));
     }
 
     private void broadcastPendingRequestAccepted(Long id) {
         LocalBroadcastManager localBroadcastManager =
                 LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
-        Intent intent = new Intent(QuickstartPreferences.PENDING_REQUEST_ACCEPTED);
+        Intent intent = new Intent(AppPreferences.PENDING_REQUEST_ACCEPTED);
         intent.putExtra(EXTRA_PARAM_SUBSCRIPTION_ID, id);
         localBroadcastManager.sendBroadcast(intent);
     }
@@ -184,7 +184,7 @@ public class SubscriptionService extends IntentService {
         }
         LocalBroadcastManager localBroadcastManager =
                 LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
-        Intent intent = new Intent(QuickstartPreferences.PENDING_REQUESTS_LOADED);
+        Intent intent = new Intent(AppPreferences.PENDING_REQUESTS_LOADED);
         intent.putParcelableArrayListExtra(EXTRA_PARAM_REQUESTS, subscriberRecords);
         localBroadcastManager.sendBroadcast(intent);
     }

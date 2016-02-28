@@ -10,8 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.ntu.phongnt.healthdroid.MainActivity;
+import com.ntu.phongnt.healthdroid.AppPreferences;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriberRecord;
@@ -59,9 +58,8 @@ public class SubscriberRecordFragment extends Fragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GoogleAccountCredential credential =
-                ((MainActivity) getActivity()).getCredential();
-        SubscriptionService.startLoadSubscriberRecords(getActivity(), credential.getSelectedAccountName());
+        String username = AppPreferences.getSignedInUser(getActivity());
+        SubscriptionService.startLoadSubscriberRecords(getActivity(), username);
     }
 
     @Override

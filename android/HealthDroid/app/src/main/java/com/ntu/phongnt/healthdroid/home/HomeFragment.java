@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.DateTime;
-import com.ntu.phongnt.healthdroid.LoginActivity;
+import com.ntu.phongnt.healthdroid.AppPreferences;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.data.Data;
@@ -70,8 +70,8 @@ public class HomeFragment extends Fragment {
             }
         });
         userField = (TextView) view.findViewById(R.id.user_id);
-        String signedInAccount = getActivity().getSharedPreferences(LoginActivity.USER_PREFERENCE, Context.MODE_PRIVATE)
-                .getString(LoginActivity.USER_ACCOUNT, "N/A");
+        String signedInAccount = getActivity().getSharedPreferences(AppPreferences.USER_PREFERENCE, Context.MODE_PRIVATE)
+                .getString(AppPreferences.USER_ACCOUNT, "N/A");
         userField.setText(signedInAccount);
 
         //Set title
