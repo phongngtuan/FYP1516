@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Google Inc. All Rights Reserved.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.ntu.phongnt.healthdroid.gcm;
+package com.ntu.phongnt.healthdroid;
 
-public class QuickstartPreferences {
+import android.content.Context;
+
+public class AppPreferences {
 
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
@@ -24,4 +26,12 @@ public class QuickstartPreferences {
     public static final String SUBSCRIPTION_REQUEST_CHANGED = "subscriptionRequestSent";
     public static final String PENDING_REQUEST_ACCEPTED = "pendingRequestAccepted";
     public static final String PENDING_REQUESTS_LOADED = "pendingRequestsLoaded";
+    public static final String USER_PREFERENCE = "user";
+    public static final String IS_SIGNED_IN = "isSignedIn";
+    public static final String USER_ACCOUNT = "userAccount";
+
+    public static String getSignedInUser(Context context) {
+        return context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE)
+                .getString(USER_ACCOUNT, "");
+    }
 }

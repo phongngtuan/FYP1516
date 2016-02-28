@@ -33,7 +33,6 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.ntu.phongnt.healthdroid.data.DataFragment;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
-import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.graph.view.GraphTabsFragment;
 import com.ntu.phongnt.healthdroid.home.HomeFragment;
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(context, "Sent token to server", Toast.LENGTH_SHORT).show();
             }
         };
-        IntentFilter tokenIntentFilter = new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE);
+        IntentFilter tokenIntentFilter = new IntentFilter(AppPreferences.REGISTRATION_COMPLETE);
         broadcastManager.registerReceiver(tokenBroadcastReceiver, tokenIntentFilter);
 
         //Subscription status receiver
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
         IntentFilter subscriptionStatusChangedFilter =
-                new IntentFilter(QuickstartPreferences.SUBSCRIPTION_REQUEST_CHANGED);
+                new IntentFilter(AppPreferences.SUBSCRIPTION_REQUEST_CHANGED);
         broadcastManager.registerReceiver(
                 subscriptionStatusBroadcastReceiver, subscriptionStatusChangedFilter);
 
@@ -133,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
         IntentFilter pendingRequestChangedFilter =
-                new IntentFilter(QuickstartPreferences.PENDING_REQUEST_ACCEPTED);
+                new IntentFilter(AppPreferences.PENDING_REQUEST_ACCEPTED);
         broadcastManager.registerReceiver(pendingRequestChangedReceiver, pendingRequestChangedFilter);
 
         //Pending request loaded
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
         IntentFilter pendingRequestLoadedFilter =
-                new IntentFilter(QuickstartPreferences.PENDING_REQUESTS_LOADED);
+                new IntentFilter(AppPreferences.PENDING_REQUESTS_LOADED);
         broadcastManager.registerReceiver(pendingRequestLoadedReceiver, pendingRequestLoadedFilter);
 
         settings = getSharedPreferences(SHARED_PREFERENCE_NAME, 0);

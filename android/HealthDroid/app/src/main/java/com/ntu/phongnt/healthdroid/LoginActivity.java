@@ -62,9 +62,6 @@ public class LoginActivity extends AppCompatActivity implements
     };
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LoginActivity";
-    public static final String USER_PREFERENCE = "user";
-    public static final String IS_SIGNED_IN = "isSignedIn";
-    public static final String USER_ACCOUNT = "userAccount";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -84,8 +81,8 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(USER_PREFERENCE, MODE_PRIVATE);
-        boolean isSignedIn = sharedPreferences.getBoolean(IS_SIGNED_IN, false);
+        SharedPreferences sharedPreferences = getSharedPreferences(AppPreferences.USER_PREFERENCE, MODE_PRIVATE);
+        boolean isSignedIn = sharedPreferences.getBoolean(AppPreferences.IS_SIGNED_IN, false);
         if (isSignedIn)
             startMainActivity();
 
@@ -155,9 +152,9 @@ public class LoginActivity extends AppCompatActivity implements
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            getSharedPreferences(USER_PREFERENCE, MODE_PRIVATE).edit()
-                    .putBoolean(IS_SIGNED_IN, true)
-                    .putString(USER_ACCOUNT, acct.getEmail())
+            getSharedPreferences(AppPreferences.USER_PREFERENCE, MODE_PRIVATE).edit()
+                    .putBoolean(AppPreferences.IS_SIGNED_IN, true)
+                    .putString(AppPreferences.USER_ACCOUNT, acct.getEmail())
                     .apply();
 
             startMainActivity();
