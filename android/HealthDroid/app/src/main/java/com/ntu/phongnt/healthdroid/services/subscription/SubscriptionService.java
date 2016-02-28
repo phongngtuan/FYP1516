@@ -33,14 +33,14 @@ public class SubscriptionService extends IntentService {
             "com.ntu.phongnt.healthdroid.services.subscription.action.update_user_list";
     public static final String ACTION_SUBSCRIBE_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.action.add_subscribed_user";
-    public static final String ACTION_UNSUBSCRIBED_USER =
-            "com.ntu.phongnt.healthdroid.services.subscription.action.remove_subscribed_user";
+    public static final String ACTION_UNSUBSCRIBE_USER =
+            "com.ntu.phongnt.healthdroid.services.subscription.action.action_unsubscribe_user";
     public static final String ACTION_CONFIRM_SUBSCRIBED =
             "com.ntu.phongnt.healthdroid.services.subscription.action.action_confirm_subscribed";
     public static final String ACTION_ACCEPT_REQUEST =
             "com.ntu.phongnt.healthdroid.services.subscription.action.accept_request";
-    public static final String ACTION_LOAD_PENDING_REQUESTS =
-            "com.ntu.phongnt.healthdroid.services.subscription.action.load_pending_request";
+    public static final String ACTION_LOAD_SUBSCRIBER_RECORDS =
+            "com.ntu.phongnt.healthdroid.services.subscription.action.load_subscriber_records";
     public static final String EXTRA_PARAM_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.param.email";
     public static final String EXTRA_PARAM_SUBSCRIPTION_ID =
@@ -69,7 +69,7 @@ public class SubscriptionService extends IntentService {
 
     public static void startUnsubscribeUser(Context context, String user) {
         Intent intent = new Intent(context, SubscriptionService.class);
-        intent.setAction(ACTION_UNSUBSCRIBED_USER);
+        intent.setAction(ACTION_UNSUBSCRIBE_USER);
         intent.putExtra(EXTRA_PARAM_USER, user);
         context.startService(intent);
     }
@@ -89,9 +89,9 @@ public class SubscriptionService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startLoadPendingRequests(Context context, String user) {
+    public static void startLoadSubscriberRecords(Context context, String user) {
         Intent intent = new Intent(context, SubscriptionService.class);
-        intent.setAction(ACTION_LOAD_PENDING_REQUESTS);
+        intent.setAction(ACTION_LOAD_SUBSCRIBER_RECORDS);
         intent.putExtra(EXTRA_PARAM_USER, user);
         context.startService(intent);
     }
@@ -112,7 +112,7 @@ public class SubscriptionService extends IntentService {
             } else if (ACTION_SUBSCRIBE_USER.equals(action)) {
                 final String user = intent.getStringExtra(EXTRA_PARAM_USER);
                 subscribedUser(user);
-            } else if (ACTION_UNSUBSCRIBED_USER.equals(action)) {
+            } else if (ACTION_UNSUBSCRIBE_USER.equals(action)) {
                 final String user = intent.getStringExtra(EXTRA_PARAM_USER);
                 unsubscribeUser(user);
             } else if (ACTION_CONFIRM_SUBSCRIBED.equals(action)) {
@@ -122,15 +122,15 @@ public class SubscriptionService extends IntentService {
                 final String user = intent.getStringExtra(EXTRA_PARAM_USER);
                 final Long subscriptionId = intent.getLongExtra(EXTRA_PARAM_SUBSCRIPTION_ID, 0);
                 acceptRequest(subscriptionId);
-            } else if (ACTION_LOAD_PENDING_REQUESTS.equals(action)) {
+            } else if (ACTION_LOAD_SUBSCRIBER_RECORDS.equals(action)) {
                 final String user = intent.getStringExtra(EXTRA_PARAM_USER);
-                loadPendingRequests(user);
+                loadSubscriberRecords(user);
             }
         }
     }
 
-    private void loadPendingRequests(String user) {
-        new GetPendingRequestTask(user).execute();
+    private void loadSubscriberRecords(String user) {
+        new GetSubscriberRecordsTask(user).execute();
     }
 
     private void updateUserList() {
@@ -343,10 +343,10 @@ public class SubscriptionService extends IntentService {
         }
     }
 
-    private class GetPendingRequestTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
+    private class GetSubscriberRecordsTask extends AsyncTask<Void, Void, List<SubscriptionRecord>> {
         private String accountName;
 
-        public GetPendingRequestTask(String accountName) {
+        public GetSubscriberRecordsTask(String accountName) {
             this.accountName = accountName;
         }
 
@@ -355,7 +355,7 @@ public class SubscriptionService extends IntentService {
             Subscription subscriptionService = SubscriptionFactory.getInstance();
             List<SubscriptionRecord> subscriptionRecords = null;
             try {
-                subscriptionRecords = subscriptionService.pending(accountName).execute().getItems();
+                subscriptionRecords = subscriptionService.subscribers(accountName).execute().getItems();
                 Log.d(TAG, "Get subscription records count: " + subscriptionRecords.size());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -368,13 +368,6 @@ public class SubscriptionService extends IntentService {
             super.onPostExecute(subscriptionRecords);
             broadcastFetchPendingRequestCompleted(subscriptionRecords);
         }
-
-        //        @Override
-//        protected void onPostExecute(List<SubscriptionRecord> subscriptionRecords) {
-//            pendingRequests.clear();
-//            pendingRequests.addAll(subscriptionRecords);
-//            pendingRequestAdapter.notifyDataSetChanged();
-//        }
     }
 
     private class AcceptPendingRequestTask extends AsyncTask<Long, Void, List<SubscriptionRecord>> {

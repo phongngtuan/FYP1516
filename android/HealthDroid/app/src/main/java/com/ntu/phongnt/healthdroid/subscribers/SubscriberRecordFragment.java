@@ -61,7 +61,7 @@ public class SubscriberRecordFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         GoogleAccountCredential credential =
                 ((MainActivity) getActivity()).getCredential();
-        SubscriptionService.startLoadPendingRequests(getActivity(), credential.getSelectedAccountName());
+        SubscriptionService.startLoadSubscriberRecords(getActivity(), credential.getSelectedAccountName());
     }
 
     @Override
