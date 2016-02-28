@@ -8,8 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -24,12 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserFragment extends Fragment implements SubscriptionChangeListener {
-    private static HealthDroidDatabaseHelper db = null;
-
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
     public static final String TAG = "USER_FRAG";
     public static final String TITLE = "Users";
+    // TODO: Customize parameter argument names
+    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static HealthDroidDatabaseHelper db = null;
     // TODO: Customize parameters
     private RecyclerView recyclerView = null;
     private int mColumnCount = 1;
@@ -49,6 +51,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -120,6 +123,13 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.user_menu, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+    }
+
+    @Override
     public void subscriptionChanged() {
         Log.d(TAG, "Handling subscription changed");
         new LoadCursorUserDbTask().execute();
@@ -138,6 +148,19 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         void onItemClick(UserWrapper user);
 
         void onSubscribeClick(UserWrapper user);
+    }
+
+    public static class UserWrapper {
+
+        public String email = null;
+        public int subscriptionState = 0;
+        public String lastUpdated = null;
+
+        public UserWrapper(String user, int subscriptionState, String lastUpdated) {
+            this.email = user;
+            this.subscriptionState = subscriptionState;
+            this.lastUpdated = lastUpdated;
+        }
     }
 
     abstract private class BaseUserDbTask<T> extends AsyncTask<T, Void, Cursor> {
@@ -185,19 +208,6 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             }
             cursor.close();
             recyclerView.getAdapter().notifyDataSetChanged();
-        }
-    }
-
-    public static class UserWrapper {
-
-        public String email = null;
-        public int subscriptionState = 0;
-        public String lastUpdated = null;
-
-        public UserWrapper(String user, int subscriptionState, String lastUpdated) {
-            this.email = user;
-            this.subscriptionState = subscriptionState;
-            this.lastUpdated = lastUpdated;
         }
     }
 

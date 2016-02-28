@@ -16,6 +16,11 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     buildTypes {
         debug {
             resValue "string", "rootUrl", "http://192.168.0.104:8080/_ah/api/"
