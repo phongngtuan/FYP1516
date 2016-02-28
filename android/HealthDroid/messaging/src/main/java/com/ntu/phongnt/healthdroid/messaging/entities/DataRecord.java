@@ -18,12 +18,27 @@ public class DataRecord {
     private Ref<HealthDroidUser> user;
     private Date date;
     @Index
+    private int type;
     private Date createdAt;
 
-    private int value;
+    private String value;
     private String identifier;
 
     public DataRecord() {
+    }
+
+    public DataRecord(Date date, String value, int type) {
+        this.date = date;
+        this.value = value;
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public HealthDroidUser getUser() {
@@ -34,11 +49,11 @@ public class DataRecord {
         this.user = Ref.create(user);
     }
 
-    public float getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

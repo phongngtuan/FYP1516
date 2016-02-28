@@ -45,13 +45,15 @@ public class DataEndpoint {
     private static final Logger log = Logger.getLogger(MessagingEndpoint.class.getName());
 
     @ApiMethod(name = "add", path = "data")
-    public DataRecord addData(@Named("value") int value, @Named("date") Date date, User user) throws OAuthRequestException, IOException {
+    public DataRecord addData(@Named("value") String value, @Named("date") Date date, @Named("type") int type, User user)
+            throws OAuthRequestException, IOException {
         DataRecord dataRecord = new DataRecord();
         if (user != null) {
             Key<HealthDroidUser> healthDroidUserKey = Key.create(HealthDroidUser.class, user.getEmail());
             HealthDroidUser healthDroidUser = ofy().load().key(healthDroidUserKey).now();
 
             dataRecord.setValue(value);
+            dataRecord.setType(type);
             dataRecord.setDate(date);
             dataRecord.setCreatedAt(new Date());
             dataRecord.setIdentifier(healthDroidUserKey.toString());
