@@ -76,7 +76,7 @@ public class SubscriberRecordFragment extends Fragment implements
 
     @Override
     public void pendingRequestAccepted(Long subscriptionId) {
-        removePendingRequest(subscriptionId);
+        markSubscriberRecordAccepted(subscriptionId);
     }
 
     @Override
@@ -86,10 +86,10 @@ public class SubscriberRecordFragment extends Fragment implements
         subscriberRecordAdapter.notifyDataSetChanged();
     }
 
-    private void removePendingRequest(Long subscriptionId) {
-        for (SubscriberRecord request : subscriberRecords) {
-            if (request.getId().equals(subscriptionId))
-                subscriberRecords.remove(request);
+    private void markSubscriberRecordAccepted(Long subscriptionId) {
+        for (SubscriberRecord record : subscriberRecords) {
+            if (record.getId().equals(subscriptionId))
+                record.setAccepted(true);
         }
         subscriberRecordAdapter.notifyDataSetChanged();
     }

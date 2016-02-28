@@ -43,6 +43,10 @@ public class SubscriberRecordAdapter extends RecyclerView.Adapter<SubscriberReco
         String user = subscriberRecords.get(position).getSubscriber();
         holder.userView.setText(user);
 
+        if (subscriberRecords.get(position).isAccepted())
+            holder.actionButton.setText("Remove");
+        else
+            holder.actionButton.setText("Accept");
         holder.actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
