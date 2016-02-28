@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.request;
+package com.ntu.phongnt.healthdroid.subscribers;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -7,15 +7,15 @@ import android.widget.TextView;
 
 import com.ntu.phongnt.healthdroid.R;
 
-public class PendingRequestViewHolder extends RecyclerView.ViewHolder {
+public class SubscriberRecordViewHolder extends RecyclerView.ViewHolder {
     public View itemView = null;
     public TextView userView = null;
-    public Button acceptButton = null;
+    public Button actionButton = null;
 
-    public PendingRequestViewHolder(View itemView) {
+    public SubscriberRecordViewHolder(View itemView) {
         super(itemView);
         this.itemView = itemView;
         this.userView = (TextView) itemView.findViewById(R.id.user);
-        this.acceptButton = (Button) itemView.findViewById(R.id.accept_btn);
+        this.actionButton = (Button) itemView.findViewById(R.id.actionButton);
     }
 }

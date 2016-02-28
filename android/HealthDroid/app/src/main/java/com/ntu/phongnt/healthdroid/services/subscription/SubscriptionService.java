@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubscriptionService extends IntentService {
-    private static final String TAG = "SubscriptionService";
-    private static HealthDroidDatabaseHelper db = null;
-
     // IntentService can perform
     public static final String ACTION_UPDATE_USER_LIST =
             "com.ntu.phongnt.healthdroid.services.subscription.action.update_user_list";
@@ -44,13 +41,14 @@ public class SubscriptionService extends IntentService {
             "com.ntu.phongnt.healthdroid.services.subscription.action.accept_request";
     public static final String ACTION_LOAD_PENDING_REQUESTS =
             "com.ntu.phongnt.healthdroid.services.subscription.action.load_pending_request";
-
     public static final String EXTRA_PARAM_USER =
             "com.ntu.phongnt.healthdroid.services.subscription.param.email";
     public static final String EXTRA_PARAM_SUBSCRIPTION_ID =
             "com.ntu.phongnt.healthdroid.services.subscription.param.subscription_id";
     public static final String EXTRA_PARAM_REQUESTS =
             "com.ntu.phongnt.healthdroid.services.subscription.param.requests";
+    private static final String TAG = "SubscriptionService";
+    private static HealthDroidDatabaseHelper db = null;
 
     public SubscriptionService() {
         super("SubscriptionService");
@@ -176,9 +174,9 @@ public class SubscriptionService extends IntentService {
     }
 
     private void broadcastFetchPendingRequestCompleted(List<SubscriptionRecord> subscriptionRecords) {
-        ArrayList<PendingRequest> pendingRequests = new ArrayList<>();
+        ArrayList<SubscriberRecord> subscriberRecords = new ArrayList<>();
         for (SubscriptionRecord record : subscriptionRecords) {
-            pendingRequests.add(new PendingRequest(
+            subscriberRecords.add(new SubscriberRecord(
                     record.getId(),
                     record.getSubscriber().getEmail(),
                     record.getTarget().getEmail()
@@ -187,8 +185,35 @@ public class SubscriptionService extends IntentService {
         LocalBroadcastManager localBroadcastManager =
                 LocalBroadcastManager.getInstance(SubscriptionService.this.getApplicationContext());
         Intent intent = new Intent(QuickstartPreferences.PENDING_REQUESTS_LOADED);
-        intent.putParcelableArrayListExtra(EXTRA_PARAM_REQUESTS, pendingRequests);
+        intent.putParcelableArrayListExtra(EXTRA_PARAM_REQUESTS, subscriberRecords);
         localBroadcastManager.sendBroadcast(intent);
+    }
+
+    private void changeSubscriptionStatus(String user, int status) {
+        UserContract userContract = new UserContract(db);
+        userContract.updateSubscriptionStatus(user, status);
+    }
+
+    private void markPending(String user) {
+        changeSubscriptionStatus(user, UserContract.UserEntry.PENDING);
+    }
+
+    private void markSubscribed(String user) {
+        changeSubscriptionStatus(user, UserContract.UserEntry.SUBSCRIBED);
+    }
+
+    private void clearLastUpdatedDate(String user) {
+        UserContract userContract = new UserContract(db);
+        userContract.updateUser(user, null, UserContract.UserEntry.ZERO_DATE);
+    }
+
+    private void markUnsubscribed(String user) {
+        changeSubscriptionStatus(user, UserContract.UserEntry.UNSUBSCRIBED);
+    }
+
+    private void deleteLocalDataOfUser(String user) {
+        DataContract dataContract = new DataContract(db);
+        dataContract.deleteDataOfUser(user);
     }
 
     private class ListUserTask extends AsyncTask<Void, Void, Void> {
@@ -378,33 +403,6 @@ public class SubscriptionService extends IntentService {
             for (SubscriptionRecord record : subscriptionRecords)
                 broadcastPendingRequestAccepted(record.getId());
         }
-    }
-
-    private void changeSubscriptionStatus(String user, int status) {
-        UserContract userContract = new UserContract(db);
-        userContract.updateSubscriptionStatus(user, status);
-    }
-
-    private void markPending(String user) {
-        changeSubscriptionStatus(user, UserContract.UserEntry.PENDING);
-    }
-
-    private void markSubscribed(String user) {
-        changeSubscriptionStatus(user, UserContract.UserEntry.SUBSCRIBED);
-    }
-
-    private void clearLastUpdatedDate(String user) {
-        UserContract userContract = new UserContract(db);
-        userContract.updateUser(user, null, UserContract.UserEntry.ZERO_DATE);
-    }
-
-    private void markUnsubscribed(String user) {
-        changeSubscriptionStatus(user, UserContract.UserEntry.UNSUBSCRIBED);
-    }
-
-    private void deleteLocalDataOfUser(String user) {
-        DataContract dataContract = new DataContract(db);
-        dataContract.deleteDataOfUser(user);
     }
 
 }

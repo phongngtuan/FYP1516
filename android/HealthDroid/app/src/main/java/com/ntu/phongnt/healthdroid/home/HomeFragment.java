@@ -118,7 +118,7 @@ public class HomeFragment extends Fragment {
                 Data dataService = DataFactory.getInstance();
                 for (Integer value : params) {
                     try {
-                        dataService.add(new DateTime(new Date()), value).execute();
+                        dataService.add(new DateTime(new Date()), 0, value.toString()).execute();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

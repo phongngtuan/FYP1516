@@ -37,15 +37,15 @@ import com.ntu.phongnt.healthdroid.gcm.QuickstartPreferences;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
 import com.ntu.phongnt.healthdroid.graph.view.GraphTabsFragment;
 import com.ntu.phongnt.healthdroid.home.HomeFragment;
-import com.ntu.phongnt.healthdroid.request.PendingRequestChangeListener;
-import com.ntu.phongnt.healthdroid.request.PendingRequestChangePublisher;
-import com.ntu.phongnt.healthdroid.request.PendingRequestFragment;
 import com.ntu.phongnt.healthdroid.services.DataFactory;
 import com.ntu.phongnt.healthdroid.services.RegistrationFactory;
 import com.ntu.phongnt.healthdroid.services.SubscriptionFactory;
 import com.ntu.phongnt.healthdroid.services.UserFactory;
-import com.ntu.phongnt.healthdroid.services.subscription.PendingRequest;
+import com.ntu.phongnt.healthdroid.services.subscription.SubscriberRecord;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
+import com.ntu.phongnt.healthdroid.subscribers.SubscriberRecordChangeListener;
+import com.ntu.phongnt.healthdroid.subscribers.SubscriberRecordChangePublisher;
+import com.ntu.phongnt.healthdroid.subscribers.SubscriberRecordFragment;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangeListener;
 import com.ntu.phongnt.healthdroid.subscription.SubscriptionChangePublisher;
 import com.ntu.phongnt.healthdroid.subscription.UserFragment;
@@ -58,27 +58,23 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         SubscriptionChangePublisher,
-        PendingRequestChangePublisher {
+        SubscriberRecordChangePublisher {
 
+    public static final String SHARED_PREFERENCE_NAME = "HealthDroid";
+    public static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
-    public static final String SHARED_PREFERENCE_NAME = "HealthDroid";
-
+    private static final int REQUEST_ACCOUNT_PICKER = 2;
+    GoogleAccountCredential credential = null;
+    SharedPreferences settings = null;
     private HomeFragment homeFragment = null;
     private DataFragment dataFragment = null;
     private UserFragment userFragment = null;
     private GraphTabsFragment graphTabsFragment = null;
-    private PendingRequestFragment pendingRequestFragment = null;
+    private SubscriberRecordFragment pendingRequestFragment = null;
     private List<SubscriptionChangeListener> subscriptionChangeListeners = new ArrayList<>();
-    private List<PendingRequestChangeListener> pendingRequestChangeListeners = new ArrayList<>();
-
+    private List<SubscriberRecordChangeListener> subscriberRecordChangeListeners = new ArrayList<>();
     private ImageView profileImage = null;
-
-    private static final int REQUEST_ACCOUNT_PICKER = 2;
-    public static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
-    GoogleAccountCredential credential = null;
-    SharedPreferences settings = null;
-
     private BroadcastReceiver tokenBroadcastReceiver = null;
 
     @Override
@@ -145,8 +141,8 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.d(TAG, "received pending request loaded broadcast");
-                ArrayList<PendingRequest> pendingRequests = intent.getParcelableArrayListExtra(SubscriptionService.EXTRA_PARAM_REQUESTS);
-                notifyPendingRequestLoaded(pendingRequests);
+                ArrayList<SubscriberRecord> subscriberRecords = intent.getParcelableArrayListExtra(SubscriptionService.EXTRA_PARAM_REQUESTS);
+                notifyPendingRequestLoaded(subscriberRecords);
             }
         };
         IntentFilter pendingRequestLoadedFilter =
@@ -292,9 +288,9 @@ public class MainActivity extends AppCompatActivity implements
                         replace(R.id.fragment_container, userFragment, "USER_FRAGMENT").commit();
 
         } else if (id == R.id.nav_pending_request) {
-            pendingRequestFragment = (PendingRequestFragment) getSupportFragmentManager().findFragmentByTag("PENDING_REQUEST_FRAGMENT");
+            pendingRequestFragment = (SubscriberRecordFragment) getSupportFragmentManager().findFragmentByTag("PENDING_REQUEST_FRAGMENT");
             if (pendingRequestFragment == null) {
-                pendingRequestFragment = PendingRequestFragment.getInstance(this);
+                pendingRequestFragment = SubscriberRecordFragment.getInstance(this);
             }
             if (!pendingRequestFragment.isVisible())
                 getSupportFragmentManager().beginTransaction()
@@ -382,24 +378,24 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void registerPendingRequestListener(PendingRequestChangeListener listener) {
-        pendingRequestChangeListeners.add(listener);
+    public void registerSubscriberRecordListener(SubscriberRecordChangeListener listener) {
+        subscriberRecordChangeListeners.add(listener);
     }
 
     @Override
-    public void unregisterPendingRequestListener(PendingRequestChangeListener listener) {
-        pendingRequestChangeListeners.remove(listener);
+    public void unregisterSubscriberRecordListener(SubscriberRecordChangeListener listener) {
+        subscriberRecordChangeListeners.remove(listener);
     }
 
     @Override
     public void notifyPendingRequestAccepted(Long subscriptionId) {
-        for (PendingRequestChangeListener listener : pendingRequestChangeListeners)
+        for (SubscriberRecordChangeListener listener : subscriberRecordChangeListeners)
             listener.pendingRequestAccepted(subscriptionId);
     }
 
-    private void notifyPendingRequestLoaded(ArrayList<PendingRequest> loadedPendingRequests) {
-        for (PendingRequestChangeListener listener : pendingRequestChangeListeners) {
-            listener.pendingRequestLoaded(loadedPendingRequests);
+    private void notifyPendingRequestLoaded(ArrayList<SubscriberRecord> loadedSubscriberRecords) {
+        for (SubscriberRecordChangeListener listener : subscriberRecordChangeListeners) {
+            listener.subscriberRecordLoaded(loadedSubscriberRecords);
         }
     }
 

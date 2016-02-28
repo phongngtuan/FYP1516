@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.request;
+package com.ntu.phongnt.healthdroid.subscribers;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,25 +14,25 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
-import com.ntu.phongnt.healthdroid.services.subscription.PendingRequest;
+import com.ntu.phongnt.healthdroid.services.subscription.SubscriberRecord;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PendingRequestFragment extends Fragment implements
-        PendingRequestAdapter.PendingRequestInteractionListener,
-        PendingRequestChangeListener {
+public class SubscriberRecordFragment extends Fragment implements
+        SubscriberRecordAdapter.SubscriberRecordInteractionListener,
+        SubscriberRecordChangeListener {
     public static final String TAG = "PENDING_REQUEST_FRAG";
     public static final String TITLE = "Pending requests";
 
-    private PendingRequestChangePublisher changePublisher = null;
+    private SubscriberRecordChangePublisher changePublisher = null;
     private RecyclerView recyclerView = null;
-    private PendingRequestAdapter pendingRequestAdapter = null;
-    private List<PendingRequest> pendingRequests = new ArrayList<>();
+    private SubscriberRecordAdapter subscriberRecordAdapter = null;
+    private List<SubscriberRecord> subscriberRecords = new ArrayList<>();
 
-    public static PendingRequestFragment getInstance(PendingRequestChangePublisher publisher) {
-        PendingRequestFragment pendingRequestFragment = new PendingRequestFragment();
+    public static SubscriberRecordFragment getInstance(SubscriberRecordChangePublisher publisher) {
+        SubscriberRecordFragment pendingRequestFragment = new SubscriberRecordFragment();
         pendingRequestFragment.setChangePublisher(publisher);
         return pendingRequestFragment;
     }
@@ -45,10 +45,10 @@ public class PendingRequestFragment extends Fragment implements
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
             ((RecyclerView) view).setLayoutManager(new LinearLayoutManager(view.getContext()));
-            pendingRequestAdapter = new PendingRequestAdapter();
-            pendingRequestAdapter.setListener(this);
-            pendingRequestAdapter.setPendingRequests(pendingRequests);
-            recyclerView.setAdapter(pendingRequestAdapter);
+            subscriberRecordAdapter = new SubscriberRecordAdapter();
+            subscriberRecordAdapter.setListener(this);
+            subscriberRecordAdapter.setSubscriberRecords(subscriberRecords);
+            recyclerView.setAdapter(subscriberRecordAdapter);
         }
 
         TitleUtil.setSupportActionBarTitle(getActivity(), TITLE);
@@ -67,13 +67,13 @@ public class PendingRequestFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        getChangePublisher().registerPendingRequestListener(this);
+        getChangePublisher().registerSubscriberRecordListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        getChangePublisher().unregisterPendingRequestListener(this);
+        getChangePublisher().unregisterSubscriberRecordListener(this);
     }
 
     @Override
@@ -82,31 +82,31 @@ public class PendingRequestFragment extends Fragment implements
     }
 
     @Override
-    public void pendingRequestLoaded(List<PendingRequest> loadedPendingRequests) {
-        pendingRequests.clear();
-        pendingRequests.addAll(loadedPendingRequests);
-        pendingRequestAdapter.notifyDataSetChanged();
+    public void subscriberRecordLoaded(List<SubscriberRecord> loadedSubscriberRecords) {
+        subscriberRecords.clear();
+        subscriberRecords.addAll(loadedSubscriberRecords);
+        subscriberRecordAdapter.notifyDataSetChanged();
     }
 
     private void removePendingRequest(Long subscriptionId) {
-        for (PendingRequest request : pendingRequests) {
+        for (SubscriberRecord request : subscriberRecords) {
             if (request.getId().equals(subscriptionId))
-                pendingRequests.remove(request);
+                subscriberRecords.remove(request);
         }
-        pendingRequestAdapter.notifyDataSetChanged();
+        subscriberRecordAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onRequestAccepted(PendingRequest subscriptionRecord) {
+    public void onRequestAccepted(SubscriberRecord subscriptionRecord) {
         Toast.makeText(getActivity(), "Accepted req by " + subscriptionRecord.getSubscriber(), Toast.LENGTH_SHORT).show();
         SubscriptionService.startAcceptRequest(getActivity(), subscriptionRecord.getSubscriber(), subscriptionRecord.getId());
     }
 
-    public PendingRequestChangePublisher getChangePublisher() {
+    public SubscriberRecordChangePublisher getChangePublisher() {
         return changePublisher;
     }
 
-    public void setChangePublisher(PendingRequestChangePublisher changePublisher) {
+    public void setChangePublisher(SubscriberRecordChangePublisher changePublisher) {
         this.changePublisher = changePublisher;
     }
 
