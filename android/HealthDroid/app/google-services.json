@@ -22,6 +22,10 @@
             "package_name": "com.ntu.phongnt.healthdroid",
             "certificate_hash": "2CEBDCC575369181A9482DE17B05BCF4F0CD2E47"
           }
+        },
+        {
+          "client_id": "29062929092-na8tnckhsgb3eei8lpjm005ffbvcukud.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [],
