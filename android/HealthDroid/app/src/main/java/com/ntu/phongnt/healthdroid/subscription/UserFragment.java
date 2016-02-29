@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,22 +19,26 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.user.UserContract;
 import com.ntu.phongnt.healthdroid.graph.util.TitleUtil;
+import com.ntu.phongnt.healthdroid.services.subscription.QueryUserTask;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserFragment extends Fragment implements SubscriptionChangeListener {
+public class UserFragment extends Fragment
+        implements SubscriptionChangeListener, QueryUserTask.Receiver {
     public static final String TAG = "USER_FRAG";
     public static final String TITLE = "Users";
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static HealthDroidDatabaseHelper db = null;
-    // TODO: Customize parameters
-    private RecyclerView recyclerView = null;
+
+    SwipeRefreshLayout swipeRefreshLayout;
+    RecyclerView recyclerView = null;
     private int mColumnCount = 1;
 
     private SubscriptionChangePublisher subscriptionChangePublisher = null;
@@ -60,18 +65,6 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         if (db == null) {
             db = HealthDroidDatabaseHelper.getInstance(getActivity());
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        subscriptionChangePublisher.unregisterSubscriptionListener(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        subscriptionChangePublisher.registerSubscriptionListener(this);
     }
 
     @Override
@@ -104,22 +97,40 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         };
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            recyclerView = (RecyclerView) view;
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            UserRecyclerViewAdapter viewAdapter = new UserRecyclerViewAdapter(listUser, listener);
-            recyclerView.setAdapter(viewAdapter);
-
-            new LoadCursorUserDbTask().execute();
+        recyclerView = (RecyclerView) view.findViewById(R.id.userRecyclerView);
+        Context context = view.getContext();
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+        UserRecyclerViewAdapter viewAdapter = new UserRecyclerViewAdapter(listUser, listener);
+        recyclerView.setAdapter(viewAdapter);
+
+        //Swipe refresh
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.userSwipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new LoadCursorUserDbTask().execute();
+            }
+        });
+
+        new LoadCursorUserDbTask().execute();
 
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        subscriptionChangePublisher.unregisterSubscriptionListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        subscriptionChangePublisher.registerSubscriptionListener(this);
     }
 
     @Override
@@ -127,12 +138,34 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.user_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(getActivity(), "Query", Toast.LENGTH_SHORT).show();
+                (new QueryUserTask(UserFragment.this)).execute(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 
     @Override
     public void subscriptionChanged() {
         Log.d(TAG, "Handling subscription changed");
         new LoadCursorUserDbTask().execute();
+    }
+
+    @Override
+    public void queryUserReceived(List<HealthDroidUser> results) {
+        listUser.clear();
+        for (HealthDroidUser user : results) {
+            listUser.add(new UserWrapper(user.getEmail(), 0, ""));
+        }
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     private void handleSubscribe(String user) {
@@ -208,6 +241,7 @@ public class UserFragment extends Fragment implements SubscriptionChangeListener
             }
             cursor.close();
             recyclerView.getAdapter().notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
