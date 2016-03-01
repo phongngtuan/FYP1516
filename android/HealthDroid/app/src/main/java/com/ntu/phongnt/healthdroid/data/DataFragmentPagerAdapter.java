@@ -10,9 +10,9 @@ public class DataFragmentPagerAdapter extends FragmentPagerAdapter {
 
     public DataFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
-        fragments[0] = new DataListFragment();
-        fragments[1] = new DataListFragment();
-        fragments[2] = new DataListFragment();
+        fragments[0] = new AllDataFragment();
+        fragments[1] = new BloodPressureDataFragment();
+        fragments[2] = new AllDataFragment();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class DataFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return fragments[position].getType();
+        return fragments[position].getLabel();
     }
 }
 

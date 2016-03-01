@@ -10,12 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ntu.phongnt.healthdroid.R;
-import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
 
 import java.util.List;
 
-public class DataListFragment extends Fragment {
+public abstract class DataListFragment extends Fragment {
     RecyclerView recyclerView;
     DataRecyclerViewAdapter dataRecyclerViewAdapter;
 
@@ -24,12 +23,13 @@ public class DataListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        HealthDroidDatabaseHelper db =
-                HealthDroidDatabaseHelper.getInstance(getActivity().getApplicationContext());
-        DataContract dataContract = new DataContract(db);
-        dataEntryList = dataContract.getAllData();
+        dataEntryList = getDataList();
         dataRecyclerViewAdapter = new DataRecyclerViewAdapter(dataEntryList);
     }
+
+    abstract List<DataContract.DataEntry> getDataList();
+
+    abstract String getLabel();
 
     @Nullable
     @Override
@@ -39,9 +39,5 @@ public class DataListFragment extends Fragment {
         recyclerView.setAdapter(dataRecyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
-    }
-
-    public String getType() {
-        return "Data";
     }
 }
