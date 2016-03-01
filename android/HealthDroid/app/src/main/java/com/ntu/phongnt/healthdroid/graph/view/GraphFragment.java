@@ -85,6 +85,8 @@ public abstract class GraphFragment extends Fragment implements
         db = HealthDroidDatabaseHelper.getInstance(getActivity());
 
         chart = makeChart(inflater.getContext());
+        List<String> xVals = chart.getData().getXVals();
+        chart.setMarkerView(new DateMarkerView(getContext(), R.layout.date_marker_view, xVals));
         FrameLayout chart_container = (FrameLayout) view.findViewById(R.id.chart_container);
         chart_container.addView(chart);
 
