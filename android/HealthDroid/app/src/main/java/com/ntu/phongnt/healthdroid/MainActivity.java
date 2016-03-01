@@ -29,7 +29,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.ntu.phongnt.healthdroid.data.DataFragment;
+import com.ntu.phongnt.healthdroid.data.DataTabsFragment;
 import com.ntu.phongnt.healthdroid.data.user.User;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.gcm.RegistrationIntentService;
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
     private HomeFragment homeFragment = null;
-    private DataFragment dataFragment = null;
+    private DataTabsFragment dataFragment = null;
     private UserFragment userFragment = null;
     private GraphTabsFragment graphTabsFragment = null;
     private SubscriberRecordFragment pendingRequestFragment = null;
@@ -268,9 +268,9 @@ public class MainActivity extends AppCompatActivity implements
                         .replace(R.id.fragment_container, graphTabsFragment, "GRAPH_TABS_FRAGMENT").commit();
 
         } else if (id == R.id.nav_data) {
-            dataFragment = (DataFragment) getSupportFragmentManager().findFragmentByTag("DATA_FRAGMENT");
+            dataFragment = (DataTabsFragment) getSupportFragmentManager().findFragmentByTag("DATA_FRAGMENT");
             if (dataFragment == null) {
-                dataFragment = new DataFragment();
+                dataFragment = new DataTabsFragment();
             }
             if (!dataFragment.isVisible())
                 getSupportFragmentManager().beginTransaction()

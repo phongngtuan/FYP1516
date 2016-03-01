@@ -104,6 +104,7 @@ public class DataContractTest {
         cursor.close();
     }
 
+    @Test
     public void testAddData3() throws Exception {
         dataContract.addData(value, date, user, 0);
         dataContract.addData(value, date, user, 1);

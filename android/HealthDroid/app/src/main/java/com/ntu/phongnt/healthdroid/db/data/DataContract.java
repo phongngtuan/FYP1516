@@ -1,9 +1,13 @@
 package com.ntu.phongnt.healthdroid.db.data;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.provider.BaseColumns;
 
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class DataContract {
 
@@ -52,6 +56,53 @@ public final class DataContract {
                 );
     }
 
+    public List<DataEntry> getData(String selection, String[] selectionArgs) {
+        List<DataEntry> dataList = new ArrayList<>();
+        Cursor cursor = healthDroidDatabaseHelper
+                .getReadableDatabase()
+                .query(
+                        DataEntry.TABLE_NAME,
+                        getColumns(),
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        DataEntry.COLUMN_NAME_DATE
+                );
+
+        if (cursor.moveToFirst()) {
+            do {
+                String user = cursor.getString(cursor.getColumnIndex(DataEntry.COLUMN_NAME_USER));
+                String date = cursor.getString(cursor.getColumnIndex(DataEntry.COLUMN_NAME_DATE));
+                String value = cursor.getString(cursor.getColumnIndex(DataEntry.COLUMN_NAME_VALUE));
+                int type = cursor.getType(cursor.getColumnIndex(DataEntry.COLUMN_NAME_TYPE));
+                dataList.add(new DataEntry(value, date, user, type));
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
+        return dataList;
+    }
+
+    public List<DataEntry> getAllData() {
+        return getData(null, null);
+    }
+
+    public List<DataEntry> getDataWithType(int type) {
+        String selection = DataEntry.COLUMN_NAME_TYPE + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(type)};
+        return getData(selection, selectionArgs);
+    }
+
+    public String[] getColumns() {
+        return new String[]{
+                DataEntry.COLUMN_NAME_VALUE,
+                DataEntry.COLUMN_NAME_DATE,
+                DataEntry.COLUMN_NAME_USER,
+                DataEntry.COLUMN_NAME_TYPE
+        };
+    }
+
     public class DataEntry implements BaseColumns {
         public static final String TABLE_NAME = "data";
         public static final String COLUMN_NAME_VALUE = "value";
@@ -62,9 +113,9 @@ public final class DataContract {
         public String value;
         public String date;
         public String user;
-        public String type;
+        public int type;
 
-        public DataEntry(String value, String date, String user, String type) {
+        public DataEntry(String value, String date, String user, int type) {
             this.value = value;
             this.date = date;
             this.user = user;
@@ -73,7 +124,7 @@ public final class DataContract {
 
 
         public DataEntry(String value, String date, String user) {
-            this(value, date, user, "0");
+            this(value, date, user, 0);
         }
     }
 }

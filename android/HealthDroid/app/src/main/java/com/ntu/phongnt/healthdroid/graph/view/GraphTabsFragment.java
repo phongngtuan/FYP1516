@@ -18,11 +18,6 @@ public class GraphTabsFragment extends Fragment {
     private ViewPager viewPager;
     private TabLayout tabLayout;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
