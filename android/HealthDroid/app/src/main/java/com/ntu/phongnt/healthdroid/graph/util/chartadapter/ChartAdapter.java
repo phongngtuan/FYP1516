@@ -11,4 +11,5 @@ public abstract class ChartAdapter {
 
     public abstract void showDataSetsByLabel(List<String> labels);
 
+    public abstract List<String> getDataSetLabels();
 }

@@ -11,14 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScatterChartAdapter extends ChartAdapter {
-    ScatterChart chart;
-    List<ScatterDataSet> dataSets;
-
-    public ScatterChartAdapter(ScatterChart chart) {
-        this.chart = chart;
-        this.dataSets = new ArrayList<>();
-    }
-
     public static int[] colors = {
 //            Color.BLACK,
 //            Color.DKGRAY,
@@ -32,6 +24,13 @@ public class ScatterChartAdapter extends ChartAdapter {
             Color.CYAN,
             Color.MAGENTA
     };
+    ScatterChart chart;
+    List<ScatterDataSet> dataSets;
+
+    public ScatterChartAdapter(ScatterChart chart) {
+        this.chart = chart;
+        this.dataSets = new ArrayList<>();
+    }
 
     @Override
     public void addEntry(String label, float value, int index) {
@@ -69,5 +68,14 @@ public class ScatterChartAdapter extends ChartAdapter {
     @Override
     public void showDataSetsByLabel(List<String> labels) {
 
+    }
+
+    @Override
+    public List<String> getDataSetLabels() {
+        List<String> result = new ArrayList<>();
+        for (ScatterDataSet dataSet : this.dataSets) {
+            result.add(dataSet.getLabel());
+        }
+        return result;
     }
 }

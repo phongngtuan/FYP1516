@@ -1,4 +1,4 @@
-package com.ntu.phongnt.healthdroid.graph.util.bloodpressure;
+package com.ntu.phongnt.healthdroid.graph.util.simple;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -17,17 +17,7 @@ import com.ntu.phongnt.healthdroid.graph.util.chartadapter.ScatterChartAdapter;
 import com.ntu.phongnt.healthdroid.graph.util.graphmanager.DataPool;
 import com.ntu.phongnt.healthdroid.graph.view.GraphFragment;
 
-public class BloodPressureFragment extends GraphFragment {
-    @Override
-    public String getDescription() {
-        return "Blood Pressure";
-    }
-
-    @Override
-    public String getType() {
-        return "Blood Pressure";
-    }
-
+public class SimpleDataFragment extends GraphFragment {
     @Override
     protected Cursor getQuery(HealthDroidDatabaseHelper db) {
         return db
@@ -39,21 +29,11 @@ public class BloodPressureFragment extends GraphFragment {
                                 DataContract.DataEntry.COLUMN_NAME_USER,
                                 DataContract.DataEntry.COLUMN_NAME_TYPE
                         },
-                        DataContract.DataEntry.COLUMN_NAME_TYPE + " = 1",
+                        DataContract.DataEntry.COLUMN_NAME_TYPE + " = 0",
                         null,
                         null,
                         null,
                         DataContract.DataEntry.COLUMN_NAME_DATE);
-    }
-
-    @Override
-    protected DataPool makeDataPool() {
-        return new BloodPressureDataPool();
-    }
-
-    @Override
-    protected ChartAdapter makeChartAdapter(Chart chart) {
-        return new ScatterChartAdapter((ScatterChart) chart);
     }
 
     @Override
@@ -87,5 +67,20 @@ public class BloodPressureFragment extends GraphFragment {
 
         chart.invalidate();
         return chart;
+    }
+
+    @Override
+    protected ChartAdapter makeChartAdapter(Chart chart) {
+        return new ScatterChartAdapter((ScatterChart) chart);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Simple";
+    }
+
+    @Override
+    protected DataPool makeDataPool() {
+        return new SimpleDataPool();
     }
 }

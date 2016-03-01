@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.ntu.phongnt.healthdroid.graph.util.bloodpressure.BloodPressureFragment;
+import com.ntu.phongnt.healthdroid.graph.util.simple.SimpleDataFragment;
 
 public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     public static final int GRAPH_COUNT = 3;
@@ -13,9 +14,9 @@ public class GraphFragmentPagerAdapter extends FragmentPagerAdapter {
     public GraphFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
         //TODO: do this according to graph subclass later
-        graphFragments[0] = new GraphFragment();
+        graphFragments[0] = new SimpleDataFragment();
         graphFragments[1] = new BloodPressureFragment();
-        graphFragments[2] = new GraphFragment();
+        graphFragments[2] = new SimpleDataFragment();
     }
 
     @Override

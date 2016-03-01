@@ -11,14 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineChartAdapter extends ChartAdapter {
-    LineChart chart = null;
-    List<LineDataSet> dataSets = null;
-
-    public LineChartAdapter(LineChart chart) {
-        this.chart = chart;
-        this.dataSets = new ArrayList<>();
-    }
-
     public static int[] colors = {
 //            Color.BLACK,
 //            Color.DKGRAY,
@@ -32,6 +24,13 @@ public class LineChartAdapter extends ChartAdapter {
             Color.CYAN,
             Color.MAGENTA
     };
+    LineChart chart = null;
+    List<LineDataSet> dataSets = null;
+
+    public LineChartAdapter(LineChart chart) {
+        this.chart = chart;
+        this.dataSets = new ArrayList<>();
+    }
 
     @Override
     public void addEntry(String label, float value, int index) {
@@ -79,5 +78,14 @@ public class LineChartAdapter extends ChartAdapter {
         }
         chart.notifyDataSetChanged();
         chart.invalidate();
+    }
+
+    @Override
+    public List<String> getDataSetLabels() {
+        List<String> result = new ArrayList<>();
+        for (LineDataSet dataSet : this.dataSets) {
+            result.add(dataSet.getLabel());
+        }
+        return result;
     }
 }
