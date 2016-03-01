@@ -67,6 +67,14 @@ public class ScatterChartAdapter extends ChartAdapter {
 
     @Override
     public void showDataSetsByLabel(List<String> labels) {
+        ScatterData data = chart.getData();
+        data.getDataSets().clear();
+        for (ScatterDataSet dataSet : this.dataSets) {
+            if (labels.contains(dataSet.getLabel()))
+                data.addDataSet(dataSet);
+        }
+        chart.notifyDataSetChanged();
+        chart.invalidate();
 
     }
 

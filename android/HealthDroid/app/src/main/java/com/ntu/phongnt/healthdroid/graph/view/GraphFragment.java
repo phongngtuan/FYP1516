@@ -29,6 +29,7 @@ import com.ntu.phongnt.healthdroid.graph.util.keycreator.ByMonthKeyCreator;
 import com.ntu.phongnt.healthdroid.graph.util.keycreator.ByWeekKeyCreator;
 import com.ntu.phongnt.healthdroid.graph.util.keycreator.KeyCreator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GraphFragment extends Fragment implements
@@ -41,7 +42,7 @@ public abstract class GraphFragment extends Fragment implements
     private ChartAdapter chartAdapter;
     private HealthDroidDatabaseHelper db;
     private int formatter_choice;
-    private List<String> dataSetChoices;
+    private List<String> dataSetChoices = new ArrayList<>();
 
     public GraphFragment() {
         super();
@@ -110,7 +111,7 @@ public abstract class GraphFragment extends Fragment implements
         menu.findItem(R.id.data_sets).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                DataSetPickerFragment dialogFragment = DataSetPickerFragment.getInstance(dataSetChoices);
+                DataSetPickerFragment dialogFragment = DataSetPickerFragment.getInstance(chartAdapter.getDataSetLabels());
                 dialogFragment.listener = GraphFragment.this;
                 dialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
                 return true;
@@ -120,7 +121,7 @@ public abstract class GraphFragment extends Fragment implements
 
     @Override
     public void onDataSetPicked(List<String> items) {
-//        chartAdapter.showDataSetsByLabel(items);
+        chartAdapter.showDataSetsByLabel(items);
     }
 
     @Override
