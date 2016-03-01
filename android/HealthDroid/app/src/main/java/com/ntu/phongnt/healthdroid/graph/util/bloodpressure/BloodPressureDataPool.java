@@ -18,22 +18,13 @@ public class BloodPressureDataPool extends DataPool {
     @SuppressWarnings("ResourceType")
     @Override
     public void insertToChart(ChartAdapter chartAdapter) {
-//        chartAdapter.addXValue("1/1/2016");
-//        chartAdapter.addEntry("test", 15f, 0);
-//        chartAdapter.addEntry("test", 20f, 0);
-//        chartAdapter.addXValue("2/1/2016");
-//        chartAdapter.addEntry("test", 5f, 1);
-//        chartAdapter.addEntry("test", 30f, 1);
-
         chartAdapter.clearDataSets();
 
         DateRange range = findRange();
         GregorianCalendar first = new GregorianCalendar();
         first.setTime(range.getFirst().getTime());
-
         GregorianCalendar last = new GregorianCalendar();
         last.setTime(range.getLast().getTime());
-
         DateFormat dateFormat = getKeyCreator().getDateFormat();
 
         int index = 0;

@@ -5,15 +5,14 @@ import android.database.Cursor;
 import android.graphics.Color;
 
 import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.ScatterChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.LineData;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.graph.util.chartadapter.ChartAdapter;
-import com.ntu.phongnt.healthdroid.graph.util.chartadapter.ScatterChartAdapter;
+import com.ntu.phongnt.healthdroid.graph.util.chartadapter.LineChartAdapter;
 import com.ntu.phongnt.healthdroid.graph.util.graphmanager.DataPool;
 import com.ntu.phongnt.healthdroid.graph.view.GraphFragment;
 
@@ -38,10 +37,10 @@ public class SimpleDataFragment extends GraphFragment {
 
     @Override
     protected Chart makeChart(Context context) {
-        ScatterChart chart = new ScatterChart(context);
-        setChartAdapter(makeChartAdapter(chart));
+        LineChart chart = new LineChart(context);
+        setChartAdapter(new LineChartAdapter(chart));
         chart.setDescription(getDescription());
-        chart.setData(new ScatterData());
+        chart.setData(new LineData());
         chart.setExtraOffsets(5, 20, 20, 20);
         chart.setTouchEnabled(true);
         chart.setScaleEnabled(true);
@@ -67,11 +66,6 @@ public class SimpleDataFragment extends GraphFragment {
 
         chart.invalidate();
         return chart;
-    }
-
-    @Override
-    protected ChartAdapter makeChartAdapter(Chart chart) {
-        return new ScatterChartAdapter((ScatterChart) chart);
     }
 
     @Override

@@ -146,8 +146,6 @@ public abstract class GraphFragment extends Fragment implements
 
     abstract protected DataPool makeDataPool();
 
-    abstract protected ChartAdapter makeChartAdapter(Chart chart);
-
     abstract private class GetCursorTask<T> extends AsyncTask<T, Void, Cursor> {
         protected Cursor doQuery(HealthDroidDatabaseHelper db) {
             Cursor result = getQuery(db);

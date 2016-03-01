@@ -12,7 +12,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.ScatterData;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.graph.util.chartadapter.ChartAdapter;
 import com.ntu.phongnt.healthdroid.graph.util.chartadapter.ScatterChartAdapter;
 import com.ntu.phongnt.healthdroid.graph.util.graphmanager.DataPool;
 import com.ntu.phongnt.healthdroid.graph.view.GraphFragment;
@@ -52,14 +51,9 @@ public class BloodPressureFragment extends GraphFragment {
     }
 
     @Override
-    protected ChartAdapter makeChartAdapter(Chart chart) {
-        return new ScatterChartAdapter((ScatterChart) chart);
-    }
-
-    @Override
     protected Chart makeChart(Context context) {
         ScatterChart chart = new ScatterChart(context);
-        setChartAdapter(makeChartAdapter(chart));
+        setChartAdapter(new ScatterChartAdapter(chart));
         chart.setDescription(getDescription());
         chart.setData(new ScatterData());
         chart.setExtraOffsets(5, 20, 20, 20);

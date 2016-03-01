@@ -41,8 +41,6 @@ public class SimpleDataPool extends DataPool {
                             acc.reducedData.get(key),
                             index
                     );
-                } else {
-                    chartAdapter.addEntry(acc.getLabel(), 0, index);
                 }
             }
             first.add(getTimeUnit(), 1);
