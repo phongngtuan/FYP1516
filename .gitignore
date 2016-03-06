@@ -28,3 +28,12 @@ proguard/
 
 *.DS_STORE
 *.swp
+
+# Latex generated file
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.log

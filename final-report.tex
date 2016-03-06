@@ -31,15 +31,15 @@
 
 \center % Center everything on the page
  
-%---------------------------------------------------------------------------------------- HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+% HEADING SECTIONS
 %----------------------------------------------------------------------------------------
 
-\textsc{\LARGE Nanyang Technological University}\\[1.5cm] % Name of your university/college \textsc{\Large School of
-Computer Engineering}\\[0.5cm] % Major heading such as course name \textsc{\large Interim Report}\\[0.5cm] % Minor
-heading such as course title
+\textsc{\LARGE Nanyang Technological University}\\[1.5cm] % Name of your university/college
+\textsc{\Large School of Computer Engineering}\\[0.5cm] % Major heading such as course name
+\textsc{\large Interim Report}\\[0.5cm] % Minor heading such as course title
 
 %----------------------------------------------------------------------------------------
-
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
@@ -48,9 +48,18 @@ heading such as course title
 %---------------------------------------------------------------------------------------- AUTHOR SECTION
 %----------------------------------------------------------------------------------------
 
-\begin{minipage}{0.4\textwidth} \begin{flushleft} \large \emph{Author:}\\ Tuan Phong \textsc{Nguyen} % Your name
-\end{flushleft} \end{minipage} ~ \begin{minipage}{0.4\textwidth} \begin{flushright} \large \emph{Supervisor:} \\ Assoc
-    Prof Chiew Tong \textsc{Lau} % Supervisor's Name \end{flushright} \end{minipage}\\[2cm]
+\begin{minipage}{0.4\textwidth}
+    \begin{flushleft}
+        \large \emph{Author:}\\ Tuan Phong
+        \textsc{Nguyen} % Your name
+    \end{flushleft}
+\end{minipage} ~
+\begin{minipage}{0.4\textwidth}
+    \begin{flushright}
+        \large \emph{Supervisor:} \\ Assoc Prof Chiew Tong
+        \textsc{Lau} % Supervisor's Name \end{flushright} \end{minipage}\\[2cm]
+    \end{flushright}
+\end{minipage}
 
 % If you don't want a supervisor, uncomment the two lines below and remove the section above
 %\Large \emph{Author:}\\ John \textsc{Smith}\\[3cm] % Your name
@@ -119,22 +128,23 @@ managing scaling to very large data sets. Additionally, Datastore is hosted as p
 hence is fully managed with no planned down time by Google. Due to its different way of representing and managing data,
 the Datastore can be easily scaled, allowing the application to maintain high performance as the traffic is increased.
 
-% Commands to include a figure:
-\begin{figure} \includegraphics[width=\textwidth]{Architecture} \caption{High level architecture of the application}
-\end{figure}
-
-We hope you find write\LaTeX\ useful, and please let us know if you have any feedback using the help menu above.
-\section{Work done so far} \label{sec:Work done so far} In the first half of the project, the basic application was
-implemented on both server side and client side \subsection{Client side}
-
+\section{Client side}
+\subsection{Overall design}
+The android application is implemented with the following components:
 \begin{enumerate}
-    \item Login of users using Google account.
-    \item Displaying of numerical data with different choice of view including by day, by week and by month.
-    \item Displaying of numerical data from different users selectively.
-    \item Selectively fetching of new data from backend.
-    \item Displaying of other users and subscription mechanics.
+    \item SignInActivity that handles signing in of users
+    \item MainActivity that serve as the hosting activity for different views of the application with a Navigation
+        drawer panel to allow users to switch among the views
+    \item Google Cloud service that handles the Google Cloud Messaging communication to listen to pushed messages from
+        the servers and redirect them to appropriate components
+    \item Database services that provides method to access the logic models uses in the class
 \end{enumerate}
 
+\subsection{Graph display}
+Displaying of graph is contained in GraphFragment class.
+
+\section{Work done so far}
+\label{sec:Work done so far}
 \subsection{Server side}
 
 \begin{enumerate}
@@ -177,5 +187,8 @@ Refactor if necessary to have a clean and loosely coupled code base so that it c
 In conclusion, the core code base of the project has been completed but there are still features to
 be implemented to provide a better interaction with the users.On the other hands, consideration in software engineering
 practices and latest change of Android library is also required throughout the process of development for the rest of
-the project.
+the project. \cite{DUMMY:1}
+
+\bibliography{fyp} 
+\bibliographystyle{ieeetr}
 \end{document}
