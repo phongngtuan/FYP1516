@@ -181,7 +181,40 @@ object for each date range selection e.g. days (05/03/2015) for ``by day'' choic
 choice.
 
 \subsubsection{KeyCreator}
-The \texttt{KeyCreator} class has the responsibility of creating appropriate
+
+\lstset{language=java,caption={KeyCreator interface},label=KeyCreator interface}
+\begin{lstlisting}
+public interface KeyCreator {
+    String createKey(String date);
+    DateRange getDateRange(String firstDate, String lastDate);
+    DateFormat getDateFormat();
+    int getTimeUnit();
+}
+\end{lstlisting}
+
+The \texttt{KeyCreator} class has the responsibility of creating the values on x-axis as well as the lookup key in the
+resulted dictionary. The \texttt{KeyCreator} is declared as an interface and implemented by concrete classes namely
+\texttt{ByDayKeyCreator}, \texttt{ByWeekKeyCreator} and \texttt{ByMonthKeyCreator}
+
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{| l | p{12cm} |}
+        \hline Method & Description \\
+        \hline createKey() & 
+            this method takes a date string in RFC3339 format as parameter and returns the corresponding key string in
+            the correct format \\
+        \hline getDateRange() &
+            this method takes the first date and the last date from the data set i.e. the range of values on x-axis of
+            the chart and returns a wrapper object that contains these 2 values and normalize the range to be at least
+            10 units. \\
+        \hline getTimeUnit() &
+            this methods takes no arguments and return the corresponding value from Java Calendar to help get the value
+            from GregorianCalendar \\
+        \hline
+    \end{tabular}
+    \caption{KeyCreator methods description}
+\end{center}
+\end{table}
 
 \section{Work done so far}
 \label{sec:Work done so far}
