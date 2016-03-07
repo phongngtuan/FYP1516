@@ -180,21 +180,38 @@ dictionaries mapping date to values. The resulted dictionaries contains appropri
 object for each date range selection e.g. days (05/03/2015) for ``by day'' choice and month (12/2015) for ``by month''
 choice.
 
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{| l | p{12cm} |}
+        \hline Method & Description \\
+        \hline accumulate() & 
+            this method start the accumulation of data to create a map from user name to their data set contained in an
+            object \texttt{DataAccumulator} \\
+        \hline insertToChart() &
+            this method takes a \texttt{ChartAdapter} as argument to insert the prepared data from accumulate() into a
+            chart \\
+        \hline
+    \end{tabular}
+    \caption{DataPool methods description}
+\end{center}
+\end{table}
+
 \subsubsection{KeyCreator}
-
-\lstset{language=java,caption={KeyCreator interface},label=KeyCreator interface}
-\begin{lstlisting}
-public interface KeyCreator {
-    String createKey(String date);
-    DateRange getDateRange(String firstDate, String lastDate);
-    DateFormat getDateFormat();
-    int getTimeUnit();
-}
-\end{lstlisting}
-
 The \texttt{KeyCreator} class has the responsibility of creating the values on x-axis as well as the lookup key in the
 resulted dictionary. The \texttt{KeyCreator} is declared as an interface and implemented by concrete classes namely
 \texttt{ByDayKeyCreator}, \texttt{ByWeekKeyCreator} and \texttt{ByMonthKeyCreator}
+
+%\begin{minipage}{\linewidth}
+%\lstset{language=java,caption={KeyCreator interface},label=KeyCreator interface}
+%\begin{lstlisting}
+%public interface KeyCreator {
+%    String createKey(String date);
+%    DateRange getDateRange(String firstDate, String lastDate);
+%    DateFormat getDateFormat();
+%    int getTimeUnit();
+%}
+%\end{lstlisting}
+%\end{minipage}
 
 \begin{table}[h]
 \begin{center}
@@ -215,6 +232,14 @@ resulted dictionary. The \texttt{KeyCreator} is declared as an interface and imp
     \caption{KeyCreator methods description}
 \end{center}
 \end{table}
+
+\subsubsection{DataAccumulator}
+The \texttt{DataAccumulator} class has the responsiblity of containing a mapping from a string representing a date to a
+data representation. Depends on different type of data, the representation is constructed differently. In the scope of
+this project, DataAccumulator is extended by 2 concrete classes namely \texttt{SimpleDataAccumulator} that has 1
+numerical value per date key and \texttt{BloodPressureDataAccumulator} that has 2 numerical values per date key. The
+\texttt{DataAccumulator} exposes the method \texttt{accumulate(String value, String key)} in which value is the String
+representation of the data and the concrete class is responsible for deserialize the string to achieve numerical values.
 
 \section{Work done so far}
 \label{sec:Work done so far}
