@@ -20,8 +20,13 @@
 %PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[12pt]{article} \usepackage[english]{babel} \usepackage[utf8x]{inputenc} \usepackage{amsmath}
-\usepackage{graphicx} \usepackage[colorinlistoftodos]{todonotes}
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{listings}
 
 \begin{document}
 
@@ -37,7 +42,8 @@
 
 \textsc{\LARGE Nanyang Technological University}\\[1.5cm] % Name of your university/college
 \textsc{\Large School of Computer Engineering}\\[0.5cm] % Major heading such as course name
-\textsc{\large Interim Report}\\[0.5cm] % Minor heading such as course title
+\textsc{\large Final Year Project}\\[0.5cm] % Minor heading such as course title
+\textsc{\large Final Report}\\[0.5cm] % Minor heading such as course title
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -78,6 +84,7 @@
 
 \end{titlepage}
 
+\linespread{1.25}
 \section{Introduction}
 Along with the development of more compact and portable platform for measuring health related data, there are many
 products on the market that are capable of reading and sending data to a computer system. These devices are often built
@@ -153,6 +160,10 @@ provided as a open source library on GitHub under Apache License, Version 2.0. T
 subclasses namely \texttt{SimpleDataFragment} that uses line chart with 1 entry per each x value and
 \texttt{BloodPressureFragment} that uses scatter chart with 2 entries per each x value. The subclasses are required to
 implement the abstract methods in \texttt{GraphFragment} to display the data accordingly.
+The \texttt{GraphFragment} contains the following abstract methods that are implemented in the concrete classes:
+\begin{lstlisting}
+String getDescription
+\end{lstlisting}
 
 \section{Work done so far}
 \label{sec:Work done so far}
