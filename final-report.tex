@@ -95,12 +95,12 @@ as well as the scalability.
 
 \section{Literature review}
 With the development of technology and medical system, there are several studies to create a system to monitor
-patients's condition in realtime effectively and correctly to enable proactive monitoring \cite{5076774}. On the other
-hand, the system which provide a common interface for large number of users must be able to serve great amount of
-traffics and interactions with the clients.  In order to handle large volume of simulatenous interaction to the
-database, an efficient and scalable approach must be used for database handling instead of traditional server. A highly
-available and reliable distributed platform is provided by Google Datastore, which offers many possibilities in
-developing such a system \cite{7059154}.
+patients's condition in realtime effectively and correctly to enable proactive monitoring \cite{5076774}, with the help
+of embedded computer system \cite{4062461}. On the other hand, the system which provide a common interface for large
+number of users must be able to serve great amount of traffics and interactions with the clients.  In order to handle
+large volume of simulatenous interaction to the database, an efficient and scalable approach must be used for database
+handling instead of traditional server. A highly available and reliable distributed platform is provided by Google
+Datastore, which offers many possibilities in developing such a system \cite{7059154}.
 
 \section{Architecture design}
 \label{sec:Architecture design}
@@ -143,37 +143,38 @@ managing scaling to very large data sets. Additionally, Datastore is hosted as p
 hence is fully managed with no planned down time by Google. Due to its different way of representing and managing data,
 the Datastore can be easily scaled, allowing the application to maintain high performance as the traffic is increased.
 
-\section{Google Cloud Datastore}
-\subsection{DataRecord}
+\section{Implementation}
+\subsection{Google Cloud Datastore}
+\subsubsection{DataRecord}
 data record
 
-\subsection{HealthDroidUser}
+\subsubsection{HealthDroidUser}
 health droid user
 
-\subsection{RegistrationRecord}
+\subsubsection{RegistrationRecord}
 registration record
 
-\subsection{SubscriptionRecord}
+\subsubsection{SubscriptionRecord}
 subscription record
 
-\section{Server side}
-\subsection{Data}
+\subsection{Server side}
+\subsubsection{Data}
 data
 
-\subsection{User}
+\subsubsection{User}
 user
 
-\subsection{Messaging}
+\subsubsection{Messaging}
 messaging
 
-\subsection{Registration}
+\subsubsection{Registration}
 registration
 
-\subsection{Subscription}
+\subsubsection{Subscription}
 subscription
 
-\section{Client side}
-\subsection{Overall design}
+\subsection{Client side}
+\subsubsection{Overall design}
 The android application is implemented with the following components:
 \begin{enumerate}
     \item SignInActivity that handles signing in of users
@@ -184,14 +185,14 @@ The android application is implemented with the following components:
     \item Database services that provides method to access the logic models uses in the class
 \end{enumerate}
 
-\subsection{Graph display}
+\subsubsection{Graph display}
 Displaying of graph is contained in GraphFragment class. This fragment also allows users to choose various ways of
 representation of the chart such as which user, time range to display as well as appropriate style of chart for
 different types of data. Displaying of the widget is handled by MPAndroidChart by Philipp Jahoda \cite{MPAndroidChart},
 provided as a open source library on GitHub under Apache License, Version 2.0. The chart placeholder is populated with a
 \texttt{Chart} subsclasses and then appropriate methods are called depending on the choice of representation.
 
-\subsubsection{Graph Fragment}
+\paragraph{Graph Fragment}
 \texttt{GraphFragment} and its subclasses are in charge of create the Chart and inflate it to the layout container.
 \texttt{GraphFragment} can be subclassed for specific type of data. In the scope of this project, it is implemented in 2
 subclasses namely \texttt{SimpleDataFragment} that uses line chart with 1 entry per each x value and
@@ -207,7 +208,7 @@ abstract DataPool makeDataPool();
 With the appropriate depencies constructed in the concrete classes, an asynchronous task extending from
 \texttt{DisplayDataTask} will then be invoked by on the time range selection and inject the dependencies dynamically.
 
-\subsubsection{DataPool}
+\paragraph{DataPool}
 As the graph fragment is required to display data grouped by date differently based on users' choices, the raw data
 entries acquired from database querying need to be processed and the accumulated value of a day, week or month is
 computed for displaying to the users. To achieve that, every time the task is invoked, all data must be queried and
@@ -234,7 +235,7 @@ choice.
 \end{center}
 \end{table}
 
-\subsubsection{KeyCreator}
+\paragraph{KeyCreator}
 The \texttt{KeyCreator} class has the responsibility of creating the values on x-axis as well as the lookup key in the
 resulted dictionary. The \texttt{KeyCreator} is declared as an interface and implemented by concrete classes namely
 \texttt{ByDayKeyCreator}, \texttt{ByWeekKeyCreator} and \texttt{ByMonthKeyCreator}
@@ -271,7 +272,7 @@ resulted dictionary. The \texttt{KeyCreator} is declared as an interface and imp
 \end{center}
 \end{table}
 
-\subsubsection{DataAccumulator}
+\paragraph{DataAccumulator}
 The \texttt{DataAccumulator} class has the responsiblity of containing a mapping from a string representing a date to a
 data representation. Depends on different type of data, the representation is constructed differently. In the scope of
 this project, DataAccumulator is extended by 2 concrete classes namely \texttt{SimpleDataAccumulator} that has 1
