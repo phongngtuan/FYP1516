@@ -96,11 +96,13 @@ as well as the scalability.
 \section{Literature review}
 With the development of technology and medical system, there are several studies to create a system to monitor
 patients's condition in realtime effectively and correctly to enable proactive monitoring \cite{5076774}, with the help
-of embedded computer system \cite{4062461}. On the other hand, the system which provide a common interface for large
-number of users must be able to serve great amount of traffics and interactions with the clients.  In order to handle
-large volume of simulatenous interaction to the database, an efficient and scalable approach must be used for database
-handling instead of traditional server. A highly available and reliable distributed platform is provided by Google
-Datastore, which offers many possibilities in developing such a system \cite{7059154}.
+of embedded computer system \cite{4062461}. Furthermore, devices with communication capabilities have been developed to
+measure human body's reading for long-range mdecial healthcare system and avoid the cost of nursing expense in families
+\cite{5918041}. On the other hand, the system which provide a common interface for large number of users must be able to
+serve great amount of traffics and interactions with the clients.  In order to handle large volume of simulatenous
+interaction to the database, an efficient and scalable approach must be used for database handling instead of
+traditional server. A highly available and reliable distributed platform is provided by Google Datastore, which offers
+many possibilities in developing such a system to store the data on the cloud \cite{7059154}.
 
 \section{Architecture design}
 \label{sec:Architecture design}
@@ -130,9 +132,10 @@ enables the application cost to scale better with the number of users and data t
 multiple pricing tiers for different amount of traffic.  Moreover, Datastore database provided by Google also supports
 caching and reliably distributes data to different locations with minimal latency.  Regarding implementation of ther
 server program, since client and server communicate through a RESTful API, the server can also be implemented in any
-programming languages. In this project, the web server is implemented in Java with Google Endpoints API.  This helps
-promote code reuse by sharing Java object between client and server codebase. In the future, the server can be swapped
-out by any web server if there is need for finer control or performance improvement.
+programming languages. In this project, the web server is implemented in Java with Google Endpoints API
+\cite{CloudEndpoints} with Cloud Search API \cite{SearchAPI}.  This approach helps promote code reuse by sharing Java
+object between client and server codebase. In the future, the server can be swapped out by any web server if there is
+need for finer control or performance improvement.
 
 \subsection{Database}
 Google Cloud Datastore is chosen to be the database backend of the system to reliably store and deliver data. Google
@@ -146,23 +149,160 @@ the Datastore can be easily scaled, allowing the application to maintain high pe
 \section{Implementation}
 \subsection{Google Cloud Datastore}
 \subsubsection{DataRecord}
-data record
+The \texttt{DataRecord} class is used to contain the information of a user's reading values uploaded from the client
+application or hardware. The model contains various properties about the data record including the type e.g. Simple,
+Blood Pressure data, created date and the reading value represented by a String. The representation of a reading depends
+on the type of interested measurement, hence the Datastore Entity does not enforce any constraint on the String format
+and relies on the client and server application to correctly serialize and deserialize the value from and to the correct
+string. \texttt{DataRecord} has the child - parent relationship with a user entity that supports efficient querying of
+all instances that belong to a given user. Lastly, the type attribute is marked to be indexed by Datastore engine so as
+to the server can query on specific type of data of interest.
+\begin{minipage}{\linewidth}
+\lstset{language=java,caption={DataRecord properties},label=DataRecord properties}
+\begin{lstlisting}
+@Entity
+public class DataRecord {
+    @Id public Long id;
+    @Parent private Ref<HealthDroidUser> user;
+    private Date date;
+    @Index private int type;
+    private Date createdAt;
+    private String value;
+}
+\end{lstlisting}
+\end{minipage}
 
 \subsubsection{HealthDroidUser}
-health droid user
+The \texttt{HealthDroidUser} class is used to represent a user of the application separately from their Google account.
+The \texttt{HealthDroidUser} instance is created when the user logs into the system for the first time and will be used
+as the reference for all their relevant data. The user object will not be created again on the next time the user logs
+in.
 
 \subsubsection{RegistrationRecord}
-registration record
+The \texttt{RegistrationRecord} class is used to represent a device that logged into the application and ready to receive
+pushed message via Google Cloud Messaging.  The \texttt{RegistrationRecord} instance is created when a device logs into the
+system and removed from Datastore database if it fails to send the message to the device i.e. the device is no longer
+used or signed in with another user.
 
 \subsubsection{SubscriptionRecord}
-subscription record
+The \texttt{SubscriptionRecord} class is used to represent a subscription relationship between a user (subscriber) and
+another user (target) and create a many-to-many relationship among users. The \texttt{SubscriptionRecord} is created
+upon receiving a request to subscribe from the client application and deleted upon receiving a request to unsubscribe.
+Since such a request need to be approved by the subscribed party, the \texttt{SubscriptionRecord} contains a
+\texttt{isAccepted} value to indicate the status, which is false by default and only set to true once the user accepts
+that. \texttt{SubscriptionRecord} has a child-parent relationship with the target user, and a reference to the
+subscriber. Thus, the instances can be queried when finding users who subscribed to a given users or users subscribed to
+by a given user.
+
+\begin{minipage}{\linewidth}
+\lstset{language=java,caption={SubscriptionRecord properties},label=SubscriptionRecord properties}
+\begin{lstlisting}SubscriptionRecord
+@Entity
+public class SubscriptionRecord {
+    @Id Long id;
+    @Index private Boolean isAccepted;
+    @Index private transient Ref<HealthDroidUser> subscriber;
+    @Parent private transient Ref<HealthDroidUser> target;
+}
+\end{lstlisting}
+\end{minipage}
 
 \subsection{Server side}
+The application server is implemented with Google Cloud Endpoints API in Java. The server can be accessed through a
+RESTful API via HTTP requests and responses. In this project, several models of the application can be interacted with
+through separate classes called an endpoint, each represent a feature and relevant methods. Each endpoint consists of
+one or more methods annotated with \texttt{@ApiMethod} annotation and is exposed to outside accesses.
+
 \subsubsection{Data}
-data
+\texttt{Data API} is contained in \texttt{DataEndpoint}. The Data API contains the following methods \\
+\begin{minipage}{\linewidth}
+\lstset{
+    frame=tb,
+    caption={Data API},
+    label=Data API
+    language=Java,
+    aboveskip=\baselineskip,
+    belowskip=\baselineskip,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=3
+}
+\begin{lstlisting}
+@ApiMethod(name = "add")
+public DataRecord addData(@Named("value") String value, @Named("date") Date date, @Named("type") int type, User user)
+@ApiMethod(name = "get");
+public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, @Nullable @Named("after") Date after)
+\end{lstlisting}
+\end{minipage}
+
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{| l | p{12cm} |}
+        \hline Method & Description \\
+        \hline addData() & 
+            this method is used to add a data entry to datastore. The method is only allowed to be access by
+            authenticated user as required in user parameter \\
+        \hline getDataRecord() &
+            this method is used to get the data from datastore. The method takes 2 optional aruguments namely userId, to
+            specify the user which data entries belong to and after, to set a lower limit of date in data entries. The
+            "after" argument can be used to efficiently get only the new data entries in datastore for update operation
+            \\
+        \hline
+    \end{tabular}
+    \caption{Data API methods description}
+\end{center}
+\end{table}
 
 \subsubsection{User}
-user
+\begin{minipage}{\linewidth}
+\lstset{
+    frame=tb,
+    caption={User API},
+    label=User API
+    language=Java,
+    aboveskip=\baselineskip,
+    belowskip=\baselineskip,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=3
+}
+\begin{lstlisting}
+@ApiMethod(name = "add")
+public HealthDroidUser addUser(User user)
+
+@ApiMethod(name = "get")
+public List<HealthDroidUser> getUser(@Nullable @Named("userId") String userId)
+
+@ApiMethod(name = "query")
+public List<HealthDroidUser> queryUser(@Named("queryString") String queryString)
+\end{lstlisting}
+\end{minipage}
+
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{| l | p{12cm} |}
+        \hline Method & Description \\
+        \hline addUser() & 
+            this method is used to add a user to datastore. The method is only allowed to be access by
+            authenticated user as required in user parameter. Upon user signing in, the method is called and user is
+            created if not already existing in the database. The method is idempotent and being called multiple times
+            does not recreate the user. In addition, the method also create an entry used by Google Search API to
+            support searching with Google's API.  \\
+        \hline getUser() &
+            this method is used to get the user from datastore. The method takes a userId as String and return
+            information about the data from the database \\
+        \hline queryUser() &
+            this method is used to query a list of users from part of the user ID. Since Datastore does not index all
+            attributes by default and hence not allow to straight forward search for user ID string. To support the
+            query for large number of users in the database, the method use Google Search API.
 
 \subsubsection{Messaging}
 messaging
@@ -216,7 +356,7 @@ prepared for processing in a \texttt{DataPool} object. The \texttt{DataPool} obj
 data of all users in the local database to be grouped by their date and then creates a Map containing the grouped
 result. The \texttt{DataPool} class contains a mapping between a username and their relevant data entries as well as the
 dictionaries mapping date to values. The resulted dictionaries contains appropriate keys generated by a KeyCreator
-object for each date range selection e.g. days (05/03/2015) for ``by day'' choice and month (12/2015) for ``by month''
+object for each date range selection e.g. days (05/03/2015) for "by day" choice and month (12/2015) for "by month"
 choice.
 
 \begin{table}[h]
@@ -324,7 +464,7 @@ Refactor if necessary to have a clean and loosely coupled code base so that it c
 In conclusion, the core code base of the project has been completed but there are still features to
 be implemented to provide a better interaction with the users.On the other hands, consideration in software engineering
 practices and latest change of Android library is also required throughout the process of development for the rest of
-the project. \cite{DUMMY:1}
+the project.
 
 \bibliography{fyp} 
 \bibliographystyle{ieeetr}
