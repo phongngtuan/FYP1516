@@ -27,6 +27,7 @@
 \usepackage{graphicx}
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{listings}
+\usepackage{tabularx}
 
 \begin{document}
 
@@ -80,10 +81,10 @@
 %----------------------------------------------------------------------------------------
 
 \vfill % Fill the rest of the page with whitespace
-
 \end{titlepage}
 
 \linespread{1.25}
+
 \section{Introduction}
 Along with the development of more compact and portable platform for measuring health related data, there are many
 products on the market that are capable of reading and sending data to a computer system. These devices are often built
@@ -253,9 +254,9 @@ public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, 
 \end{lstlisting}
 \end{minipage}
 
-\begin{table}[h]
+\begin{table}
 \begin{center}
-    \begin{tabular}{| l | p{12cm} |}
+    \begin{tabularx}{\textwidth}{|l|X|}
         \hline Method & Description \\
         \hline addData() & 
             this method is used to add a data entry to datastore. The method is only allowed to be access by
@@ -266,9 +267,9 @@ public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, 
             "after" argument can be used to efficiently get only the new data entries in datastore for update operation
             \\
         \hline
-    \end{tabular}
-    \caption{Data API methods description}
+    \end{tabularx}
 \end{center}
+\caption{Data API}
 \end{table}
 
 \subsubsection{User}
@@ -301,9 +302,9 @@ public List<HealthDroidUser> queryUser(@Named("queryString") String queryString)
 \end{lstlisting}
 \end{minipage}
 
-\begin{table}[h]
+\begin{table}
 \begin{center}
-    \begin{tabular}{| l | p{12cm} |}
+    \begin{tabularx}{\textwidth}{| l | X |}
         \hline Method & Description \\
         \hline addUser() & 
             this method is used to add a user to datastore. The method is only allowed to be access by
@@ -319,9 +320,9 @@ public List<HealthDroidUser> queryUser(@Named("queryString") String queryString)
             attributes by default and hence not allow to straight forward search for user ID string. To support the
             query for large number of users in the database, the method use Google Search API. \\
         \hline
-    \end{tabular}
-    \caption{User API}
+    \end{tabularx}
 \end{center}
+    \caption{User API}
 \end{table}
 
 \subsubsection{Registration}
@@ -356,9 +357,9 @@ public CollectionResponse<RegistrationRecord> listDevices(@Named("count") int co
 Registration API provides the methods to register and unregister a device to the backend system for receiving
 notifications via Google Cloud Messaging.
 
-\begin{table}[h]
+\begin{table}
 \begin{center}
-    \begin{tabular}{| l | p{12cm} |}
+    \begin{tabularx}{\textwidth}{| l | X |}
         \hline Method & Description \\
         \hline registerDevice() & 
             this method is used to register a device to the backend. The method is only allowed to be accessed by an
@@ -368,9 +369,9 @@ notifications via Google Cloud Messaging.
         \hline listDevices() &
             this method is used to query a list of all device registrations that belong to a user. \\
         \hline
-    \end{tabular}
-    \caption{User API}
+    \end{tabularx}
 \end{center}
+\caption{User API}
 \end{table}
 
 \subsubsection{Subscription}
@@ -415,9 +416,9 @@ public List<SubscriptionRecord> unsubscribe(@Named("userId") String userId, @Nul
 \end{lstlisting}
 \end{minipage}
 
-\begin{table}[h]
+\begin{table}
 \begin{center}
-    \begin{tabular}{| l | p{12cm} |}
+    \begin{tabularx}{\textwidth}{| l | X |}
         \hline Method & Description \\
         \hline listSubscription() & 
             this method is used to list all the subscription records in the database. \\
@@ -430,9 +431,9 @@ public List<SubscriptionRecord> unsubscribe(@Named("userId") String userId, @Nul
         \hline unsubscribe() & 
             this method is used to unsubscribe from a user. \\
         \hline
-    \end{tabular}
-    \caption{Subscription API}
+    \end{tabularx}
 \end{center}
+\caption{Subscription API}
 \end{table}
 
 \subsection{Client side}
@@ -448,29 +449,59 @@ The android application is implemented with the following components:
     \item Database services that provides method to access the logic models uses in the class
 \end{enumerate}
 
+Each view of the application is implemented in a class called Fragment.  Navigations between parallel fragments are
+achieved through Navigation Drawer as suggested by Google's new Material android design guidelines
+\cite{NavigationDrawerPattern}. Each view is implemented as an independent fragment so that the user interface of the
+application can be refactored and remimplemented without changing the view itself.  Transitioning between fragments is
+handled by the Main activity's fragment manager. The Main Activity also acts as the main communication among fragments
+fragments or between a service and fragments. The communication mechanism follows Observer pattern
+\cite{Gamma:1995:DPE:186897} with each fragment registers and unregisters itself with the activity for interested
+events.
 
 \subsubsection{Local database}
-In order to interact with the local database, all views in the application use centralized point of access. The client application logic
-business requires 2 models \texttt{Data} and \texttt{User} and hence there are 2 contract classes that represent the interface to the
-database. These interfaces effectively simplify the dependencies and interaction between the views and the models. By having a single mean
-of access, it is easier to change the way the data is access globally by changing the interface and also make it easier to debug if
-neccessary.
+In order to interact with the local database, all views in the application use centralized point of access. The client
+application logic business requires 2 models \texttt{Data} and \texttt{User} and hence there are 2 contract classes that
+represent the interface to the database. These interfaces effectively simplify the dependencies and interaction between
+the views and the models. By having a single mean of access, it is easier to change the way the data is access globally
+by changing the interface and also make it easier to debug if neccessary.
 
 \subsubsection{Services}
-The application consists of a set of Service class extending Android's Service that handle interactions with the models and the application
-server. The service is invoked from any of the views by creating an Intent with appropriate arguments and the result is then propagated to
-all effective views that are interested in the result. Once finishing servicing a request, an event is created and broadcasted to the main
-activity. Since there are more and one view that are interested in a given model, the event is received by the main activity and then
-propagated to its current view for displaying the result if the view is registered with the activity. Upon creating and replacing a fragment
-to the activity, a fragment is registered to receive the broadcasted events following Observer pattern. Each event is implemented with a
-pair of Publisher-Listener interfaces with the view implementing the listener interface and the main activity implementing the according
-publisher interface.
+The application consists of a set of Service class extending Android's IntentService that handle interactions with the models
+and the application server. The service is invoked from any of the views by creating an Intent with appropriate
+arguments and the result is then propagated to all effective views that are interested in the result. Once finishing
+servicing a request, an event is created and broadcasted to the main activity. Since there are more and one view that
+are interested in a given model, the event is received by the main activity and then propagated to its current view for
+displaying the result if the view is registered with the activity. Upon creating and replacing a fragment to the
+activity, a fragment is registered to receive the broadcasted events following Observer pattern. Each event is
+implemented with a pair of Publisher-Listener interfaces with the view implementing the listener interface and the main
+activity implementing the according publisher interface.
+The service classes run on a separate thread rather than UI thread hence allows calling network operations in the
+service implementation. In this application, each request is translated to one or more network operations to the back
+end server and executed in an AsyncTask.
 
 \paragraph{Subscription Service} \mbox{} \\
-Something here
+The \texttt{SubscriptionService} is used to handle the interaction with the users and subscriptions. The service provides the
+methods to fetch a list of users of the application, subscribe to a user, cancel a subscription request and accept a
+subscription requests by other users.  In local domain, the subscriptions from a logged in user to other users can be
+represented as a status attached to a User entity indicating not-subscribed, subscribed or pending request. The states
+of the subscription request is described in a Finite State Machine diagram. The aforementioned status is also
+implemented in the views to change the widgets accordingly so as to reflect the status of the subscription.
+
+\begin{figure}[!ht]
+    \caption{Subscription model FSM}
+    \centering
+    \includegraphics[width=1\textwidth]{subscription_fsm}
+\end{figure}
 
 \paragraph{Data Service} \mbox{} \\
-Something here
+The \texttt{DataService} is used to handle the interaction with the data records in the database. In the client
+application, \texttt{DataService} consists of 1 method to fetch data from the back end server and store in local SQLite
+database. The fetching is performed in rolling basis to reduce the network traffic i.e. only the new data if fetched.
+Each subscribed user entry in the local database maintains a \texttt{lastUpdated} field to indicate the latest time it
+was updated.  This information is initialized to a zero day when the user is created and updated every time the data of
+that user is fetched from the database. Upon unsubscription, the entry is cleared and reassigned to zero day so that all
+data of that user is fetched if the user is subscribed to again. During the fetch and insert to database operation, the
+list of data entries is iterated and the latest date is recorded and updated for a given user.
 
 \subsubsection{Graph display}
 Displaying of graph is contained in GraphFragment class. This fragment also allows users to choose various ways of
@@ -479,23 +510,25 @@ different types of data. Displaying of the widget is handled by MPAndroidChart b
 provided as a open source library on GitHub under Apache License, Version 2.0. The chart placeholder is populated with a
 \texttt{Chart} subsclasses and then appropriate methods are called depending on the choice of representation.
 
-\paragraph{Graph Fragment}
+\paragraph{Graph Fragment}\mbox{} \\
 \texttt{GraphFragment} and its subclasses are in charge of create the Chart and inflate it to the layout container.
 \texttt{GraphFragment} can be subclassed for specific type of data. In the scope of this project, it is implemented in 2
 subclasses namely \texttt{SimpleDataFragment} that uses line chart with 1 entry per each x value and
 \texttt{BloodPressureFragment} that uses scatter chart with 2 entries per each x value. The subclasses are required to
 implement the abstract methods in \texttt{GraphFragment} to display the data accordingly.  The \texttt{GraphFragment}
 contains the following abstract methods that are implemented in the concrete classes:
+
 \begin{lstlisting}
 abstract String getDescription();
 abstract Cursor getQuery(HealthDroidDatabaseHelper);
 abstract Chart makeChart(Context);
 abstract DataPool makeDataPool();
 \end{lstlisting}
+
 With the appropriate depencies constructed in the concrete classes, an asynchronous task extending from
 \texttt{DisplayDataTask} will then be invoked by on the time range selection and inject the dependencies dynamically.
 
-\paragraph{DataPool}
+\paragraph{DataPool}\mbox{} \\
 As the graph fragment is required to display data grouped by date differently based on users' choices, the raw data
 entries acquired from database querying need to be processed and the accumulated value of a day, week or month is
 computed for displaying to the users. To achieve that, every time the task is invoked, all data must be queried and
@@ -506,9 +539,9 @@ dictionaries mapping date to values. The resulted dictionaries contains appropri
 object for each date range selection e.g. days (05/03/2015) for "by day" choice and month (12/2015) for "by month"
 choice.
 
-\begin{table}[h]
+\begin{table}
 \begin{center}
-    \begin{tabular}{| l | p{12cm} |}
+    \begin{tabularx}{\textwidth}{| l | X |}
         \hline Method & Description \\
         \hline accumulate() & 
             this method start the accumulation of data to create a map from user name to their data set contained in an
@@ -517,12 +550,12 @@ choice.
             this method takes a \texttt{ChartAdapter} as argument to insert the prepared data from accumulate() into a
             chart \\
         \hline
-    \end{tabular}
-    \caption{DataPool methods description}
+    \end{tabularx}
 \end{center}
+\caption{DataPool methods description}
 \end{table}
 
-\paragraph{KeyCreator}
+\paragraph{KeyCreator}\mbox{} \\
 The \texttt{KeyCreator} class has the responsibility of creating the values on x-axis as well as the lookup key in the
 resulted dictionary. The \texttt{KeyCreator} is declared as an interface and implemented by concrete classes namely
 \texttt{ByDayKeyCreator}, \texttt{ByWeekKeyCreator} and \texttt{ByMonthKeyCreator}
@@ -539,9 +572,9 @@ resulted dictionary. The \texttt{KeyCreator} is declared as an interface and imp
 %\end{lstlisting}
 %\end{minipage}
 
-\begin{table}[h]
+\begin{table}
 \begin{center}
-    \begin{tabular}{| l | p{12cm} |}
+    \begin{tabularx}{\textwidth}{| l | X |}
         \hline Method & Description \\
         \hline createKey() & 
             this method takes a date string in RFC3339 format as parameter and returns the corresponding key string in
@@ -554,12 +587,12 @@ resulted dictionary. The \texttt{KeyCreator} is declared as an interface and imp
             this methods takes no arguments and return the corresponding value from Java Calendar to help get the value
             from GregorianCalendar \\
         \hline
-    \end{tabular}
-    \caption{KeyCreator methods description}
+    \end{tabularx}
 \end{center}
+    \caption{KeyCreator methods description}
 \end{table}
 
-\paragraph{DataAccumulator}
+\paragraph{DataAccumulator}\mbox{} \\
 The \texttt{DataAccumulator} class has the responsiblity of containing a mapping from a string representing a date to a
 data representation. Depends on different type of data, the representation is constructed differently. In the scope of
 this project, DataAccumulator is extended by 2 concrete classes namely \texttt{SimpleDataAccumulator} that has 1
@@ -612,6 +645,7 @@ In conclusion, the core code base of the project has been completed but there ar
 be implemented to provide a better interaction with the users.On the other hands, consideration in software engineering
 practices and latest change of Android library is also required throughout the process of development for the rest of
 the project.
+\vfill
 
 \bibliography{fyp} 
 \bibliographystyle{ieeetr}
