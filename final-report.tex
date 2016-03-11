@@ -195,7 +195,21 @@ subscriber. Thus, the instances can be queried when finding users who subscribed
 by a given user.
 
 \begin{minipage}{\linewidth}
-\lstset{language=java,caption={SubscriptionRecord properties},label=SubscriptionRecord properties}
+\lstset{
+    frame=tb,
+    caption={SubscriptionRecord},
+    label=SubscriptionRecord
+    language=Java,
+    aboveskip=\baselineskip,
+    belowskip=\baselineskip,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=3
+}
 \begin{lstlisting}SubscriptionRecord
 @Entity
 public class SubscriptionRecord {
@@ -258,6 +272,7 @@ public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, 
 \end{table}
 
 \subsubsection{User}
+User API provides methods to interact with the user model of the applicaton.
 \begin{minipage}{\linewidth}
 \lstset{
     frame=tb,
@@ -302,18 +317,126 @@ public List<HealthDroidUser> queryUser(@Named("queryString") String queryString)
         \hline queryUser() &
             this method is used to query a list of users from part of the user ID. Since Datastore does not index all
             attributes by default and hence not allow to straight forward search for user ID string. To support the
-            query for large number of users in the database, the method use Google Search API.
-
-\subsubsection{Messaging}
-messaging
+            query for large number of users in the database, the method use Google Search API. \\
+        \hline
+    \end{tabular}
+    \caption{User API}
+\end{center}
+\end{table}
 
 \subsubsection{Registration}
-registration
+\begin{minipage}{\linewidth}
+\lstset{
+    frame=tb,
+    caption={Registration API},
+    label=Registration API
+    language=Java,
+    aboveskip=\baselineskip,
+    belowskip=\baselineskip,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=3
+}
+\begin{lstlisting}
+@ApiMethod(name = "register")
+public void registerDevice(@Named("regId") String regId, User user)
+
+@ApiMethod(name = "unregister")
+public void unregisterDevice(@Named("regId") String regId)
+
+@ApiMethod(name = "listDevices")
+public CollectionResponse<RegistrationRecord> listDevices(@Named("count") int count)
+\end{lstlisting}
+\end{minipage}
+
+Registration API provides the methods to register and unregister a device to the backend system for receiving
+notifications via Google Cloud Messaging.
+
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{| l | p{12cm} |}
+        \hline Method & Description \\
+        \hline registerDevice() & 
+            this method is used to register a device to the backend. The method is only allowed to be accessed by an
+            authenticated user and create a \texttt{RegistrationRecord} entity. \\
+        \hline unregisterDevice() &
+            this method is used to unregister a device to the backend.\\
+        \hline listDevices() &
+            this method is used to query a list of all device registrations that belong to a user. \\
+        \hline
+    \end{tabular}
+    \caption{User API}
+\end{center}
+\end{table}
 
 \subsubsection{Subscription}
-subscription
+Subscription API provides the methods to interact with subscriptions between users in the datastore. \\
+\begin{minipage}{\linewidth}
+\lstset{
+    frame=tb,
+    caption={Subscription API},
+    label=Subscription API
+    language=Java,
+    aboveskip=\baselineskip,
+    belowskip=\baselineskip,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=3
+}
+\begin{lstlisting}
+@ApiMethod(name = "subscribe")
+public SubscriptionRecord subscribe(@Named("target") String target, User user)
+
+@ApiMethod(name = "accept")
+public SubscriptionRecord acceptSubscription(@Named("subscriptionId") Long subscriptionId, User user)
+
+@ApiMethod(name = "list")
+public List<SubscriptionRecord> listSubscriptions()
+
+@ApiMethod(name = "subscribed")
+public Collection<SubscriptionRecord> getSubscribed(User user)
+
+@ApiMethod(name = "subscribers")
+public Collection<SubscriptionRecord> subscribers(@Named("userId") String userId) 
+
+@ApiMethod(name = "pending")
+public Collection<SubscriptionRecord> pending(@Named("userId") String userId)
+
+@ApiMethod(name = "unsubscribe")
+public List<SubscriptionRecord> unsubscribe(@Named("userId") String userId, @Nullable @Named("target") String target)
+\end{lstlisting}
+\end{minipage}
+
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{| l | p{12cm} |}
+        \hline Method & Description \\
+        \hline listSubscription() & 
+            this method is used to list all the subscription records in the database. \\
+        \hline getSubscribed() & 
+            this method is used to get all the users that is subscribed to by a give user. \\
+        \hline subsribers() & 
+            this method is used to get all the users that subscribed to a given user. \\
+        \hline subscribe() & 
+            this method is used to subscribe to a user. \\
+        \hline unsubscribe() & 
+            this method is used to unsubscribe from a user. \\
+        \hline
+    \end{tabular}
+    \caption{Subscription API}
+\end{center}
+\end{table}
 
 \subsection{Client side}
+
 \subsubsection{Overall design}
 The android application is implemented with the following components:
 \begin{enumerate}
@@ -324,6 +447,24 @@ The android application is implemented with the following components:
         the servers and redirect them to appropriate components
     \item Database services that provides method to access the logic models uses in the class
 \end{enumerate}
+
+
+\subsubsection{Local database}
+In order to interact with the local database, all views in the application use centralized point of access. The client application logic
+business requires 2 models \texttt{Data} and \texttt{User} and hence there are 2 contract classes that represent the interface to the
+database. These interfaces effectively simplify the dependencies and interaction between the views and the models. By having a single mean
+of access, it is easier to change the way the data is access globally by changing the interface and also make it easier to debug if
+neccessary.
+
+\subsection{Services}
+The application consists of a set of Service class extending Android's Service that handle interactions with the models and the application
+server. The service is invoked from any of the views by creating an Intent with appropriate arguments and the result is then propagated to
+all effective views that are interested in the result. Once finishing servicing a request, an event is created and broadcasted to the main
+activity. Since there are more and one view that are interested in a given model, the event is received by the main activity and then
+propagated to its current view for displaying the result if the view is registered with the activity. Upon creating and replacing a fragment
+to the activity, a fragment is registered to receive the broadcasted events following Observer pattern. Each event is implemented with a
+pair of Publisher-Listener interfaces with the view implementing the listener interface and the main activity implementing the according
+publisher interface.
 
 \subsubsection{Graph display}
 Displaying of graph is contained in GraphFragment class. This fragment also allows users to choose various ways of
