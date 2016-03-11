@@ -456,7 +456,7 @@ database. These interfaces effectively simplify the dependencies and interaction
 of access, it is easier to change the way the data is access globally by changing the interface and also make it easier to debug if
 neccessary.
 
-\subsection{Services}
+\subsubsection{Services}
 The application consists of a set of Service class extending Android's Service that handle interactions with the models and the application
 server. The service is invoked from any of the views by creating an Intent with appropriate arguments and the result is then propagated to
 all effective views that are interested in the result. Once finishing servicing a request, an event is created and broadcasted to the main
@@ -465,6 +465,12 @@ propagated to its current view for displaying the result if the view is register
 to the activity, a fragment is registered to receive the broadcasted events following Observer pattern. Each event is implemented with a
 pair of Publisher-Listener interfaces with the view implementing the listener interface and the main activity implementing the according
 publisher interface.
+
+\paragraph{Subscription Service} \mbox{} \\
+Something here
+
+\paragraph{Data Service} \mbox{} \\
+Something here
 
 \subsubsection{Graph display}
 Displaying of graph is contained in GraphFragment class. This fragment also allows users to choose various ways of
@@ -478,8 +484,8 @@ provided as a open source library on GitHub under Apache License, Version 2.0. T
 \texttt{GraphFragment} can be subclassed for specific type of data. In the scope of this project, it is implemented in 2
 subclasses namely \texttt{SimpleDataFragment} that uses line chart with 1 entry per each x value and
 \texttt{BloodPressureFragment} that uses scatter chart with 2 entries per each x value. The subclasses are required to
-implement the abstract methods in \texttt{GraphFragment} to display the data accordingly.
-The \texttt{GraphFragment} contains the following abstract methods that are implemented in the concrete classes:
+implement the abstract methods in \texttt{GraphFragment} to display the data accordingly.  The \texttt{GraphFragment}
+contains the following abstract methods that are implemented in the concrete classes:
 \begin{lstlisting}
 abstract String getDescription();
 abstract Cursor getQuery(HealthDroidDatabaseHelper);
