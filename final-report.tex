@@ -25,6 +25,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{svg}
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{listings}
 \usepackage{tabularx}
@@ -93,7 +94,17 @@ However, a universal platform to collect and display the data to users has not b
 the measured data is not frequently recorded so that it can be used as reference in diagnosing or study.  This project
 aims to implement such a platform with consideration on capability of adapting multiple types of devices, data sharing
 as well as the scalability.
-
+The scope of this project is to implements a cloud-based working application that consists of a backend server for
+storing data and an Android application that allows users to query their own and other users' data. Overall, 
+the scope of the application can be described with the following features:
+\begin{enumerate}
+    \item Users are able to post or submit the medical record (data) to the database
+    \item Users are able to view their own data as listing and graphical representation
+    \item Users are able to request to view other users' data and view all authorized data sets simulataneously
+    \item Users are able to accept a request to view their own data or cancel an authorized request
+    \item Users are able to receive notifications on their phone about certain events such as emergency or critical
+        data timely.
+\end{enumerate}
 \section{Literature review}
 With the development of technology and medical system, there are several studies to create a system to monitor
 patients's condition in realtime effectively and correctly to enable proactive monitoring \cite{5076774}, with the help
@@ -465,7 +476,7 @@ represent the interface to the database. These interfaces effectively simplify t
 the views and the models. By having a single mean of access, it is easier to change the way the data is access globally
 by changing the interface and also make it easier to debug if neccessary.
 
-\subsubsection{Services}
+\subsubsection{Utility Services}
 The application consists of a set of Service class extending Android's IntentService that handle interactions with the models
 and the application server. The service is invoked from any of the views by creating an Intent with appropriate
 arguments and the result is then propagated to all effective views that are interested in the result. Once finishing
@@ -502,6 +513,22 @@ was updated.  This information is initialized to a zero day when the user is cre
 that user is fetched from the database. Upon unsubscription, the entry is cleared and reassigned to zero day so that all
 data of that user is fetched if the user is subscribed to again. During the fetch and insert to database operation, the
 list of data entries is iterated and the latest date is recorded and updated for a given user.
+
+\subsubsection{Google Cloud Messaging}
+Google Cloud Messaging (GCM) is the free service provided by Google to allows developers to send messages between
+servers and client applications. The service supports both upstream and downstream messages but only downstream message
+is used in this application.
+To integrate the application with the Google Cloud Messaging service, each instance of the application must register
+itself and implement a listener service to listen for the pushed message \cite{CloudMessaging}. Registration to the
+backend is invoked through a \texttt{RegistrationIntentService}. In the recent versions of Google Cloud Messaging
+library for Android, GCM register() has been deprecated and replaced with \texttt{InstanceID} hence InstanceID API is used in
+this application to keep it up to date with the latest change. Upon receiving the \texttt{InstanceID}, the service also
+invokes the registration to the application server (Endpoint component) to register its token which is used to identify
+the device.
+Receiving of downstream message is handled by subclasses of \texttt{GcmListenerService}. This is the receiving point
+that process the messages sent from the application server to signal changes of data or subscription e.g. request
+accepted events. The GCM listener service must be implemented so that it agrees on the format and content of the message
+sent by the server module.
 
 \subsubsection{Graph display}
 Displaying of graph is contained in GraphFragment class. This fragment also allows users to choose various ways of
@@ -591,11 +618,28 @@ representation of the data and the concrete class is responsible for deserialize
 
 
 \subsubsection{User Display}
-\paragraph{User recycler view} \mbox{} \\
-user list
+\paragraph{User RecyclerView} \mbox{} \\
+In recent versions of Android Support Library, Google has released the \texttt{RecyclerView} as a flexible view for
+providing a limited window into a large data set. This widget is a more advanced and flexible implementation of
+\texttt{ListView} that used to be the standard way to display a list of items. \texttt{RecyclerView} contains the view
+to display items that can be scrolled very efficiently by maintaining a limited number of views\cite{RecyclerView}.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{RecyclerView}
+    \caption{Recycler View structure}
+\end{figure}
+A recycler view delegate its responsibility to \texttt{LayoutManager} for displaying the layout and \texttt{Adapter} to
+map an object model to a view. When an adapter is created, the object representation is bound to the view contained in
+the coresponding \texttt{ViewHolder}. By delegating the responsibility to handle the binding and interaction with the
+views to the programmer, RecyclerView effectively reduces the overhead and unnecessary work in the UI.
 
-\paragraph{User view holder} \mbox{} \\
-user display row
+\paragraph{User ViewHolder} \mbox{} \\
+The view for a user is managed by \texttt{UserViewHolder} class. This view contains the information about the users a
+button that allows to subscribe, unsubscribe depending on the current state. Interactions on the button is delegated to
+the event listener set by the client of this class i.e. UserFragment. Hence, interactions on the view is propagated
+upstream to the fragment to the database model and change of the model is listened by the fragment and propagated to the
+view to change accordingly. Thus, series of callbacks implemented by 2 interfaces \texttt{SubscriptionChangeListener} and
+\texttt{SubscriptionChangePublisher} created a 2-way binding of models in the application.
 
 \section{Work done so far}
 \label{sec:Work done so far}
