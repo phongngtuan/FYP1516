@@ -51,6 +51,7 @@
 %----------------------------------------------------------------------------------------
 
 \HRule \\[0.4cm] { \huge \bfseries Final Report}\\[0.4cm] % Title of your document \HRule \\[1.5cm]
+{ \huge \bfseries Android application for cloud-based healthcare monitor}\\[0.4cm] % Title of your document \HRule \\[1.5cm]
  
 %---------------------------------------------------------------------------------------- AUTHOR SECTION
 %----------------------------------------------------------------------------------------
@@ -108,16 +109,34 @@ application can be described with the following features:
         data timely.
 \end{enumerate}
 
-\section{Literature review}
-With the development of technology and medical system, there are several studies to create a system to monitor
-patients's condition in realtime effectively and correctly to enable proactive monitoring \cite{5076774} with the help
-of embedded computer system \cite{4062461}. Furthermore, devices with communication capabilities have been developed to
-measure human body's reading for long-range mdecial healthcare system and avoid the cost of nursing expense in families
-\cite{5918041}. On the other hand, the system which provide a common interface for large number of users must be able to
-serve great amount of traffics and interactions with the clients.  In order to handle large volume of simulatenous
-interaction to the database, an efficient and scalable approach must be used for database handling instead of
-traditional server. A highly available and reliable distributed platform is provided by Google Datastore, which offers
-many possibilities in developing such a system to store the data on the cloud \cite{7059154}.
+\section{Related work}
+In the last decade, it is observed that healthcare is shifting from tradional reactive approach to proactive approach so
+that the issues can be discovered and treated at an early stage. This approach requires a solution to continuously
+collect sensor data and monitor through a reliable service.  With the development of technology and medical system,
+there are several studies to create a system to monitor patients's condition in realtime effectively and correctly to
+enable proactive monitoring \cite{5076774} with the help of embedded computer system \cite{4062461}. Furthermore,
+devices with communication capabilities have been developed to measure human body's reading for long-range mdecial
+healthcare system and avoid the cost of nursing expense in families \cite{5918041}. On the other hand, the system which
+provide a common interface for large number of users must be able to serve great amount of traffics and interactions
+with the clients.  In order to handle large volume of simulatenous interaction to the database, an efficient and
+scalable approach must be used for database handling instead of traditional server. A highly available and reliable
+distributed platform is provided by Google Datastore, which offers many possibilities in developing such a system to
+store the data on the cloud \cite{7059154}.  Supperior communication between healthcare professionals is now possible
+thanks to the advancement of wireless sensors and Internet of Things. Such a development helps the healthcare system to
+provide a better services by allowing the scientists to access the bigger sample size and the users to utilize the
+collected sensor data without expert knowledge \cite{7027488}.  To extend the advancement to ubiquitous home
+healthcare, array of sensoring devices to detect Electrocardiogram (ECG) and Photoplethysmography (PPG), blood glucose
+and ear temperature was developed for Home Integrated Health Monitoring in \cite{4352299} and in \cite{5918041}. Data
+are collected from the devices around the house via ZigBee communication technology, and from those devices, transmitted
+to home server and then medical institutions. However, viewing and interpretation of the data by the users is still not
+properly implemented.  On the other hand, cloud computing is an emerging trends that offers several advantages to the
+traditional physical servers and hosting. Google Cloud Computing platform can reduce the cost of large-scale clusters
+and fault tolerance server to extremely low \cite{5718338}. The solution for healthcare monitor can be implemented
+based on Google Cloud Computing stack and use its messaging service, Google Cloud Messaging to send the notifications to
+the large number of client devices. Althouth in real world application, the Google Cloud Messaging are observed to have
+unpredictable time delay of message arrival, it is capable of delivering messaging to significantly large number of
+subscribers in a reasonable timeframe. Hence, Google Cloud computing and google Cloud Messaging is a suitable
+infrastructure for an application that have random accesses by large user base \cite{7037233}.
 
 \section{Architecture design}
 \label{sec:Architecture design}
