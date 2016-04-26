@@ -23,10 +23,10 @@ android {
 
     buildTypes {
         debug {
-            resValue "string", "rootUrl", "http://192.168.0.104:8080/_ah/api/"
+            resValue "string", "rootUrl", "http://192.168.0.100:8080/_ah/api/"
         }
         release {
-            resValue "string", "rootUrl", "http://192.168.0.104:8080/_ah/api/"
+            resValue "string", "rootUrl", "http://192.168.0.100:8080/_ah/api/"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -44,16 +44,16 @@ dependencies {
 
     androidTestCompile 'com.android.support.test:runner:0.4'
     androidTestCompile 'com.android.support.test:rules:0.4'
-    androidTestCompile 'com.android.support:support-annotations:23.2.0'
+    androidTestCompile 'com.android.support:support-annotations:23.3.0'
 
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:support-v4:23.2.0'
-    compile 'com.android.support:design:23.2.0'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
     compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
-    compile 'com.android.support:recyclerview-v7:23.2.0'
 }
 apply plugin: 'com.google.gms.google-services'
