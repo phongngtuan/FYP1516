@@ -22,6 +22,9 @@ public final class DataContract {
     public static final String SQL_DELETE_DATA_TABLE =
             "DROP TABLE IF EXISTS " + DataEntry.TABLE_NAME;
 
+    public static final int SIMPLE_TYPE = 0;
+    public static final int BLOOD_PRESSURE_TYPE = 1;
+
     private HealthDroidDatabaseHelper healthDroidDatabaseHelper;
 
     public DataContract(HealthDroidDatabaseHelper healthDroidDatabaseHelper) {
@@ -40,10 +43,6 @@ public final class DataContract {
                         DataContract.DataEntry.TABLE_NAME,
                         DataContract.DataEntry.COLUMN_NAME_DATE,
                         values);
-    }
-
-    public long addData(String value, String date, String user) {
-        return addData(value, date, user, 0);
     }
 
     public long deleteDataOfUser(String user) {

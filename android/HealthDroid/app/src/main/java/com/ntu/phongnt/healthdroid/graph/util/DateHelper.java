@@ -16,7 +16,7 @@ public class DateHelper {
         try {
             return formatRfc3339.parse(date);
         } catch (ParseException e) {
-            Log.d("HealthDroidDatabaseHelper", "Cannot parse string: " + date);
+            Log.d("DatabaseHelper", "Cannot parse string: " + date);
         }
         return null;
     }
@@ -38,7 +38,7 @@ public class DateHelper {
             calendar.setTime(formatRfc3339.parse(date));
             return calendar.get(property);
         } catch (ParseException e) {
-            Log.d("HealthDroidDatabaseHelper", "Cannot parse string: " + date);
+            Log.d("DatabaseHelper", "Cannot parse string: " + date);
         }
         return -1;
     }
