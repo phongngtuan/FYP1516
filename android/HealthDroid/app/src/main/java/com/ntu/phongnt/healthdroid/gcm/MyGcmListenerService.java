@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.ntu.phongnt.healthdroid.R;
+import com.ntu.phongnt.healthdroid.services.data.DataFetchingService;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
 public class MyGcmListenerService extends GcmListenerService {
@@ -54,6 +55,7 @@ public class MyGcmListenerService extends GcmListenerService {
                     .build();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
+            DataFetchingService.startFetchingData(this);
         }
 //        else
 //            new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();

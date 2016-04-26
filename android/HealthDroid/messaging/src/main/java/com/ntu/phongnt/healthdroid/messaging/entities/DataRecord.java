@@ -19,6 +19,7 @@ public class DataRecord {
     private Date date;
     @Index
     private int type;
+    @Index
     private Date createdAt;
 
     private String value;

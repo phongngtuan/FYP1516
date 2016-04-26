@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
@@ -61,9 +62,9 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
         Log.d(TAG, "Getting data for email: " + user.email);
 
         //Get the data records for this user, after last updated time
-//        DateTime after = DateTime.parseRfc3339(DateHelper.formatAsRfc3992(DateHelper.getDate(user.lastUpdated)));
-//        List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).setAfter(after).execute().getItems();
-        List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).execute().getItems();
+        DateTime after = DateTime.parseRfc3339(DateHelper.formatAsRfc3992(DateHelper.getDate(user.lastUpdated)));
+        List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).setAfter(after).execute().getItems();
+        //List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).execute().getItems();
 
         Log.d(TAG, "Found " + dataRecordList.size());
 

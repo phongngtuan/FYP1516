@@ -13,7 +13,7 @@ import android.content.Intent;
  */
 public class DataFetchingService extends IntentService {
     // IntentService can perform
-    private static final String ACTION_FETCH_DATA = "com.ntu.phongnt.healthdroid.action.FOO";
+    private static final String ACTION_FETCH_DATA = "com.ntu.phongnt.healthdroid.action.fetch_data";
 
     public DataFetchingService() {
         super("DataFetchingService");
