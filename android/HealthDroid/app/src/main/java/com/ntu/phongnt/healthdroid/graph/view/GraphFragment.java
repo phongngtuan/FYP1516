@@ -167,8 +167,7 @@ public abstract class GraphFragment extends Fragment implements
         @Override
         protected void onPostExecute(Cursor cursor) {
             graphManager = new GraphManager(cursor);
-            graphManager.setKeyCreator(makeKeyCreator());
-            graphManager.setDataPool(makeDataPool());
+            graphManager.setDataPool(makeDataPool(), makeKeyCreator());
             graphManager.addDataToChart(getChartAdapter());
             chart.invalidate();
         }

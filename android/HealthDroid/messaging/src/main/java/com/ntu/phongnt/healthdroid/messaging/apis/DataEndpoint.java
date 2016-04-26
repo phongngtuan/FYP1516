@@ -64,7 +64,11 @@ public class DataEndpoint {
             //TODO: Need to refactor this, copy paste for now
             //Sending notifications
             Sender sender = new Sender(API_KEY);
-            Message msg = new Message.Builder().collapseKey("data_updated").build();
+            Message msg = new Message.Builder()
+                    .collapseKey("data_updated")
+                    .addData("opCode", "dataAdded")
+                    .addData("user", healthDroidUser.getEmail())
+                    .build();
             System.out.println("DEBUG: Publisher " + healthDroidUser.getEmail());
             List<SubscriptionRecord> subscriptionRecords = ofy().load().type(SubscriptionRecord.class).ancestor(healthDroidUser).list();
             System.out.println("DEBUG: Subscription records count: " + subscriptionRecords.size());

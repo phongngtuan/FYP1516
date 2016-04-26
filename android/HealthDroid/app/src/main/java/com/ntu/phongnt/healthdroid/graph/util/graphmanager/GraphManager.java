@@ -9,7 +9,6 @@ import com.ntu.phongnt.healthdroid.graph.util.keycreator.KeyCreator;
 public class GraphManager {
     Cursor cursor;
     DataPool dataPool;
-    KeyCreator keyCreator;
 
     public GraphManager(Cursor cursor) {
         this.cursor = cursor;
@@ -40,19 +39,11 @@ public class GraphManager {
         dataPool.insertToChart(chartAdapter);
     }
 
-    public KeyCreator getKeyCreator() {
-        return keyCreator;
-    }
-
-    public void setKeyCreator(KeyCreator keyCreator) {
-        this.keyCreator = keyCreator;
-    }
-
     public DataPool getDataPool() {
         return dataPool;
     }
 
-    public void setDataPool(DataPool dataPool) {
+    public void setDataPool(DataPool dataPool, KeyCreator keyCreator) {
         this.dataPool = dataPool;
         this.dataPool.setKeyCreator(keyCreator);
     }

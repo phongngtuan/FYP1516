@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.api.client.util.DateTime;
 import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
@@ -22,10 +21,10 @@ import java.util.List;
 public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> {
     public static final String TAG = "GetDataTask";
     public static final String SUBSCRIBED_USERS_KEY = "SUBSCRIBED_USERS_KEY";
+    String accountName;
     private HealthDroidDatabaseHelper healthDroidDatabaseHelper = null;
     private UserContract userContract = null;
     private DataContract dataContract = null;
-    String accountName;
 
     public GetDataRecordsFromEndpointTask(Context context) {
         SharedPreferences settings = context.getSharedPreferences("HealthDroid", 0);
@@ -60,9 +59,12 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
 
     private void getDataBelongsToUser(Data dataService, UserContract.UserEntry user) throws IOException {
         Log.d(TAG, "Getting data for email: " + user.email);
-        DateTime after = DateTime.parseRfc3339(DateHelper.formatAsRfc3992(DateHelper.getDate(user.lastUpdated)));
+
         //Get the data records for this user, after last updated time
-        List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).setAfter(after).execute().getItems();
+//        DateTime after = DateTime.parseRfc3339(DateHelper.formatAsRfc3992(DateHelper.getDate(user.lastUpdated)));
+//        List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).setAfter(after).execute().getItems();
+        List<DataRecord> dataRecordList = dataService.get().setUserId(user.email).execute().getItems();
+
         Log.d(TAG, "Found " + dataRecordList.size());
 
         Date latestDateFromData = addDataToDatabase(dataRecordList);

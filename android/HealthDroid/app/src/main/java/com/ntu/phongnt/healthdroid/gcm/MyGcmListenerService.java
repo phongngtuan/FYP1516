@@ -12,8 +12,8 @@ import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.services.subscription.SubscriptionService;
 
 public class MyGcmListenerService extends GcmListenerService {
-    private static final String TAG = "MyGcmListenerService";
     public static final String TARGET_USER = "target";
+    private static final String TAG = "MyGcmListenerService";
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -40,6 +40,20 @@ public class MyGcmListenerService extends GcmListenerService {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
             SubscriptionService.startConfirmSubscribed(this, targetUser);
+        } else if (opCode.equalsIgnoreCase("dataAdded")) {
+            String targetUser = data.getString("user");
+            Log.d(TAG, "new data for user " + targetUser);
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("Health Droid")
+                    .setContentText(
+                            "New data added for " + targetUser
+                    )
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setVibrate(new long[0])
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1, notification);
         }
 //        else
 //            new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();

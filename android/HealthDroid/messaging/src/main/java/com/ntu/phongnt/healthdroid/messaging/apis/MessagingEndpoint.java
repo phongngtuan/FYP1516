@@ -103,7 +103,11 @@ public class MessagingEndpoint {
         }
 
         Sender sender = new Sender(API_KEY);
-        Message msg = new Message.Builder().collapseKey("data_updated").build();
+        Message msg = new Message.Builder()
+                .collapseKey("data_updated")
+                .addData("opCode", "dataAdded")
+                .addData("user", body)
+                .build();
         List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
         for (RegistrationRecord record : records) {
             Result result = sender.send(msg, record.getRegId(), 5);
