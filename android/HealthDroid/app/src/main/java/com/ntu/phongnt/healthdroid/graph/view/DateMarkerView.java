@@ -23,8 +23,7 @@ public class DateMarkerView extends MarkerView {
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        int dataSetIndex = highlight.getDataSetIndex();
-        dateView.setText(xVals.get(dataSetIndex));
+        dateView.setText(xVals.get(highlight.getXIndex()));
     }
 
     @Override
