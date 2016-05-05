@@ -21,6 +21,7 @@ public class SubscriptionFactory {
                 AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(),
                 credential)
+                .setApplicationName("HealthDroid")
                 .setRootUrl(rootUrl)
                 .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                     @Override

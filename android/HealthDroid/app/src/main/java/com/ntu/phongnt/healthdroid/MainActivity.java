@@ -1,18 +1,22 @@
 package com.ntu.phongnt.healthdroid;
 
+import android.Manifest;
 import android.accounts.AccountManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -63,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
     private static final int REQUEST_ACCOUNT_PICKER = 2;
+    private static final int HEALTHDROID_PERMISSION_REQUEST_GET_ACCOUNTS = 3;
+    String accountName = null;
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
     private HomeFragment homeFragment = null;
@@ -180,27 +186,36 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
                 break;
+            case HEALTHDROID_PERMISSION_REQUEST_GET_ACCOUNTS:
+                handleAccountSelected(getSelectedAccountName());
         }
     }
 
     private void handleAccountSelected(String accountName) {
         Log.d(TAG, "Authorized complete");
         Log.d(TAG, "Account name: " + accountName);
-        setSelectedAccountName(accountName);
-        constructServices(credential);
 
-        // Start IntentService to register this application with GCM.
-        if (checkPlayServices()) {
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-            Log.i(TAG, "Here");
+        //Request permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.GET_ACCOUNTS},
+                    HEALTHDROID_PERMISSION_REQUEST_GET_ACCOUNTS);
+        } else {
+            setSelectedAccountName(accountName);
+            constructServices(credential);
+
+            // Start IntentService to register this application with GCM.
+            if (checkPlayServices()) {
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+                Log.i(TAG, "Here");
+            }
+            //Register this email to endpoint
+            new RegisterUserToEndpoint(accountName).execute();
+            //TODO: refactor to appropriate place
+            //Load list user
+            SubscriptionService.startUpdateUserList(this);
         }
-        //Register this email to endpoint
-        new RegisterUserToEndpoint().execute();
-        //TODO: refactor to appropriate place
-        //Load list user
-        SubscriptionService.startUpdateUserList(this);
-
     }
 
     @Override
@@ -326,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements
     private void constructServices(GoogleAccountCredential credential) {
         String rootUrl = getResources().getString(R.string.rootUrl);
         Log.d("Root_url", rootUrl);
+
         SubscriptionFactory.build(credential, rootUrl);
         UserFactory.build(credential, rootUrl);
         RegistrationFactory.build(credential, rootUrl);
@@ -350,6 +366,10 @@ public class MainActivity extends AppCompatActivity implements
             return false;
         }
         return true;
+    }
+
+    private String getSelectedAccountName() {
+        return settings.getString(PREF_ACCOUNT_NAME, "");
     }
 
     private void setSelectedAccountName(String accountName) {
@@ -423,14 +443,21 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private class RegisterUserToEndpoint extends AsyncTask<Void, Void, HealthDroidUser> {
+        String accountName;
+
+        public RegisterUserToEndpoint(String accountName) {
+            this.accountName = accountName;
+        }
+
         @Override
         protected HealthDroidUser doInBackground(Void... params) {
             User userService = UserFactory.getInstance();
             HealthDroidUser healthDroidUser = null;
             try {
                 List<HealthDroidUser> users = userService.get()
-                        .set("userId", credential.getSelectedAccountName())
-                        .execute().getItems();
+                        .set("userId", accountName)
+                        .execute()
+                        .getItems();
                 if (users.isEmpty() || users.get(0).isEmpty()) {
                     healthDroidUser = userService.add().execute();
                     Log.d(TAG, "Registered email");
