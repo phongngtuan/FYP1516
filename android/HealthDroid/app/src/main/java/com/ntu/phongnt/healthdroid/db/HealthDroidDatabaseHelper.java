@@ -55,75 +55,222 @@ public class HealthDroidDatabaseHelper extends SQLiteOpenHelper {
 
         //TODO: Hard coded value for dev purpose, change later
         cv.put(TYPE, 0);
-        cv.put(VALUE, 1);
-        cv.put(DATE, "2015-10-26T03:37:48.038+07:00");
         cv.put(USER, "phongnt.ptnk@gmail.com");
+
+        cv.put(VALUE, 1.5);
+        cv.put(DATE, "2015-01-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(TYPE, 0);
         cv.put(VALUE, 2);
-        cv.put(DATE, "2015-11-26T03:37:48.038+07:00");
-        cv.put(USER, "phongnt.ptnk@gmail.com");
+        cv.put(DATE, "2015-02-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(TYPE, 0);
+        cv.put(VALUE, 2.5);
+        cv.put(DATE, "2015-03-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        //Multiple entries in a month
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-01T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-03T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-05T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-07T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-08T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-10T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-15T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-20T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-22T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-04-27T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        //Month data ends here
+        cv.put(VALUE, 2.5);
+        cv.put(DATE, "2015-05-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 4);
+        cv.put(DATE, "2015-06-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3.5);
+        cv.put(DATE, "2015-07-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2.75);
+        cv.put(DATE, "2015-08-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3.5);
+        cv.put(DATE, "2015-09-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 4);
+        cv.put(DATE, "2015-10-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 5);
+        cv.put(DATE, "2015-11-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
         cv.put(VALUE, 4);
         cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
-        cv.put(USER, "phongnt.ptnk@gmail.com");
+        db.insert(TABLE, VALUE, cv);
+        /* First user data ends */
+
+        /* Second user data starts */
+        cv.put(USER, "email@example.com");
+
+        cv.put(VALUE, 2);
+        cv.put(DATE, "2015-01-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(TYPE, 0);
-        cv.put(VALUE, 8);
-        cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
-        cv.put(USER, "phongnt.ptnk@gmail.com");
+        cv.put(VALUE, 2.5);
+        cv.put(DATE, "2015-02-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(TYPE, 0);
-        cv.put(VALUE, 8);
-        cv.put(DATE, "2015-12-24T03:37:48.038+07:00");
-        cv.put(USER, "phongnt.ptnk@gmail.com");
+        cv.put(VALUE, 2.25);
+        cv.put(DATE, "2015-03-26T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(TYPE, 0);
-        cv.put(VALUE, 8);
-        cv.put(DATE, "2015-12-25T03:37:48.038+07:00");
-        cv.put(USER, "phongnt.ptnk@gmail.com");
+        //Multiple entries in a month
+        cv.put(VALUE, 3);
+        cv.put(DATE, "2015-04-01T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(TYPE, 0);
-        cv.put(VALUE, 6);
+        cv.put(VALUE, 2.5);
+        cv.put(DATE, "2015-04-03T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2.75);
+        cv.put(DATE, "2015-04-05T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3);
+        cv.put(DATE, "2015-04-07T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 4);
+        cv.put(DATE, "2015-04-08T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 5);
+        cv.put(DATE, "2015-04-10T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 4.5);
+        cv.put(DATE, "2015-04-15T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 4);
+        cv.put(DATE, "2015-04-20T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3);
+        cv.put(DATE, "2015-04-22T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3.5);
+        cv.put(DATE, "2015-04-27T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        //Month data ends here
+        cv.put(VALUE, 2.5);
+        cv.put(DATE, "2015-05-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 4.5);
+        cv.put(DATE, "2015-06-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3.5);
+        cv.put(DATE, "2015-07-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3);
+        cv.put(DATE, "2015-08-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 2.75);
+        cv.put(DATE, "2015-09-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 4);
+        cv.put(DATE, "2015-10-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3.25);
+        cv.put(DATE, "2015-11-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, 3.5);
         cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
-        cv.put(USER, "email@example.com");
         db.insert(TABLE, VALUE, cv);
+        /*Second user data ends */
 
-        cv.put(TYPE, 0);
-        cv.put(VALUE, 10);
-        cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
-        cv.put(USER, "email@example.com");
-        db.insert(TABLE, VALUE, cv);
+        /* Blood pressure data */
+        cv.put(TYPE, 1);
 
-    cv.put(VALUE, "8/5");
+        cv.put(USER, "phongnt.ptnk@gmail.com");
+
+        cv.put(VALUE, "80/120");
         cv.put(DATE, "2015-12-24T03:37:48.038+07:00");
-        cv.put(USER, "phongnt.ptnk@gmail.com");
-        cv.put(TYPE, 1);
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(VALUE, "6/4");
+        cv.put(VALUE, "70/110");
         cv.put(DATE, "2015-12-25T03:37:48.038+07:00");
-        cv.put(USER, "phongnt.ptnk@gmail.com");
-        cv.put(TYPE, 1);
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(VALUE, "6/3");
+        cv.put(VALUE, "80/110");
         cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
-        cv.put(USER, "email@example.com");
-        cv.put(TYPE, 1);
         db.insert(TABLE, VALUE, cv);
 
-        cv.put(VALUE, "10/5");
+        cv.put(VALUE, "70/100");
         cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
         cv.put(USER, "email@example.com");
-        cv.put(TYPE, 1);
+
+        cv.put(VALUE, "90/130");
+        cv.put(DATE, "2015-12-24T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, "100/120");
+        cv.put(DATE, "2015-12-25T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, "90/110");
+        cv.put(DATE, "2015-12-26T03:37:48.038+07:00");
+        db.insert(TABLE, VALUE, cv);
+
+        cv.put(VALUE, "110/140");
+        cv.put(DATE, "2015-12-23T03:37:48.038+07:00");
         db.insert(TABLE, VALUE, cv);
     }
 
