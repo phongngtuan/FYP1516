@@ -36,9 +36,11 @@ public class ScatterChartAdapter extends ChartAdapter {
     public void addEntry(String label, float value, int index) {
         ScatterData data = chart.getScatterData();
         if (data != null) {
-            ScatterDataSet dataSet = data.getDataSetByLabel(label, true);
+            ScatterDataSet dataSet = (ScatterDataSet) data.getDataSetByLabel(label, true);
             if (dataSet == null) {
                 dataSet = new ScatterDataSet(new ArrayList<Entry>(), label);
+                dataSet.setScatterShapeSize(20f);
+                dataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
                 final int color = colors[dataSets.size() % colors.length];
                 dataSet.setValueTextColor(color);
                 dataSet.setColor(color);

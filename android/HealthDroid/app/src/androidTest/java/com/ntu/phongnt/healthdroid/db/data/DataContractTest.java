@@ -54,7 +54,7 @@ public class DataContractTest {
 
     @Test
     public void testAddData() throws Exception {
-        dataContract.addData(value, date, user);
+        dataContract.addData(value, date, user, 0);
         Cursor cursor = db.getReadableDatabase().query(
                 DataContract.DataEntry.TABLE_NAME,
                 new String[]{
@@ -74,7 +74,7 @@ public class DataContractTest {
 
     @Test
     public void testAddData2() throws Exception {
-        dataContract.addData(value, date, user);
+        dataContract.addData(value, date, user, 0);
         Cursor cursor = db.getReadableDatabase().query(
                 DataContract.DataEntry.TABLE_NAME,
                 new String[]{
@@ -141,9 +141,9 @@ public class DataContractTest {
 
     @Test
     public void testDeleteDataOfUser() throws Exception {
-        dataContract.addData(value, date, user);
+        dataContract.addData(value, date, user, 0);
         String anotherUser = "another@user.com";
-        dataContract.addData(value, date, anotherUser);
+        dataContract.addData(value, date, anotherUser, 0);
         Cursor cursor = db.getReadableDatabase().query(
                 DataContract.DataEntry.TABLE_NAME,
                 new String[]{

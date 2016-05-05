@@ -6,13 +6,8 @@ import android.test.RenamingDelegatingContext;
 
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
 import com.ntu.phongnt.healthdroid.db.data.DataContract;
-import com.ntu.phongnt.healthdroid.graph.util.DateRange;
-import com.ntu.phongnt.healthdroid.graph.util.keycreator.ByMonthKeyCreator;
-import com.ntu.phongnt.healthdroid.graph.util.keycreator.KeyCreator;
-import com.ntu.phongnt.healthdroid.graph.util.simple.SimpleDataPool;
 
 import org.junit.Before;
-import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
@@ -54,31 +49,31 @@ public class GraphManagerTest {
         cursor.close();
     }
 
-    @Test
-    public void testGetDataByUser() throws Exception {
-        Cursor cursor = db.getReadableDatabase().query(
-                DataContract.DataEntry.TABLE_NAME,
-                new String[]{
-                        DataContract.DataEntry.COLUMN_NAME_VALUE,
-                        DataContract.DataEntry.COLUMN_NAME_DATE,
-                        DataContract.DataEntry.COLUMN_NAME_USER,
-                        DataContract.DataEntry.COLUMN_NAME_TYPE
-                },
-                DataContract.DataEntry.COLUMN_NAME_TYPE + " = 0",
-                null,
-                null,
-                null,
-                null
-        );
-        GraphManager adapter
-                = new GraphManager(cursor);
-        DataPool dataPool = new SimpleDataPool();
-        KeyCreator keyCreator = new ByMonthKeyCreator();
-        adapter.setKeyCreator(keyCreator);
-        adapter.setDataPool(dataPool);
-        adapter.getDataByUser();
-        adapter.accumulateDataByUser();
-        DateRange range = dataPool.findRange();
-        cursor.close();
-    }
+//    @Test
+//    public void testGetDataByUser() throws Exception {
+//        Cursor cursor = db.getReadableDatabase().query(
+//                DataContract.DataEntry.TABLE_NAME,
+//                new String[]{
+//                        DataContract.DataEntry.COLUMN_NAME_VALUE,
+//                        DataContract.DataEntry.COLUMN_NAME_DATE,
+//                        DataContract.DataEntry.COLUMN_NAME_USER,
+//                        DataContract.DataEntry.COLUMN_NAME_TYPE
+//                },
+//                DataContract.DataEntry.COLUMN_NAME_TYPE + " = 0",
+//                null,
+//                null,
+//                null,
+//                null
+//        );
+//        GraphManager adapter
+//                = new GraphManager(cursor);
+//        DataPool dataPool = new SimpleDataPool();
+//        KeyCreator keyCreator = new ByMonthKeyCreator();
+//        adapter.setKeyCreator(keyCreator);
+//        adapter.setDataPool(dataPool);
+//        adapter.getDataByUser();
+//        adapter.accumulateDataByUser();
+//        DateRange range = dataPool.findRange();
+//        cursor.close();
+//    }
 }

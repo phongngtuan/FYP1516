@@ -36,9 +36,10 @@ public class LineChartAdapter extends ChartAdapter {
     public void addEntry(String label, float value, int index) {
         LineData data = chart.getData();
         if (data != null) {
-            LineDataSet dataSet = data.getDataSetByLabel(label, true);
+            LineDataSet dataSet = (LineDataSet) data.getDataSetByLabel(label, true);
             if (dataSet == null) {
                 dataSet = new LineDataSet(new ArrayList<Entry>(), label);
+                dataSet.setCircleSize(5f);
                 final int color = colors[dataSets.size() % colors.length];
                 dataSet.setValueTextColor(color);
                 dataSet.setFillColor(color);
