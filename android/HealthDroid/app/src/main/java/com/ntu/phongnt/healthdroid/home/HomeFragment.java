@@ -88,7 +88,9 @@ public class HomeFragment extends Fragment {
                         .setContentText(
                                 "My notification"
                         )
+                        .setDefaults(Notification.DEFAULT_SOUND)
                         .setPriority(Notification.PRIORITY_HIGH)
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .setVibrate(new long[0])
                         .build();
                 NotificationManager notificationManager =

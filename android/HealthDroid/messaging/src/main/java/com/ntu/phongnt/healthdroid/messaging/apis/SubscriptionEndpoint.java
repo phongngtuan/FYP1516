@@ -78,6 +78,7 @@ public class SubscriptionEndpoint {
             //Sending notifications
             Sender sender = new Sender(API_KEY);
             Message msg = new Message.Builder()
+                    .delayWhileIdle(false)
                     .addData("opCode", "subscriptionAccepted")
                     .addData("subscriptionId", subscriptionId.toString())
                     .addData("subscriber", subscriptionRecord.getSubscriber().getEmail())

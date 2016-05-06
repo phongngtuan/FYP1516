@@ -69,7 +69,10 @@ public class MessagingEndpoint {
             message = message.substring(0, 1000) + "[...]";
         }
         Sender sender = new Sender(API_KEY);
-        Message msg = new Message.Builder().addData("message", message).build();
+        Message msg = new Message.Builder()
+                .delayWhileIdle(false)
+                .addData("message", message)
+                .build();
         List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
         for (RegistrationRecord record : records) {
             Result result = sender.send(msg, record.getRegId(), 5);
@@ -105,6 +108,7 @@ public class MessagingEndpoint {
         Sender sender = new Sender(API_KEY);
         Message msg = new Message.Builder()
                 .collapseKey("data_updated")
+                .delayWhileIdle(false)
                 .addData("opCode", "dataAdded")
                 .addData("user", body)
                 .build();

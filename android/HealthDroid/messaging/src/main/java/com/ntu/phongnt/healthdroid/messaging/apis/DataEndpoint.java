@@ -66,6 +66,7 @@ public class DataEndpoint {
             Sender sender = new Sender(API_KEY);
             Message msg = new Message.Builder()
                     .collapseKey("data_updated")
+                    .delayWhileIdle(false)
                     .addData("opCode", "dataAdded")
                     .addData("user", healthDroidUser.getEmail())
                     .build();

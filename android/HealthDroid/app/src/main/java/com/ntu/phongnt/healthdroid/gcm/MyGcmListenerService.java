@@ -35,7 +35,9 @@ public class MyGcmListenerService extends GcmListenerService {
                     .setContentText(
                             targetUser + " accepted id " + id
                     )
+                    .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setPriority(Notification.PRIORITY_HIGH)
+                    .setDefaults(Notification.DEFAULT_SOUND)
                     .setVibrate(new long[0])
                     .build();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -50,15 +52,28 @@ public class MyGcmListenerService extends GcmListenerService {
                     .setContentText(
                             "New data added for " + targetUser
                     )
+                    .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setPriority(Notification.PRIORITY_HIGH)
+                    .setDefaults(Notification.DEFAULT_SOUND)
                     .setVibrate(new long[0])
                     .build();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
             DataFetchingService.startFetchingData(this);
+        } else {
+            Log.d(TAG, "Test GCM message");
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("Health Droid")
+                    .setContentText("Message" + data.getString("message", ""))
+                    .setVisibility(Notification.VISIBILITY_PUBLIC)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setDefaults(Notification.DEFAULT_SOUND)
+                    .setVibrate(new long[0])
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1, notification);
         }
-//        else
-//            new GetDataRecordsFromEndpointTask(getApplicationContext()).execute();
     }
 
 }
