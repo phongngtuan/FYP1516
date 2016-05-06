@@ -46,19 +46,19 @@ public class MyGcmListenerService extends GcmListenerService {
         } else if (opCode.equalsIgnoreCase("dataAdded")) {
             String targetUser = data.getString("user");
             Log.d(TAG, "new data for user " + targetUser);
-            Notification notification = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("Health Droid")
-                    .setContentText(
-                            "New data added for " + targetUser
-                    )
-                    .setVisibility(Notification.VISIBILITY_PUBLIC)
-                    .setPriority(Notification.PRIORITY_HIGH)
-                    .setDefaults(Notification.DEFAULT_SOUND)
-                    .setVibrate(new long[0])
-                    .build();
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1, notification);
+//            Notification notification = new NotificationCompat.Builder(this)
+//                    .setSmallIcon(R.mipmap.ic_launcher)
+//                    .setContentTitle("Health Droid")
+//                    .setContentText(
+//                            "New data added for " + targetUser
+//                    )
+//                    .setVisibility(Notification.VISIBILITY_PUBLIC)
+//                    .setPriority(Notification.PRIORITY_HIGH)
+//                    .setDefaults(Notification.DEFAULT_SOUND)
+//                    .setVibrate(new long[0])
+//                    .build();
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//            notificationManager.notify(1, notification);
             DataFetchingService.startFetchingData(this);
         } else {
             Log.d(TAG, "Test GCM message");
