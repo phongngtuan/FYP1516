@@ -16,7 +16,7 @@ public class BloodPressureDataFragment extends DataListFragment {
         HealthDroidDatabaseHelper db =
                 HealthDroidDatabaseHelper.getInstance(getActivity().getApplicationContext());
         DataContract dataContract = new DataContract(db);
-        return dataContract.getDataWithType(0);
+        return dataContract.getDataWithType(DataContract.BLOOD_PRESSURE_TYPE);
     }
 
 }
