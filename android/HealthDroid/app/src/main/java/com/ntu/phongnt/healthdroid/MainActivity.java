@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements
         SubscriptionChangePublisher,
         SubscriberRecordChangePublisher {
 
-    public static final String SHARED_PREFERENCE_NAME = "HealthDroid";
-    public static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
     private static final int REQUEST_ACCOUNT_PICKER = 2;
@@ -153,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements
                 new IntentFilter(AppPreferences.PENDING_REQUESTS_LOADED);
         broadcastManager.registerReceiver(pendingRequestLoadedReceiver, pendingRequestLoadedFilter);
 
-        settings = getSharedPreferences(SHARED_PREFERENCE_NAME, 0);
+        settings = getSharedPreferences(AppPreferences.SHARED_PREFERENCE_NAME, 0);
         credential = GoogleAccountCredential.usingAudience(
                 this,
                 "server:client_id:" + BuildConfig.WEB_CLIENT_ID);
@@ -320,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void pickAccount() {
-        String savedAccountName = settings.getString(PREF_ACCOUNT_NAME, null);
+        String savedAccountName = settings.getString(AppPreferences.PREF_ACCOUNT_NAME, null);
         if (credential.getSelectedAccountName() == null)
             if (savedAccountName == null) {
                 Intent newChooseAccountIntent = AccountPicker.newChooseAccountIntent(null,
@@ -369,12 +367,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private String getSelectedAccountName() {
-        return settings.getString(PREF_ACCOUNT_NAME, "");
+        return settings.getString(AppPreferences.PREF_ACCOUNT_NAME, "");
     }
 
     private void setSelectedAccountName(String accountName) {
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString(PREF_ACCOUNT_NAME, accountName);
+        editor.putString(AppPreferences.PREF_ACCOUNT_NAME, accountName);
         editor.apply();
         credential.setSelectedAccountName(accountName);
     }

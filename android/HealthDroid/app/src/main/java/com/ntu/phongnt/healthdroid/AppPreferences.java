@@ -29,6 +29,8 @@ public class AppPreferences {
     public static final String USER_PREFERENCE = "user";
     public static final String IS_SIGNED_IN = "isSignedIn";
     public static final String USER_ACCOUNT = "userAccount";
+    public static final String SHARED_PREFERENCE_NAME = "HealthDroid";
+    public static final String PREF_ACCOUNT_NAME = "PREF_ACCOUNT_NAME";
 
     public static String getSignedInUser(Context context) {
         return context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE)

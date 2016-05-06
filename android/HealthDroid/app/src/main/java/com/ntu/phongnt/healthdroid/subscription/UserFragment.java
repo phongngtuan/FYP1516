@@ -1,6 +1,7 @@
 package com.ntu.phongnt.healthdroid.subscription;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.ntu.phongnt.healthdroid.AppPreferences;
 import com.ntu.phongnt.healthdroid.R;
 import com.ntu.phongnt.healthdroid.data.user.model.HealthDroidUser;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
@@ -33,7 +35,6 @@ public class UserFragment extends Fragment
         implements SubscriptionChangeListener, QueryUserTask.Receiver {
     public static final String TAG = "USER_FRAG";
     public static final String TITLE = "Users";
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static HealthDroidDatabaseHelper db = null;
 
@@ -229,13 +230,19 @@ public class UserFragment extends Fragment
         @Override
         protected void onPostExecute(Cursor cursor) {
             listUser.clear();
+            SharedPreferences settings = getActivity().getSharedPreferences(AppPreferences.SHARED_PREFERENCE_NAME, 0);
+            String selectedAccountName = settings.getString(AppPreferences.PREF_ACCOUNT_NAME, "");
             if (cursor.moveToFirst()) {
                 do {
                     String email = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL));
-                    int subscription = cursor.getInt(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS));
-                    String lastUpdated = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED));
-                    UserWrapper userWrapper = new UserWrapper(email, subscription, lastUpdated);
-                    listUser.add(userWrapper);
+                    //Exclude users on client
+                    if (!email.equalsIgnoreCase(selectedAccountName)) {
+                        int subscription = cursor.getInt(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_SUBSCRIPTION_STATUS));
+                        String lastUpdated = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_LAST_UPDATED));
+                        UserWrapper userWrapper = new UserWrapper(email, subscription, lastUpdated);
+                        listUser.add(userWrapper);
+                        Log.d(TAG, "added user :" + userWrapper.email);
+                    }
                 }
                 while (cursor.moveToNext());
             }

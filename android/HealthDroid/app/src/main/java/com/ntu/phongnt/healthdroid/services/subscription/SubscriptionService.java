@@ -10,7 +10,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.ntu.phongnt.healthdroid.AppPreferences;
-import com.ntu.phongnt.healthdroid.MainActivity;
 import com.ntu.phongnt.healthdroid.data.subscription.Subscription;
 import com.ntu.phongnt.healthdroid.data.subscription.model.SubscriptionRecord;
 import com.ntu.phongnt.healthdroid.data.user.User;
@@ -142,8 +141,8 @@ public class SubscriptionService extends IntentService {
     }
 
     private void unsubscribeUser(String targetUser) {
-        SharedPreferences settings = getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME, 0);
-        String thisUser = settings.getString(MainActivity.PREF_ACCOUNT_NAME, "");
+        SharedPreferences settings = getSharedPreferences(AppPreferences.SHARED_PREFERENCE_NAME, 0);
+        String thisUser = settings.getString(AppPreferences.PREF_ACCOUNT_NAME, "");
         if (!thisUser.isEmpty()) {
             new CancelSubscriptionTask(thisUser).execute(targetUser);
         }

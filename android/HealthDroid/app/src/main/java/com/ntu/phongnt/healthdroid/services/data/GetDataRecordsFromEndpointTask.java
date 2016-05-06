@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.api.client.util.DateTime;
-import com.ntu.phongnt.healthdroid.MainActivity;
+import com.ntu.phongnt.healthdroid.AppPreferences;
 import com.ntu.phongnt.healthdroid.data.data.Data;
 import com.ntu.phongnt.healthdroid.data.data.model.DataRecord;
 import com.ntu.phongnt.healthdroid.db.HealthDroidDatabaseHelper;
@@ -29,7 +29,7 @@ public class GetDataRecordsFromEndpointTask extends AsyncTask<Void, Void, Void> 
 
     public GetDataRecordsFromEndpointTask(Context context) {
         SharedPreferences settings = context.getSharedPreferences("HealthDroid", 0);
-        accountName = settings.getString(MainActivity.PREF_ACCOUNT_NAME, null);
+        accountName = settings.getString(AppPreferences.PREF_ACCOUNT_NAME, null);
 
         healthDroidDatabaseHelper = HealthDroidDatabaseHelper.getInstance(context.getApplicationContext());
         this.dataContract = new DataContract(healthDroidDatabaseHelper);
