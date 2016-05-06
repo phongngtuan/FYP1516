@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -31,6 +32,9 @@ import android.widget.Toast;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ntu.phongnt.healthdroid.data.DataTabsFragment;
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = "MainActivity";
     private static final int REQUEST_ACCOUNT_PICKER = 2;
     private static final int HEALTHDROID_PERMISSION_REQUEST_GET_ACCOUNTS = 3;
-    String accountName = null;
+
     GoogleAccountCredential credential = null;
     SharedPreferences settings = null;
     private HomeFragment homeFragment = null;
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements
     private List<SubscriberRecordChangeListener> subscriberRecordChangeListeners = new ArrayList<>();
     private ImageView profileImage = null;
     private BroadcastReceiver tokenBroadcastReceiver = null;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +101,26 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         profileImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
+
+        //Load profile image
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, null /* OnConnectionFailedListener */)
+                .addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(Plus.SCOPE_PLUS_PROFILE)
+                .build();
+        googleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+            @Override
+            public void onConnected(@Nullable Bundle bundle) {
+                Person.Image image = Plus.PeopleApi.getCurrentPerson(googleApiClient).getImage();
+                new LoadProfileImageTask(profileImage).execute(image.getUrl());
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+
+            }
+        });
 
         //Instance variables initializations
         //Broadcasting
@@ -426,8 +451,7 @@ public class MainActivity extends AppCompatActivity implements
         protected Bitmap doInBackground(String... urls) {
             try {
                 URL url = new URL(urls[0]);
-                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                return bmp;
+                return BitmapFactory.decodeStream(url.openConnection().getInputStream());
             } catch (Exception e) {
                 e.printStackTrace();
             }

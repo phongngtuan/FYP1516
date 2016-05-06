@@ -31,9 +31,9 @@ public class MyGcmListenerService extends GcmListenerService {
             String targetUser = data.getString("target", "");
             Notification notification = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("My Tittle")
+                    .setContentTitle("HealthDroid")
                     .setContentText(
-                            targetUser + " accepted id " + id
+                            targetUser + " accepted your request"
                     )
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setPriority(Notification.PRIORITY_HIGH)
@@ -64,7 +64,7 @@ public class MyGcmListenerService extends GcmListenerService {
             Log.d(TAG, "Test GCM message");
             Notification notification = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("Health Droid")
+                    .setContentTitle("Test message")
                     .setContentText("Message" + data.getString("message", ""))
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setPriority(Notification.PRIORITY_HIGH)
