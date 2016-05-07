@@ -18,6 +18,9 @@ public class DataSetPickerFragment extends DialogFragment {
     private String[] choices;
     private boolean[] checkedItems;
 
+    public DataSetPickerFragment() {
+    }
+
     public static DataSetPickerFragment getInstance(String[] choices) {
         DataSetPickerFragment fragment = new DataSetPickerFragment();
         fragment.choices = choices;
@@ -29,9 +32,6 @@ public class DataSetPickerFragment extends DialogFragment {
         String[] choicesArray = new String[choices.size()];
         choices.toArray(choicesArray);
         return getInstance(choicesArray);
-    }
-
-    public DataSetPickerFragment() {
     }
 
     @NonNull
@@ -46,7 +46,7 @@ public class DataSetPickerFragment extends DialogFragment {
                         checkedItems[which] = isChecked;
                     }
                 })
-                .setPositiveButton("Wai?", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> selected = new ArrayList<>();
