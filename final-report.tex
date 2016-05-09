@@ -87,7 +87,7 @@
 
 \begin{abstract}
 There is an emerging need for proactive healthcare monitor that is enabled by the development of portable devices and
-Internet of Things. Based on the related work on the network of sensoring devices to collect medical data, this project
+Internet of Things. Based on the related work on the network of sensor devices to collect medical data, this project
 aims to complete the solution by implementing a layer that allows users to store, view and share their data in a reliable
 and distributed cloud-based system. In this project, a backend system hosted on cloud computing service and an android
 mobile client were developed. Google App Engine was selected as the platform for server due to its low cost and reliable
@@ -117,29 +117,29 @@ application can be described with the following features:
 \begin{enumerate}
     \item Users are able to post or submit the medical record (data) to the a persistent database (database)
     \item Users are able to view their own data as numerical listing and graphical representation
-    \item Users are able to request to view other users' data and view all authorized data sets simulataneously
+    \item Users are able to request to view other users' data and view all authorized data sets simultaneously
     \item Users are able to accept a request to view their own data or cancel an authorized request
     \item Users are able to receive notifications on their phone about certain events such as emergency or critical
         data timely.
 \end{enumerate}
 
 \section{Related work}
-In the last decade, it is observed that healthcare is shifting from tradional reactive approach to proactive approach so
+In the last decade, it is observed that healthcare is shifting from traditional reactive approach to proactive approach so
 that the issues can be discovered and treated at an early stage. This approach requires a solution to continuously
 collect sensor data and monitor through a reliable service.  With the development of technology and medical system,
 there are several studies to create a system to monitor patients's condition in realtime effectively and correctly to
 enable proactive monitoring \cite{5076774} with the help of embedded computer system \cite{4062461}. Furthermore,
-devices with communication capabilities have been developed to measure human body's reading for long-range mdecial
+devices with communication capabilities have been developed to measure human body's reading for long-range medical
 healthcare system and avoid the cost of nursing expense in families \cite{5918041}. On the other hand, the system which
 provide a common interface for large number of users must be able to serve great amount of traffics and interactions
-with the clients.  In order to handle large volume of simulatenous interaction to the database, an efficient and
+with the clients.  In order to handle large volume of simultaneous interaction to the database, an efficient and
 scalable approach must be used for database handling instead of traditional server. A highly available and reliable
 distributed platform is provided by Google Datastore, which offers many possibilities in developing such a system to
-store the data on the cloud \cite{7059154}.  Supperior communication between healthcare professionals is now possible
+store the data on the cloud \cite{7059154}.  Superior communication between healthcare professionals is now possible
 thanks to the advancement of wireless sensors and Internet of Things. Such a development helps the healthcare system to
 provide a better services by allowing the scientists to access the bigger sample size and the users to utilize the
 collected sensor data without expert knowledge \cite{7027488}.  To extend the advancement to ubiquitous home
-healthcare, array of sensoring devices to detect Electrocardiogram (ECG) and Photoplethysmography (PPG), blood glucose
+healthcare, array of sensor devices to detect Electrocardiogram (ECG) and Photoplethysmography (PPG), blood glucose
 and ear temperature was developed for Home Integrated Health Monitoring in \cite{4352299} and in \cite{5918041}. Data
 are collected from the devices around the house via ZigBee communication technology, and from those devices, transmitted
 to home server and then medical institutions. However, viewing and interpretation of the data by the users is still not
@@ -147,7 +147,7 @@ properly implemented.  On the other hand, cloud computing is an emerging trends 
 traditional physical servers and hosting. Google Cloud Computing platform can reduce the cost of large-scale clusters
 and fault tolerance server to extremely low \cite{5718338}. The solution for healthcare monitor can be implemented
 based on Google Cloud Computing stack and use its messaging service, Google Cloud Messaging to send the notifications to
-the large number of client devices. Althouth in real world application, the Google Cloud Messaging are observed to have
+the large number of client devices. Although in real world application, the Google Cloud Messaging are observed to have
 unpredictable time delay of message arrival, it is capable of delivering messaging to significantly large number of
 subscribers in a reasonable timeframe. Hence, Google Cloud computing and google Cloud Messaging is a suitable
 infrastructure for an application that have random accesses by large user base \cite{7037233}.
@@ -158,7 +158,7 @@ The application contains 3 main components namely the client, the backend server
 
 \subsection{Client side}
 The client is responsible for displaying the data acquired from the physical measuring devices visually as graph or
-reading listing. The client application needs to acquire the the data records from the backend server through network
+reading listing. The client application needs to acquire the data records from the backend server through network
 communication and cache it in local database for presenting to the app user. In order to server as a universal interface to
 various types of medical record, the interface is capable of displaying different types of graph for different record
 type and designed to be extended when there is need for a new representation of data. The client connects 
@@ -170,14 +170,14 @@ via HTTP request and response, the client application can be implemented in any 
 desktop program or web application. Previously, there were many medical monitor devices that are capable of connecting
 to smart phones via bluetooth and hence required such a platform to posting the data upstream. But with the introduction
 of various small-size computing module that is network capable (Bluetooth, Ethernet) such as Raspberry Pi 3 or Intel
-Edision, the link between measuring devices and the server can be completed easily with an affordable cost. Due to time
+Edison, the link between measuring devices and the server can be completed easily with an affordable cost. Due to time
 constraint and man power of this project as well as the extensibility to other projects, the client is only implemented
 for Android phones.
 
 \subsection{Server side}
 The server is a Web server that exposes a RESTful API to the clients and serves the incoming requests. Such a RESTful
 API that communicates via HTTP request and response is a standard way for network application and provides an
-asbstraction layer between front-end and back-end, allowing a wide array of client devices to communicate with the
+abstraction layer between front-end and back-end, allowing a wide array of client devices to communicate with the
 server using standard message. To perform the business logic, the server interacts with a persistent database to provide
 the service as application backend.  The server side is chosen to be hosted on Google App Engine cloud service so as to
 elevate scalability and reliability of the application. By using cloud computing from a credible service provider, the
@@ -187,7 +187,7 @@ users and data traffic since the service provider offers multiple pricing tiers 
 the development stage which does not require large volume of transactions can make use of the free tier and scale up
 once the application acquires certain user base and transaction volume. Moreover, Datastore database provided by Google
 also supports caching and reliably distributes data to different locations with minimal latency.  Regarding
-implementation of ther server program, since client and server communicate through a RESTful API, the server can also be
+implementation of the server program, since client and server communicate through a RESTful API, the server can also be
 implemented in any programming languages. In this project, the web server is implemented in Java with Google Endpoints
 API \cite{CloudEndpoints} with Cloud Search API \cite{SearchAPI}.  This approach helps promote code reuse by sharing
 Java object between client and server codebase. In the future, the server can be swapped out by any web server if there
@@ -196,7 +196,7 @@ is need for finer control or performance improvement.
 \subsection{Database}
 Google Cloud Datastore is chosen to be the database backend of the system to reliably store and deliver data. Google
 Cloud Datastore is a schema-less NoSQL Datastore providing robust, reliable storage for the web application. In
-constrast with SQL-like database, Datastore treats each record in the database as a key-value pair without unnecessary
+contrast with SQL-like database, Datastore treats each record in the database as a key-value pair without unnecessary
 indexes. Comparing to the traditional relation databases, the Datastore uses a distributed architecture to automatically
 managing scaling to very large data sets. Additionally, Datastore is hosted as part of the Google App Engine platform,
 hence is fully managed with no planned down time by Google. Due to its different way of representing and managing data,
@@ -317,7 +317,7 @@ public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, 
             this method is used to add a data entry to datastore. The method is only allowed to be access by
             authenticated user as required in user parameter \\
         \hline getDataRecord() &
-            this method is used to get the data from datastore. The method takes 2 optional aruguments namely userId, to
+            this method is used to get the data from datastore. The method takes 2 optional arguments namely userId, to
             specify the user which data entries belong to and after, to set a lower limit of date in data entries. The
             "after" argument can be used to efficiently get only the new data entries in datastore for update operation
             \\
@@ -328,7 +328,7 @@ public List<DataRecord> getDataRecord(@Nullable @Named("userId") String userId, 
 \end{table}
 
 \subsubsection{User}
-User API provides methods to interact with the user model of the applicaton.
+User API provides methods to interact with the user model of the application.
 \begin{minipage}{\linewidth}
 \lstset{
     frame=tb,
@@ -479,7 +479,7 @@ public List<SubscriptionRecord> unsubscribe(@Named("userId") String userId, @Nul
             this method is used to list all the subscription records in the database. \\
         \hline getSubscribed() & 
             this method is used to get all the users that is subscribed to by a give user. \\
-        \hline subsribers() & 
+        \hline subscribers() & 
             this method is used to get all the users that subscribed to a given user. \\
         \hline subscribe() & 
             this method is used to subscribe to a user. \\
@@ -507,7 +507,7 @@ The android application is implemented with the following components:
 Each view of the application is implemented in a class called Fragment.  Navigations between parallel fragments are
 achieved through Navigation Drawer as suggested by Google's new Material android design guidelines
 \cite{NavigationDrawerPattern}. Each view is implemented as an independent fragment so that the user interface of the
-application can be refactored and remimplemented without changing the view itself.  Transitioning between fragments is
+application can be refactored and reimplemented without changing the view itself.  Transitioning between fragments is
 handled by the Main activity's fragment manager. The Main Activity also acts as the main communication among fragments
 fragments or between a service and fragments. The communication mechanism follows Observer pattern
 \cite{Gamma:1995:DPE:186897} with each fragment registers and unregisters itself with the activity for interested
@@ -518,7 +518,7 @@ In order to interact with the local database, all views in the application use c
 application logic business requires 2 models \texttt{Data} and \texttt{User} and hence there are 2 contract classes that
 represent the interface to the database. These interfaces effectively simplify the dependencies and interaction between
 the views and the models. By having a single mean of access, it is easier to change the way the data is access globally
-by changing the interface and also make it easier to debug if neccessary.
+by changing the interface and also make it easier to debug if necessary.
 
 \subsubsection{Utility Services}
 The application consists of a set of Service class extending Android's IntentService that handle interactions with the models
@@ -579,7 +579,7 @@ Displaying of graph is contained in GraphFragment class. This fragment also allo
 representation of the chart such as which user, time range to display as well as appropriate style of chart for
 different types of data. Displaying of the widget is handled by MPAndroidChart by Philipp Jahoda \cite{MPAndroidChart},
 provided as a open source library on GitHub under Apache License, Version 2.0. The chart placeholder is populated with a
-\texttt{Chart} subsclasses and then appropriate methods are called depending on the choice of representation.
+\texttt{Chart} subclasses and then appropriate methods are called depending on the choice of representation.
 
 \paragraph{Graph Fragment}\mbox{} \\
 \texttt{GraphFragment} and its subclasses are in charge of create the Chart and inflate it to the layout container.
@@ -602,7 +602,7 @@ abstract Chart makeChart(Context);
 abstract DataPool makeDataPool();
 \end{lstlisting}
 
-With the appropriate depencies constructed in the concrete classes, an asynchronous task extending from
+With the appropriate dependencies constructed in the concrete classes, an asynchronous task extending from
 \texttt{DisplayDataTask} will then be invoked by on the time range selection and inject the dependencies dynamically.
 Actual invocation of the \texttt{Chart} widget is handled by a \texttt{ChartAdapter} object. However, each type of
 chart provided by MPAndroidChart has different attributes and hence is handled differently. The \texttt{GraphFragment}
@@ -679,7 +679,7 @@ for each user. Since there are different type of DataPool for each type of chart
 declared as abstract and requires its subclasses to construct the correct \texttt{DataAccumulator} instance. 
 
 \paragraph{DataAccumulator}\mbox{} \\
-The \texttt{DataAccumulator} class has the responsiblity of containing a mapping from a string representing a date to a
+The \texttt{DataAccumulator} class has the responsibility of containing a mapping from a string representing a date to a
 data representation. Depends on different type of data, the representation is constructed differently. In the scope of
 this project, DataAccumulator is extended by 2 concrete classes namely \texttt{SimpleDataAccumulator} that has 1
 numerical value per date key and \texttt{BloodPressureDataAccumulator} that has 2 numerical values per date key. The
@@ -703,7 +703,7 @@ to display items that can be scrolled very efficiently by maintaining a limited 
 \end{figure}
 A recycler view delegate its responsibility to \texttt{LayoutManager} for displaying the layout and \texttt{Adapter} to
 map an object model to a view. When an adapter is created, the object representation is bound to the view contained in
-the coresponding \texttt{ViewHolder}. By delegating the responsibility to handle the binding and interaction with the
+the corresponding \texttt{ViewHolder}. By delegating the responsibility to handle the binding and interaction with the
 views to the programmer, RecyclerView effectively reduces the overhead and unnecessary work in the UI.
 
 \paragraph{User ViewHolder} \mbox{} \\
@@ -719,7 +719,7 @@ view to change accordingly. Thus, series of callbacks implemented by 2 interface
     \centering
     \includegraphics[width=1\textwidth]{UserView}
 \end{figure}
-
+\clearpage
 \section{Discussion}
 \subsection{Android development practices}
 In order to approach the latest change in new Android version and Android SDK, the project aims to use the latest tools
@@ -737,15 +737,15 @@ software engineering was considered and followed throughout the development of t
 read and reused by other developers.Serious consideration and effort has been put in the designing the graph components
 such that the application can be easily extended to other types of data i.e. blood pressure, blood glucose etc. as well
 as different ways of viewing data in the future. As the graph feature of the application is expected to be flexible and
-supports various options of displaying, the responsiblity was split into small classes with single responsiblity.
+supports various options of displaying, the responsibility was split into small classes with single responsibility.
 Most components depends only on interfaces and hence new classes complying to the interface can be created and easily
 plugged into the code base with dependency injection. Otherwise, there would have been lots of code duplications in and
 type checking to ensure that the application works as expected. Without careful design, the code would have been tightly
 coupled and number of classes increase significantly as each class handles a specific combination of the choices. As the
-project proceeds, the unstructured code base could grow beyound maintainability.
+project proceeds, the unstructured code base could grow beyond maintainability.
 
 \section{Conclusion}
-In conslusion, this project has implemented a prototype of cloud-based medical data managing solutions. The application
+In conclusion, this project has implemented a prototype of cloud-based medical data managing solutions. The application
 implemented in this application aims to provide a reliable platform for large volume of transactions. The application
 consists of an Android application and a backend server that runs on Google App Engine which is a efficient and scalable
 approach for server and database hosting. The projects provided working application as a proof of concept for a full
